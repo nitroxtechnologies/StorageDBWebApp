@@ -11,52 +11,21 @@
     <body>
     <div class="container">
         <div class="col-lg-12 text-center" style="margin-top: 50px">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown
-                    <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    <g:each in="${companies}" var="company" status="i">
-                        <li><a href="#">${company.name} (${company.id})</a></li>
-                    </g:each>
-                </ul>
-            </div>
-            %{--<table class="table">--}%
-                %{--<thead>--}%
-                %{--<tr>--}%
-                    %{--<th scope="col">ID</th>--}%
-                    %{--<th scope="col">Company Name</th>--}%
-                %{--</tr>--}%
-                %{--</thead>--}%
-                %{--<tbody>--}%
-                %{--<g:each in="${companies}" var="company" status="i">--}%
-                    %{--<tr>--}%
-                        %{--<th scope = "row"> ${company.id}</th>--}%
-                        %{--<td class="text-left">${company.name}</td>--}%
-                    %{--</tr>--}%
-                %{--</g:each>--}%
-                %{--<tr>--}%
-                    %{--<th scope="row">1</th>--}%
-                    %{--<td>Mark</td>--}%
-                    %{--<td>Otto</td>--}%
-                    %{--<td>@mdo</td>--}%
-                %{--</tr>--}%
-                %{--<tr>--}%
-                    %{--<th scope="row">2</th>--}%
-                    %{--<td>Jacob</td>--}%
-                    %{--<td>Thornton</td>--}%
-                    %{--<td>@fat</td>--}%
-                %{--</tr>--}%
-                %{--<tr>--}%
-                    %{--<th scope="row">3</th>--}%
-                    %{--<td>Larry</td>--}%
-                    %{--<td>the Bird</td>--}%
-                    %{--<td>@twitter</td>--}%
-                %{--</tr>--}%
-                %{--</tbody>--}%
-            %{--</table>--}%
+            <label for="countryddl" >Company:</label>
+            <g:select optionKey="id" optionValue="name"
+                      name="LocalGrailsCompany.name" from="${companies}"
+                      onChange= "${remoteFunction(
+                                           controller: 'LocalGrailsCompany',
+                                           action:'loadFacilities',
+                                           params: '\'id=\'+escape(this.value)',
+                                           update: 'provinceddl')}" ></g:select>
+              <label for="provinceddl" >Province:</label>
+              <div id="provinceddl">
+                </div>
+                  <g:select name="provinceddl" noSelection="['':'Select one...']" from="${facilities}">
+              </g:select>
         </div>
     </div>
-    </body>
 </html>
 
 

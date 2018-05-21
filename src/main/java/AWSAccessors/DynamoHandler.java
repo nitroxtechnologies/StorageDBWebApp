@@ -15,13 +15,12 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class DynamoHandler
 {
@@ -131,6 +130,19 @@ public class DynamoHandler
     public void addCompanyToFacility(CompanyToFacility ctf)
     {
         mapper.save(ctf);
+    }
+
+    public ArrayList<Facility> getFacilitiesFromCompanyID(long id)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+id));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("companyId = :val1").withExpressionAttributeValues(eav);
+
+        List scanResult = mapper.scan(Facility.class, scanExpression);
+
+        return (ArrayList<Facility>) scanResult;
     }
 
     public void addFacility(Facility f)
