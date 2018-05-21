@@ -9,7 +9,6 @@ class LocalGrailsCompanyController {
     def index()
     {
         println("CONTROLLER RAN")
-        render LocalGrailsCompany.count()
         def companies = []
         companies = LocalGrailsCompany.list();
         [companies:companies]
