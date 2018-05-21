@@ -10,7 +10,7 @@ class LocalGrailsCompanyController {
     {
         println("CONTROLLER RAN")
         def companies = []
-        companies = LocalGrailsCompany.list();
+        companies = LocalGrailsCompany.list()
         [companies:companies]
     }
     def renderSpecial(Company c)
