@@ -30,11 +30,13 @@ public class DynamoHandler
     public DynamoHandler() throws IOException
     {
         Scanner sc = new Scanner(new File("DataFiles/credentials.txt"));
+
         //String AWS_ACCESS_KEY_ID = sc.nextLine();
         //String AWS_SECRET_ACCESS_KEY = sc.nextLine();
         HashMap hm = new HashMap<String,String>();
         hm.put("AWS_ACCESS_KEY_ID",sc.nextLine());
         hm.put("AWS_SECRET_ACCESS_KEY",sc.nextLine());
+        System.out.println("ACCESS KEY" + hm.get("AWS_ACCESS_KEY_ID"));
         setEnv(hm);
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
                 .withRegion(Regions.US_WEST_1).withCredentials(new EnvironmentVariableCredentialsProvider())

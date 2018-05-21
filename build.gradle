@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.10"
         classpath "io.spring.gradle:dependency-management-plugin:1.0.0.RC2"
     }
 }
@@ -30,13 +30,13 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.178'
+        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.333'
     }
 }
 
 dependencies {
 
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.178'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.333'
 
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
@@ -63,7 +63,7 @@ dependencies {
     runtime "org.glassfish.web:el-impl:2.1.2-b03"
     runtime "com.h2database:h2"
     runtime "org.apache.tomcat:tomcat-jdbc"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.2"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.10"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails.plugins:geb"
     testCompile "org.grails:grails-web-testing-support"
