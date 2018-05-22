@@ -20,8 +20,6 @@
                 <g:select id = 'facilities' optionKey="id" optionValue="name"
                           name="LocalGrailsFacility.name" from="${facilities}">
                 </g:select>
-                      %{--<g:select name="provinceddl" noSelection="['':'Select one...']" from="${facilities}">--}%
-                  %{--</g:select>--}%
             </div>
 
         </div>
