@@ -14,7 +14,7 @@
                 <label for="countryddl" >Company:</label>
                 <g:select id = "cDropdown" optionKey="id" optionValue="name"
                           name="companydropdown" from="${companies}"
-                          onChange= 'goToPage(2)'>
+                          onChange= 'goToPage(document.getElementById("cDropdown"))'>
                 </g:select>
 
                 <g:select id = 'facilities' optionKey="id" optionValue="name"
@@ -24,7 +24,8 @@
 
         </div>
     <g:javascript>
-       function goToPage(cID){
+       function goToPage(e){
+            var cID = e.options[e.selectedIndex].text;
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID;
     }
 </g:javascript>
