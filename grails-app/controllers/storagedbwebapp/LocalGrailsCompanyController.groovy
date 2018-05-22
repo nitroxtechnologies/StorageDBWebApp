@@ -10,21 +10,13 @@ import AWSAccessors.Facility
 class LocalGrailsCompanyController {
     def index()
     {
-        println("CONTROLLER RAN!!")
         def companies = []
         companies = LocalGrailsCompany.list()
         [companies:companies]
-        /*
-        def facilities = []
-        facilities = LocalGrailsFacility.list()
-        [facilities:facilities]
-
-        def units = []
-        units = LocalGrailsUnit.list()
-        [units:units]*/
     }
     def loadFacilities()
     {
+
 
         long id = 0
         println("ID" + id)
@@ -37,7 +29,11 @@ class LocalGrailsCompanyController {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
         }
         facilities = LocalGrailsFacility.list()
-        [facilities:facilities]
+
+        def companies = []
+        companies = LocalGrailsCompany.list()
+
+        [companies:companies, facilities: facilities]
     }
 
 
