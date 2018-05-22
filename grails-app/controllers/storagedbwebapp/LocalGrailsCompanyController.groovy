@@ -24,11 +24,13 @@ class LocalGrailsCompanyController {
         def facilities = []
         DynamoHandler dh = new DynamoHandler()
         List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(0)
+        LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
         for(Facility f : facilitiesArraylist)
         {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
         }
         facilities = LocalGrailsFacility.list()
+
 
         def companies = []
         companies = LocalGrailsCompany.list()
