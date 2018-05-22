@@ -22,11 +22,5 @@
             </div>
 
         </div>
-    <g:javascript>
-       function goToPage(arg){
-            // var value = arg.options[arg.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}";
-    }
-</g:javascript>
     </body>
 </html>

@@ -16,6 +16,7 @@ class LocalGrailsCompanyController {
     }
     def loadFacilities()
     {
+        println(params.cID)
         println("Loading facilities....")
         def facilities = []
         DynamoHandler dh = new DynamoHandler()
@@ -28,9 +29,8 @@ class LocalGrailsCompanyController {
         facilities = LocalGrailsFacility.list()
 
 
-        def companies = [params.cID]
-//        companies = LocalGrailsCompany.list()
-//        println(companies)
+        def companies = []
+        companies.add(new LocalGrailsCompany(id: params.cID, name: params.cName)) // retain selection
         [companies:companies, facilities: facilities]
     }
 

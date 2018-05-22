@@ -25,8 +25,9 @@
         </div>
     <g:javascript>
        function goToPage(e){
-            var cID = e.options[e.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID;
+            var cID = e.selectedIndex;
+            var cName = e.options[e.selectedIndex].text;
+           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
     }
 </g:javascript>
     </body>
