@@ -12,9 +12,9 @@
         <div class="container">
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label for="countryddl" >Company:</label>
-                <g:select optionKey="id" optionValue="name"
+                <g:select id = "cDropdown" optionKey="id" optionValue="name"
                           name="companydropdown" from="${companies}"
-                          onChange= 'goToPage(0)'>
+                          onChange= 'goToPage(2)'>
                 </g:select>
 
                 <g:select id = 'facilities' optionKey="id" optionValue="name"
@@ -24,9 +24,8 @@
 
         </div>
     <g:javascript>
-       function goToPage(arg){
-            // var value = arg.options[arg.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}";
+       function goToPage(cID){
+           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID;
     }
 </g:javascript>
     </body>

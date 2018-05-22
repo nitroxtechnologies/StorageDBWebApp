@@ -16,14 +16,11 @@ class LocalGrailsCompanyController {
     }
     def loadFacilities()
     {
-
-
-        long id = 0
-        println("ID" + id)
-        println("WEIRD CONTROLLER")
+        println(params.cID as Integer)
+        println("Loading facilities....")
         def facilities = []
         DynamoHandler dh = new DynamoHandler()
-        List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(0)
+        List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(params.cID as Integer)
         LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
         for(Facility f : facilitiesArraylist)
         {
@@ -34,7 +31,7 @@ class LocalGrailsCompanyController {
 
         def companies = []
         companies = LocalGrailsCompany.list()
-
+        println(companies)
         [companies:companies, facilities: facilities]
     }
 

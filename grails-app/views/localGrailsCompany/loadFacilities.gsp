@@ -13,8 +13,7 @@
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label for="countryddl" >Company:</label>
                 <g:select optionKey="id" optionValue="name"
-                          name="companydropdown" from="${companies}"
-                          onChange= 'goToPage(0)'>
+                          name="companydropdown" from="${companies}">
                 </g:select>
 
                 <g:select id = 'facilities' optionKey="id" optionValue="name"
