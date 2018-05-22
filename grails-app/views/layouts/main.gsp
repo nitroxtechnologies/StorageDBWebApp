@@ -9,23 +9,29 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     </head>
     <body>
-    <div class="container">
-        <div class="col-lg-12 text-center" style="margin-top: 50px">
-            <label for="countryddl" >Company:</label>
-            <g:select optionKey="id" optionValue="name"
-                      name="LocalGrailsCompany.name" from="${companies}"
-                      onChange= "${remoteFunction(
-                                           controller: 'LocalGrailsCompany',
-                                           action:'loadFacilities',
-                                           params: '\'id=\'+escape(this.value)',
-                                           update: 'provinceddl')}" ></g:select>
-              <label for="provinceddl" >Province:</label>
-              <div id="provinceddl">
-                </div>
-                  <g:select name="provinceddl" noSelection="['':'Select one...']" from="${facilities}">
-              </g:select>
+        <div class="container">
+            <div class="col-lg-12 text-center" style="margin-top: 50px">
+                <label for="countryddl" >Company:</label>
+                <g:select optionKey="id" optionValue="name"
+                          name="companydropdown" from="${companies}"
+                          onChange= 'goToPage(0)'>
+                </g:select>
+
+                <g:select id = 'facilities' optionKey="id" optionValue="name"
+                          name="LocalGrailsFacility.name" from="${facilities}">
+                </g:select>
+                      %{--<g:select name="provinceddl" noSelection="['':'Select one...']" from="${facilities}">--}%
+                  %{--</g:select>--}%
+            </div>
+
         </div>
-    </div>
+    <g:javascript>
+       function goToPage(arg){
+            // var value = arg.options[arg.selectedIndex].text;
+           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}";
+    }
+</g:javascript>
+    </body>
 </html>
 
 

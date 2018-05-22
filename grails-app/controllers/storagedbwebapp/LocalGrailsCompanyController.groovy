@@ -25,11 +25,13 @@ class LocalGrailsCompanyController {
     }
     def loadFacilities()
     {
-        long id = (long) params['id']
-        println("WEIRD CONTROLLER");
+
+        long id = 0
+        println("ID" + id)
+        println("WEIRD CONTROLLER")
         def facilities = []
-        DynamoHandler dh = new DynamoHandler();
-        ArrayList<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(0);
+        DynamoHandler dh = new DynamoHandler()
+        List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(0)
         for(Facility f : facilitiesArraylist)
         {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
@@ -37,14 +39,8 @@ class LocalGrailsCompanyController {
         facilities = LocalGrailsFacility.list()
         [facilities:facilities]
     }
-    def save()
-    {
 
-    }
-    def renderSpecial(Company c)
-    {
-        //render c.id + " " + c.name + "\n"
-    }
+
     def render()
     {
         //render "CONTROLLER RENDER"

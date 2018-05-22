@@ -132,7 +132,7 @@ public class DynamoHandler
         mapper.save(ctf);
     }
 
-    public ArrayList<Facility> getFacilitiesFromCompanyID(long id)
+    public List<Facility> getFacilitiesFromCompanyID(long id)
     {
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
         eav.put(":val1", new AttributeValue().withN(""+id));
@@ -142,7 +142,7 @@ public class DynamoHandler
 
         List scanResult = mapper.scan(Facility.class, scanExpression);
 
-        return (ArrayList<Facility>) scanResult;
+        return scanResult;
     }
 
     public void addFacility(Facility f)
