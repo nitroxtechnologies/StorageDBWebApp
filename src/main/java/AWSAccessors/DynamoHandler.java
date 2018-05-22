@@ -145,6 +145,56 @@ public class DynamoHandler
         return scanResult;
     }
 
+    public List<Unit> getUnitsFromFacilityName(String name)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withS(""+name));
+
+        Map<String,String> ean = new HashMap<>();
+        ean.put("#n","name");
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("#n = :val1").withExpressionAttributeValues(eav).withExpressionAttributeNames(ean);
+
+        List scanResult = mapper.scan(Facility.class, scanExpression);
+
+        Facility f = (Facility) scanResult.get(0);
+
+        eav = new HashMap<>();
+        eav.put(":val1", new AttributeValue().withN(""+f.getId()));
+
+        scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("facilityId = :val1").withExpressionAttributeValues(eav);
+
+        scanResult = mapper.scan(FacilityToUnit.class,scanExpression);
+
+        eav = new HashMap<String, AttributeValue>();
+
+        String filterExpression = "";
+
+        System.out.println("SEARCH ID: " + f.getId() + " SIZE: " + scanResult.size());
+
+        for(int i = 0; i < scanResult.size(); i++)
+        {
+            long unitId = ((FacilityToUnit)scanResult.get(i)).getUnitId();
+            filterExpression += ("id = :val" + (i+1));
+            eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
+            if(i != scanResult.size() - 1)
+            {
+                filterExpression += " OR ";
+            }
+        }
+
+        scanResult = new ArrayList();
+
+        scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+
+        scanResult.addAll(mapper.scan(Unit.class, scanExpression));
+
+        return scanResult;
+    }
+
     public void addFacility(Facility f)
     {
         mapper.save(f);

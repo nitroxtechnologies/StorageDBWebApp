@@ -12,15 +12,34 @@
         <div class="container">
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label for="countryddl" >Company:</label>
-                <g:select optionKey="id" optionValue="name"
-                          name="companydropdown" from="${companies}">
+                <g:select id = "cDropdown" optionKey="id" optionValue="name"
+                          name="companydropdown" from="${companies}"
+                          onChange= 'loadFacilities(document.getElementById("cDropdown"))'>
                 </g:select>
 
-                <g:select id = 'facilities' optionKey="id" optionValue="name"
-                          name="LocalGrailsFacility.name" from="${facilities}">
+                <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name"
+                          name="facilitydropdown" from="${facilities}"
+                          onChange= 'loadUnits(document.getElementById("facilitiesDropdown"))'>
+                </g:select>
+
+                <g:select id = 'units' optionKey="id" optionValue="name"
+                          name="unitdropdown" from="${units}">
                 </g:select>
             </div>
 
         </div>
+    <g:javascript>
+       function loadFacilities(e){
+            var cID = e.selectedIndex;
+            var cName = e.options[e.selectedIndex].text;
+           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
+    }
+
+    function loadUnits(e) {
+        var fID = e.selectedIndex;
+        var fName = e.options[e.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?fID=" + fID + "&fName=" + fName;
+    }
+</g:javascript>
     </body>
 </html>
