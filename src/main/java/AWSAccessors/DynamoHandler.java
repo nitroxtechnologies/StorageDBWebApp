@@ -204,6 +204,42 @@ public class DynamoHandler
         return scanResult;
     }
 
+    public Unit getUnitFromUnitName(String name)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withS(""+name));
+
+        Map<String,String> ean = new HashMap<>();
+        ean.put("#n","name");
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("#n = :val1").withExpressionAttributeValues(eav).withExpressionAttributeNames(ean);
+
+        List scanResult = mapper.scan(Unit.class, scanExpression);
+
+        Unit u = (Unit) scanResult.get(0);
+
+        return u;
+    }
+
+    public FacilityToUnit getFacilityToUnitFromNames(String facilityName, String unitName)
+    {
+        Facility f = getFacilityFromFacilityName(facilityName);
+
+        Unit u = getUnitFromUnitName(unitName);
+
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withS(""+u.getId()));
+        eav.put(":val2", new AttributeValue().withS(""+f.getId()));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("unitId = :val1 and facilityId = :val2").withExpressionAttributeValues(eav);
+
+        List scanResult = mapper.scan(FacilityToUnit.class, scanExpression);
+
+        return ((FacilityToUnit)scanResult.get(0));
+    }
+
     public void addFacility(Facility f)
     {
         mapper.save(f);

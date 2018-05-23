@@ -3,6 +3,7 @@ package storagedbwebapp
 import AWSAccessors.Company
 import AWSAccessors.DynamoHandler
 import AWSAccessors.Facility
+import AWSAccessors.FacilityToUnit
 import AWSAccessors.Unit
 
 /**
@@ -63,6 +64,25 @@ class LocalGrailsCompanyController {
 
 
         [companies:companies, company: company, facility: facility, facilities: facilities, units: units]
+    }
+    def loadUnitTable()
+    {
+        def companies = LocalGrailsCompany.list()
+        def facilities = LocalGrailsFacility.list()
+        def units = LocalGrailsUnit.list()
+
+        FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.unitName as String)
+
+        Unit u = dh.getUnitFromName(params.unitName as String);
+
+        def unitPrice = ftu.getRateAmount();
+        def unitName = u.getName();
+        def unitFloor = u.getFloor();
+
+        [companies: companies, facilities: facilities, units: units, unitPrice: unitPrice, unitName: unitName, unitFloor: unitFloor]
+
+
+        //In order for this code to compile, I need to come
     }
 
 
