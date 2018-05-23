@@ -30,7 +30,7 @@ class LocalGrailsCompanyController {
         }
         facilities = LocalGrailsFacility.list()
 
-//        def companies = [params.cName]
+
         def companies = LocalGrailsCompany.list()
 
         def company = (Integer.parseInt(""+params.cID) + 1)
@@ -45,16 +45,22 @@ class LocalGrailsCompanyController {
         def units = []
 
         DynamoHandler dh = new DynamoHandler()
+        Facility f = dh.getFacilityFromFacilityName(params.fName as String)
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-
+        LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
             new LocalGrailsUnit(id: u.getId(), name: u.getName()).save()
         }
 
         units = LocalGrailsUnit.list()
+        System.out.println("LOAD UNITS DROPDOWN - COMPANY: " + f.companyId + " FACILITY: " + params.fID);
+        def company = f.companyId + 1;
+        def facility = (params.fID as Integer) + 1;
 
-        [companies:companies, facilities: facilities, units: units]
+
+
+        [companies:companies, company: company, facility: facility, facilities: facilities, units: units]
     }
 
 

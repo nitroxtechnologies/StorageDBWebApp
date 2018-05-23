@@ -69,7 +69,7 @@
     }
 
     function loadUnits(e) {
-        var fID = e.selectedIndex;
+        var fID = e.selectedIndex - 1;
         var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?fID=" + fID + "&fName=" + fName;
     }
