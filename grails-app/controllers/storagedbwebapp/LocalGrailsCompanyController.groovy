@@ -55,8 +55,10 @@ class LocalGrailsCompanyController {
 
         units = LocalGrailsUnit.list()
         System.out.println("LOAD UNITS DROPDOWN - COMPANY: " + f.companyId + " FACILITY: " + params.fID);
-        def company = f.companyId + 1;
-        def facility = (params.fID as Integer) + 1;
+//        def company = f.companyId + 1;
+        def company = (Integer.parseInt(params.cID) + 2)
+        def facility = (Integer.parseInt(params.fID) + 1)
+        println("FACILITY: " + facility)
 
 
 

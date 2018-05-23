@@ -51,7 +51,7 @@
                 <label>Facility:</label>
                 <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name"
                           name="facilitydropdown" from="${facilities}"
-                          onChange= 'loadUnits(document.getElementById("facilitiesDropdown"))' noSelection="['null':'Select a Facility']">
+                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))' noSelection="['null':'Select a Facility']">
                 </g:select>
             </div>
 
@@ -63,15 +63,17 @@
     </footer>
     <g:javascript>
        function loadFacilities(e){
-            var cID = e.selectedIndex - 1;
+            var cID = e.selectedIndex;
             var cName = e.options[e.selectedIndex].text;
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
-    function loadUnits(e) {
+    function loadUnits(c, e) {
+        var cID = c.selectedIndex - 1;
+        var cName = c.options[c.selectedIndex].text;
         var fID = e.selectedIndex - 1;
         var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?fID=" + fID + "&fName=" + fName;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%

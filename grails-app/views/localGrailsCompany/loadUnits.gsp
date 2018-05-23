@@ -50,11 +50,11 @@
                 <label>Facility:</label>
                 <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
                           name="facilitydropdown" from="${facilities}"
-                          onChange= 'loadUnits(document.getElementById("facilitiesDropdown"))'>
+                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
                 </g:select>
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="id" optionValue="name"
-                          name="unitdropdown" from="${units}">
+                          name="unitdropdown" from="${units}" noSelection="['null':'Select a Unit']">
                 </g:select>
             </div>
 
@@ -71,10 +71,12 @@
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
-    function loadUnits(e) {
+    function loadUnits(c, e) {
+        var cID = c.selectedIndex - 1;
+        var cName = c.options[c.selectedIndex].text;
         var fID = e.selectedIndex;
         var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?fID=" + fID + "&fName=" + fName;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
 </g:javascript>
     </body>
