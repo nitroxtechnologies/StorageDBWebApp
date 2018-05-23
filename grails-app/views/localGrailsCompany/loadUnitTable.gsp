@@ -70,8 +70,8 @@
                 <tbody>
                     <tr>
                         <th scope = "row"> ${unitName}</th>
-                        <td class="text-left">${unitPrice}</td>
                         <td class="text-left">${unitFloor}</td>
+                        <td class="text-left">${unitPrice}</td>
                     </tr>
                 </tbody>
             </table>

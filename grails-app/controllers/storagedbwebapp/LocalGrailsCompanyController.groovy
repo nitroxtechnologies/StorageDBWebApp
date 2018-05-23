@@ -67,13 +67,15 @@ class LocalGrailsCompanyController {
     }
     def loadUnitTable()
     {
+        DynamoHandler dh = new DynamoHandler()
+
         def companies = LocalGrailsCompany.list()
         def facilities = LocalGrailsFacility.list()
         def units = LocalGrailsUnit.list()
 
-        FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.unitName as String)
+        FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
-        Unit u = dh.getUnitFromName(params.unitName as String);
+        Unit u = dh.getUnitFromUnitName(params.uName as String);
 
         def unitPrice = ftu.getRateAmount();
         def unitName = u.getName();

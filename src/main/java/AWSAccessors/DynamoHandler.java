@@ -229,11 +229,13 @@ public class DynamoHandler
         Unit u = getUnitFromUnitName(unitName);
 
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-        eav.put(":val1", new AttributeValue().withS(""+u.getId()));
-        eav.put(":val2", new AttributeValue().withS(""+f.getId()));
+        eav.put(":val1", new AttributeValue().withN(""+u.getId()));
+        eav.put(":val2", new AttributeValue().withN(""+f.getId()));
+
+        System.out.println("QUERY\nFACILITY ID: " + f.getId() + " UNIT ID: " + u.getId());
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
-                .withFilterExpression("unitId = :val1 and facilityId = :val2").withExpressionAttributeValues(eav);
+                .withFilterExpression("unitId = :val1 AND facilityId = :val2").withExpressionAttributeValues(eav);
 
         List scanResult = mapper.scan(FacilityToUnit.class, scanExpression);
 
