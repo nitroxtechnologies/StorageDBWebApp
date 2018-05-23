@@ -1,4 +1,4 @@
-buildscript {
+ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
@@ -37,7 +37,6 @@ dependencyManagement {
 dependencies {
 
     compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.11.333'
-
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"

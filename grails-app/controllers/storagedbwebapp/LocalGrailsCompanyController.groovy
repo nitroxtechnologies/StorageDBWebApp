@@ -11,13 +11,14 @@ import AWSAccessors.Unit
 class LocalGrailsCompanyController {
     def index()
     {
+        println("index controller")
         def companies = []
         companies = LocalGrailsCompany.list()
         [companies:companies]
     }
     def loadFacilities()
     {
-        println(params.cID)
+        println("CID = " + params.cID)
         println("Loading facilities....")
         def facilities = []
         DynamoHandler dh = new DynamoHandler()
@@ -29,9 +30,13 @@ class LocalGrailsCompanyController {
         }
         facilities = LocalGrailsFacility.list()
 
+//        def companies = [params.cName]
         def companies = LocalGrailsCompany.list()
 
-        [companies:companies, facilities: facilities]
+        def company = (Integer.parseInt(""+params.cID) + 1)
+        println("Company ID =" + company)
+        [companies:companies, company: company, facilities: facilities]
+//        render(view: "main",  model: [companies:companies, company: company, facilities: facilities])
     }
     def loadUnits()
     {
