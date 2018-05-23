@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="loadUnits"/>
+        <meta name="layout" content="loadUnitTable"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
@@ -54,10 +54,27 @@
                 </g:select>
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="id" optionValue="name"
-                          name="unitdropdown" from="${units}" noSelection="['null':'Select a Unit']"
+                          name="unitdropdown" from="${units}" value="${unit}"
                           onChange = 'showUnit(document.getElementById("facilitiesDropdown"), document.getElementById("units"))'>
                 </g:select>
             </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Dimensions</th>
+                    <th scope="col">Floor</th>
+                    <th scope="col">Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope = "row"> ${unitName}</th>
+                        <td class="text-left">${unitPrice}</td>
+                        <td class="text-left">${unitFloor}</td>
+                    </tr>
+                </tbody>
+            </table>
 
         </div>
     <footer class="footer">
@@ -79,7 +96,6 @@
         var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
-
     function showUnit(f, e) {
         var fID = f.selectedIndex;
         var fName = f.options[f.selectedIndex].text;
