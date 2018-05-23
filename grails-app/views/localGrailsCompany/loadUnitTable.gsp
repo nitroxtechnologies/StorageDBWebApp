@@ -59,7 +59,7 @@
                 </g:select>
             </div>
 
-            <table class="table">
+            <table class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
                     <th scope="col">Dimensions</th>
