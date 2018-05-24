@@ -151,7 +151,7 @@ class LocalGrailsCompanyController
             double price = 0.0;
             boolean canSet = true;
             for (LocalGrailsUnit local : LocalGrailsUnit.list()) {
-                if (local.getId() == u.getId()) {
+                if (local.getName().equals(u.getName())) {
                     canSet = false;
                 }
             }
