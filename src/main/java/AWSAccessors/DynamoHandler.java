@@ -163,7 +163,7 @@ public class DynamoHandler
         return f;
     }
 
-    public List<Unit> getUnitsFromFacilityName(String name, String type)
+    public List<Unit> getUnitsFromFacilityName(String name)
     {
         Facility f = getFacilityFromFacilityName(name);
 
@@ -181,15 +181,13 @@ public class DynamoHandler
         Map<String,String> ean = new HashMap<>();
         ean.put("#t","type");
 
-        eav.put(":val1", new AttributeValue().withS(""+type));
-
         System.out.println("SEARCH ID: " + f.getId() + " SIZE: " + scanResult.size());
 
         for(int i = 0; i < scanResult.size(); i++)
         {
             long unitId = ((FacilityToUnit)scanResult.get(i)).getUnitId();
-            filterExpression += ("id = :val" + (i+2));
-            eav.put(":val"+(i+2), new AttributeValue().withN(""+unitId));
+            filterExpression += ("id = :val" + (i+1));
+            eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != scanResult.size() - 1)
             {
                 filterExpression += " OR ";
@@ -204,7 +202,7 @@ public class DynamoHandler
             scanResult = new ArrayList();
 
             scanExpression = new DynamoDBScanExpression()
-                    .withFilterExpression(filterExpression).withExpressionAttributeValues(eav).withExpressionAttributeNames(ean);
+                    .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
 
             scanResult.addAll(mapper.scan(Unit.class, scanExpression));
         }

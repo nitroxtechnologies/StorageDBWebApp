@@ -9,18 +9,56 @@ import AWSAccessors.Unit
 /**
  * Created by spencersharp on 8/19/17.
  */
-class LocalGrailsCompanyController {
+class LocalGrailsCompanyController
+{
+    def updateLocalTables()
+    {
+        DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
+
+        def companies = LocalGrailsCompany.list()
+        def facilities = LocalGrailsFacility.list()
+        def units = LocalGrailsUnit.list()
+
+        def company = companies.get(dropdownInfo.companyIndex)
+        def facility = facilities.get(dropdownInfo.facilityIndex)
+        def unit = units.get(dropdownInfo.unitIndex)
+
+        [company: company, facility: facility, companies: companies, facilities: facilities, units: units]
+    }
+    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex)
+    {
+        DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
+        DropdownInfo.executeUpdate('delete from DropdownInfo')
+
+        if(companyIndex >= 0)
+        {
+            dropdownInfo.companyIndex = companyIndex;
+        }
+        if(facilityIndex >= 0)
+        {
+            dropdownInfo.facilityIndex = facilityIndex;
+        }
+        if(climateIndex >= 0)
+        {
+            dropdownInfo.climateIndex = climateIndex;
+        }
+        if(unitIndex >= 0)
+        {
+            dropdownInfo.unitIndex = unitIndex
+        }
+    }
     def index()
     {
-        println("index controller")
-        def companies = []
-        companies = LocalGrailsCompany.list()
-        [companies:companies]
+        print("INDEX")
+        updateLocalTables()
     }
+    /*
+    PARAMS NEEDED WHEN LOADED: cID
+     */
     def loadFacilities()
     {
+        println("LOAD FACILITIES")
         println("CID = " + params.cID)
-        println("Loading facilities....")
         def facilities = []
         DynamoHandler dh = new DynamoHandler()
         List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(params.cID as Integer)
@@ -29,16 +67,11 @@ class LocalGrailsCompanyController {
         {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
         }
-        facilities = LocalGrailsFacility.list()
-
-
-        def companies = LocalGrailsCompany.list()
-
-        def company = (Integer.parseInt(""+params.cID) + 1)
-        println("Company ID =" + company)
-        [companies:companies, company: company, facilities: facilities]
-//        render(view: "main",  model: [companies:companies, company: company, facilities: facilities])
+        updateDropdownList((params.cID as Integer)+1, -1, -1, -1)
+        updateLocalTables()
     }
+    //Deprecated
+    /*
     def loadUnits()
     {
         def companies = LocalGrailsCompany.list()
@@ -47,7 +80,7 @@ class LocalGrailsCompanyController {
 
         String type = (params.climate as String);
 
-        if(type.toLowerCase().contains("non"))
+        if(type.toLowerCase().contains("no"))
         {
             type = "Non-Climate";
         }
@@ -62,7 +95,7 @@ class LocalGrailsCompanyController {
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
-            new LocalGrailsUnit(id: u.getId(), name: u.getName()).save()
+            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor()).save()
         }
 
         units = LocalGrailsUnit.list()
@@ -72,33 +105,29 @@ class LocalGrailsCompanyController {
         def facility = (Integer.parseInt(params.fID) + 1)
         println("FACILITY: " + facility)
 
-
-
         [companies:companies, company: company, facility: facility, facilities: facilities, units: units]
     }
+    */
+    /*
+    PARAMS NEEDED WHEN LOADED: fName, uName
+     */
     def loadUnitTable()
     {
         DynamoHandler dh = new DynamoHandler()
 
-        def companies = LocalGrailsCompany.list()
-        def facilities = LocalGrailsFacility.list()
-        def units = LocalGrailsUnit.list()
-
-
-
+        Facility f = dh.getFacilityFromFacilityName(params.fName as String)
+        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
+        LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
+        for(Unit u : unitsArraylist)
+        {
+            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor()).save()
+        }
+        /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
         Unit u = dh.getUnitFromUnitName(params.uName as String);
-
-        def unitPrice = ftu.getRateAmount();
-        def unitName = u.getName();
-        def unitFloor = u.getFloor();
-        def unitType = u.getType();
-
-        [companies: companies, facilities: facilities, units: units, unitType: unitType, unitPrice: unitPrice, unitName: unitName, unitFloor: unitFloor]
-
-
-        //In order for this code to compile, I need to come
+        */
+        updateLocalTables()
     }
 
 

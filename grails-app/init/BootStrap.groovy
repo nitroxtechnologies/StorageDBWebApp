@@ -1,5 +1,6 @@
 import AWSAccessors.Company
 import AWSAccessors.DynamoHandler
+import storagedbwebapp.DropdownInfo
 import storagedbwebapp.LocalGrailsCompany
 import storagedbwebapp.LocalGrailsCompanyController
 
@@ -12,6 +13,7 @@ class BootStrap {
                 Company c = dh.getCompanyFromId(i);
                 new LocalGrailsCompany(id: c.getId(), name: c.getName()).save()
             }
+        new DropdownInfo(companyIndex: 0, facilityIndex: 0, climateIndex: 0, unitIndex: 0).save()
     }
     def destroy = {
     }
