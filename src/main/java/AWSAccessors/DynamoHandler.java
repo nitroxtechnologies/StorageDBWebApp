@@ -175,7 +175,7 @@ public class DynamoHandler
 
         List scanResult = mapper.scan(FacilityToUnit.class,scanExpression);
 
-        System.out.println("\n\nUNITS: " + scanResult + "\n\n");
+        //System.out.println("\n\nUNITS: " + scanResult + "\n\n");
 
         eav = new HashMap<String, AttributeValue>();
 
@@ -193,7 +193,7 @@ public class DynamoHandler
                 filterExpression += " OR ";
             }
         }
-        System.out.println("\n\nFILTER EXPRESSION: " + filterExpression + "\n\n");
+        //System.out.println("\n\nFILTER EXPRESSION: " + filterExpression + "\n\n");
 
         if(scanResult.size() > 0) {
             scanResult = new ArrayList();
@@ -249,7 +249,7 @@ public class DynamoHandler
         eav.put(":val1", new AttributeValue().withN(""+u.getId()));
         eav.put(":val2", new AttributeValue().withN(""+f.getId()));
 
-        System.out.println("QUERY\nFACILITY ID: " + f.getId() + " UNIT ID: " + u.getId() + "\nFACILITY NAME: " + facilityName + " UNIT NAME: " + unitName);
+        //System.out.println("QUERY\nFACILITY ID: " + f.getId() + " UNIT ID: " + u.getId() + "\nFACILITY NAME: " + facilityName + " UNIT NAME: " + unitName);
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("unitId = :val1 AND facilityId = :val2").withExpressionAttributeValues(eav);

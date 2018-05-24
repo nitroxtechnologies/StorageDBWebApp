@@ -48,7 +48,7 @@
                 <label>Company:</label>
                 <g:select id = "cDropdown" optionKey="id" optionValue="name"
                           name="companydropdown" from="${companies}" value = ""
-                          onChange= 'goToPage(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
+                          onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
                 </g:select>
             </div>
     </div>
@@ -59,7 +59,7 @@
         </div>
     </footer>
     <g:javascript>
-       function goToPage(e){
+       function loadFacilities(e){
             var cID = e.selectedIndex - 1;
             var cName = e.options[e.selectedIndex].text;
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
