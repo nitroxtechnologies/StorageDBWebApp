@@ -53,6 +53,8 @@
                           onChange= 'loadUnits(document.getElementById("cDropdown"),
                     document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
                 </g:select>
+            </div>
+            <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label>Climate Controlled:</label>
                 <select name="climate" id="climate" onChange='loadUnits(document.getElementById("cDropdown"),
                     document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>

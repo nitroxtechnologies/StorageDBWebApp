@@ -8,6 +8,14 @@
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
+        <style>
+            .show {
+                display: block;
+            }
+            .entries {
+                display: none;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
@@ -50,26 +58,29 @@
                 <label>Facility:</label>
                 <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
                           name="facilitydropdown" from="${facilities}"
-                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
+                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
                 </g:select>
+            </div>
+            <div class="col-lg-12 text-center" style="margin-top: 20px">
                 <label>Climate Controlled:</label>
-                <select name="climate" id="climate" onChange='loadUnits(document.getElementById("cDropdown"),
-                    document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
-                    <option disabled selected value> ${unitType} </option>
+                <select name="climate" id="climate" onChange='filterTable(document.getElementbyId("climate"))'>
+                    <option selected value="all"> All </option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                 </select>
                 <br>
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="id" optionValue="name"
-                          name="unitdropdown" from="${units}" value="${unit}"
-                          onChange = 'showUnit(document.getElementById("facilitiesDropdown"), document.getElementById("units"))'>
+                          name="unitdropdown" from="${units}"
+                          onChange = 'filterTable(document.getElementbyId("units"))'
+                          noSelection="['null':'Select a Facility']">
                 </g:select>
             </div>
 
-            <table class="table" style="margin-top: 50px">
+            <table id = "unitTable" class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
+                    %{--<th scope="col">ID</th>--}%
                     <th scope="col">Dimensions</th>
                     <th scope="col">Floor</th>
                     <th scope="col">Price</th>
@@ -77,12 +88,15 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope = "row"> ${unitName}</th>
-                        <td class="text-left">${unitFloor}</td>
-                        <td class="text-left">${unitPrice}</td>
-                        <td class="text-left">${unitType}</td>
+                <g:each in="${units}" var="unit" status="i">
+                    <tr class = "entries ${unit.name} ${unit.climate}">
+                        %{--<th scope = "row"> ${unit.id}</th>--}%
+                        <td class="text-left">${unit.name}</td>
+                        <td class="text-left">${unit.floor}</td>
+                        <td class="text-left">${unit.climate}</td>
+                        <td class="text-left">${unit.price}</td>
                     </tr>
+                </g:each>
                 </tbody>
             </table>
 
@@ -99,22 +113,61 @@
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
-    function loadUnits(c, e, cli) {
-        var climate = cli.options[cli.selectedIndex].text;
+    function loadUnits(c, e) {
         var cID = c.selectedIndex - 1;
         var cName = c.options[c.selectedIndex].text;
         var fID = e.selectedIndex - 1;
         var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName + "&climate=" + climate;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
-    function showUnit(f, e) {
-        var fID = f.selectedIndex;
-        var fName = f.options[f.selectedIndex].text;
-        var uID = e.selectedIndex - 1;
-        var uName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?uID=" + uID + "&uName=" + uName + "&fID=" + fID + "&fName=" + fName;
+
+    function filterTable(e) {
+        var i;
+        var filter = e.options[e.selectedIndex].text;
+        if (filter == "All") filter = "";
+
+        var units = document.getElementsByClassName("entries");
+
+        for (i = 0; i < units.length; i++) {
+            hideRow(units[i], "show");
+            if (units[i].className.indexOf(filter) > -1) showRow(units[i], "show");
+        }
+
+
+        function showRow(element, name) {
+          var i, arr1, arr2;
+          arr1 = element.className.split(" ");
+          arr2 = name.split(" ");
+          for (i = 0; i < arr2.length; i++) {
+            if (arr1.indexOf(arr2[i]) == -1) {
+              element.className += " " + arr2[i];
+            }
+          }
+        }
+
+        // Hide elements that are not selected
+        function hideRow(element, name) {
+          var i, arr1, arr2;
+          arr1 = element.className.split(" ");
+          arr2 = name.split(" ");
+          for (i = 0; i < arr2.length; i++) {
+            while (arr1.indexOf(arr2[i]) > -1) {
+              arr1.splice(arr1.indexOf(arr2[i]), 1);
+            }
+          }
+          element.className = arr1.join(" ");
+        }
 
     }
+
+    %{--function showUnit(f, e) {--}%
+        %{--var fID = f.selectedIndex;--}%
+        %{--var fName = f.options[f.selectedIndex].text;--}%
+        %{--var uID = e.selectedIndex - 1;--}%
+        %{--var uName = e.options[e.selectedIndex].text;--}%
+        %{--window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?uID=" + uID + "&uName=" + uName + "&fID=" + fID + "&fName=" + fName;--}%
+
+    %{--}--}%
 </g:javascript>
     </body>
 </html>

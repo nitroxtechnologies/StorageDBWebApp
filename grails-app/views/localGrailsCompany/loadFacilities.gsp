@@ -50,16 +50,10 @@
                 </g:select>
                 <label>Facility:</label>
                 <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name"
-                          name="facilitydropdown" from="${facilities}" noSelection="['null':'Select a Facility']">
-                          %{--onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))' noSelection="['null':'Select a Facility']">--}%
+                          name="facilitydropdown" from="${facilities}"
+                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'
+                          noSelection="['null':'Select a Facility']">
                 </g:select>
-                <label>Climate Controlled:</label>
-                <select name="climate" id="climate" onChange='loadUnits(document.getElementById("cDropdown"),
-                    document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
-                    <option disabled selected value> Select an option </option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                </select>
             </div>
 
         </div>
@@ -75,13 +69,12 @@
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
-    function loadUnits(c, e, cli) {
-        var climate = cli.options[cli.selectedIndex].text;
+    function loadUnits(c, e) {
         var cID = c.selectedIndex - 1;
         var cName = c.options[c.selectedIndex].text;
         var fID = e.selectedIndex - 1;
         var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName + "&climate=" + climate;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
