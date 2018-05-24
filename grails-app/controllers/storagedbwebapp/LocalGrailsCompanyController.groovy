@@ -93,8 +93,9 @@ class LocalGrailsCompanyController {
         def unitPrice = ftu.getRateAmount();
         def unitName = u.getName();
         def unitFloor = u.getFloor();
+        def unitType = u.getType();
 
-        [companies: companies, facilities: facilities, units: units, unitPrice: unitPrice, unitName: unitName, unitFloor: unitFloor]
+        [companies: companies, facilities: facilities, units: units, unitType: unitType, unitPrice: unitPrice, unitName: unitName, unitFloor: unitFloor]
 
 
         //In order for this code to compile, I need to come
