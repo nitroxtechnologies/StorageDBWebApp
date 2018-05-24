@@ -70,7 +70,7 @@
     }
 
     function loadUnits(c, e) {
-        var cID = c.selectedIndex - 1;
+        var cID = c.selectedIndex;
         var cName = c.options[c.selectedIndex].text;
         var fID = e.selectedIndex - 1;
         var fName = e.options[e.selectedIndex].text;

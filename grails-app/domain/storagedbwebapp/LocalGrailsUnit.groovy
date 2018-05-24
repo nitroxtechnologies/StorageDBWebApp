@@ -5,4 +5,5 @@ class LocalGrailsUnit {
     String name
     String climate
     int floor
+    double price
 }

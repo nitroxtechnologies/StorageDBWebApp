@@ -19,47 +19,53 @@ class LocalGrailsCompanyController
         def facilities = LocalGrailsFacility.list()
         def units = LocalGrailsUnit.list()
 
-        def company = companies.get(dropdownInfo.companyIndex)
+        def company;
+        if(facilities.size() > dropdownInfo.companyIndex)
+        {
+            company = companies.get(dropdownInfo.companyIndex);
+        }
         def facility;
-        if(dropdownInfo.facilityIndex > 0)
+        if(facilities.size() > dropdownInfo.facilityIndex)
         {
             facility = facilities.get(dropdownInfo.facilityIndex)
         }
         def unit;
-        if(dropdownInfo.unitIndex > 0)
+        if(units.size() > dropdownInfo.unitIndex)
         {
             unit = units.get(dropdownInfo.unitIndex)
         }
 
-        [company: company, facility: facility, companies: companies, facilities: facilities, units: units]
+        [company: company, facility: facility, unit: unit, companies: companies, facilities: facilities, units: units]
     }
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex)
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
 
-        if(companyIndex >= 0)
+        if(companyIndex > 0)
         {
-            dropdownInfo.companyIndex = companyIndex;
+            dropdownInfo.companyIndex = companyIndex - 1;
         }
-        if(facilityIndex >= 0)
+        if(facilityIndex > 0)
         {
-            dropdownInfo.facilityIndex = facilityIndex;
+            dropdownInfo.facilityIndex = facilityIndex - 1;
         }
-        if(climateIndex >= 0)
+        if(climateIndex > 0)
         {
-            dropdownInfo.climateIndex = climateIndex;
+            dropdownInfo.climateIndex = climateIndex - 1;
         }
-        if(unitIndex >= 0)
+        if(unitIndex > 0)
         {
-            dropdownInfo.unitIndex = unitIndex
+            dropdownInfo.unitIndex = unitIndex - 1;
         }
 
         new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex).save()
     }
     def index()
     {
-        print("INDEX")
+        println("----------------");
+        println("INDEX")
+        println("----------------");
         updateLocalTables()
     }
     /*
@@ -67,8 +73,10 @@ class LocalGrailsCompanyController
      */
     def loadFacilities()
     {
+        println("----------------");
         println("LOAD FACILITIES")
         println("CID = " + params.cID)
+        println("----------------");
         def facilities = []
         DynamoHandler dh = new DynamoHandler()
         List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(params.cID as Integer)
@@ -77,7 +85,7 @@ class LocalGrailsCompanyController
         {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer)+1, -1, -1, -1)
+        updateDropdownList((params.cID as Integer), 0, 0, 0)
         updateLocalTables()
     }
     //Deprecated
@@ -123,16 +131,27 @@ class LocalGrailsCompanyController
      */
     def loadUnitTable()
     {
+        new LocalGrailsUnit(id: 0, name: "10x10", climate: "Climate", floor: 0, price: 10.00).save()
+        /*
+        println("----------------");
+        println("LOAD UNIT TABLE")
+        println("fName: " + params.fName);
+        println("fID: " + params.fID);
+
+
         DynamoHandler dh = new DynamoHandler()
 
         Facility f = dh.getFacilityFromFacilityName(params.fName as String)
+        println("Facility ID: " + params.fName);
+        println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
-            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor()).save()
+            FacilityToUnit ftu = dh.getFacilityToUnitFromNames(f.getName(), u.getName())
+            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: ftu.getRateAmount()).save()
         }
-        updateDropdownList(-1, (params.fID as Integer)+1, -1, -1)
+        updateDropdownList(0, (params.fID as Integer), 0, 0)
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 

@@ -114,9 +114,9 @@
     }
 
     function loadUnits(c, e) {
-        var cID = c.selectedIndex - 1;
+        var cID = c.selectedIndex;
         var cName = c.options[c.selectedIndex].text;
-        var fID = e.selectedIndex - 1;
+        var fID = e.selectedIndex;
         var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
