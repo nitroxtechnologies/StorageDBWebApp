@@ -132,6 +132,7 @@ class LocalGrailsCompanyController
         {
             new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor()).save()
         }
+        updateDropdownList(-1, (params.fID as Integer)+1, -1, -1)
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 

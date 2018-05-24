@@ -177,7 +177,7 @@ public class DynamoHandler
 
         eav = new HashMap<String, AttributeValue>();
 
-        String filterExpression = "#t = :val1 AND (";
+        String filterExpression = "";
         Map<String,String> ean = new HashMap<>();
         ean.put("#t","type");
 
@@ -191,10 +191,6 @@ public class DynamoHandler
             if(i != scanResult.size() - 1)
             {
                 filterExpression += " OR ";
-            }
-            else
-            {
-                filterExpression += ")";
             }
         }
 
