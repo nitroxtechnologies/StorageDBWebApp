@@ -20,8 +20,16 @@ class LocalGrailsCompanyController
         def units = LocalGrailsUnit.list()
 
         def company = companies.get(dropdownInfo.companyIndex)
-        def facility = facilities.get(dropdownInfo.facilityIndex)
-        def unit = units.get(dropdownInfo.unitIndex)
+        def facility;
+        if(dropdownInfo.facilityIndex > 0)
+        {
+            facility = facilities.get(dropdownInfo.facilityIndex)
+        }
+        def unit;
+        if(dropdownInfo.unitIndex > 0)
+        {
+            unit = units.get(dropdownInfo.unitIndex)
+        }
 
         [company: company, facility: facility, companies: companies, facilities: facilities, units: units]
     }
@@ -46,6 +54,8 @@ class LocalGrailsCompanyController
         {
             dropdownInfo.unitIndex = unitIndex
         }
+
+        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex).save()
     }
     def index()
     {
