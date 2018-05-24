@@ -45,9 +45,20 @@ class LocalGrailsCompanyController {
         def facilities = LocalGrailsFacility.list()
         def units = []
 
+        String type = (params.climate as String);
+
+        if(type.toLowerCase().contains("non"))
+        {
+            type = "Non-Climate";
+        }
+        else
+        {
+            type = "Climate";
+        }
+
         DynamoHandler dh = new DynamoHandler()
         Facility f = dh.getFacilityFromFacilityName(params.fName as String)
-        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String, params.unitType as String)
+        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String, type)
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
