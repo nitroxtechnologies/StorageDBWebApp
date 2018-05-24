@@ -20,7 +20,7 @@ class LocalGrailsCompanyController
         def units = LocalGrailsUnit.list()
 
         def company;
-        if(facilities.size() > dropdownInfo.companyIndex)
+        if(companies.size() > dropdownInfo.companyIndex)
         {
             company = companies.get(dropdownInfo.companyIndex);
         }
