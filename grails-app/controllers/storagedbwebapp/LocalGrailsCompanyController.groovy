@@ -47,7 +47,7 @@ class LocalGrailsCompanyController {
 
         DynamoHandler dh = new DynamoHandler()
         Facility f = dh.getFacilityFromFacilityName(params.fName as String)
-        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
+        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String, params.unitType as String)
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
@@ -72,6 +72,8 @@ class LocalGrailsCompanyController {
         def companies = LocalGrailsCompany.list()
         def facilities = LocalGrailsFacility.list()
         def units = LocalGrailsUnit.list()
+
+
 
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
