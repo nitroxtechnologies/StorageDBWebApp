@@ -50,8 +50,16 @@
                 <label>Facility:</label>
                 <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
                           name="facilitydropdown" from="${facilities}"
-                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
+                          onChange= 'loadUnits(document.getElementById("cDropdown"),
+                    document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
                 </g:select>
+                <label>Climate Controlled:</label>
+                <select name="climate" id="climate" onChange='loadUnits(document.getElementById("cDropdown"),
+                    document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
+                    <option disabled selected value> Select an option </option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="id" optionValue="name"
                           name="unitdropdown" from="${units}" noSelection="['null':'Select a Unit']"
@@ -72,14 +80,14 @@
            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
-    function loadUnits(c, e) {
+    function loadUnits(c, e, cli) {
+        var climate = cli.options[cli.selectedIndex].text;
         var cID = c.selectedIndex - 1;
         var cName = c.options[c.selectedIndex].text;
-        var fID = e.selectedIndex;
+        var fID = e.selectedIndex - 1;
         var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnits')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName + "&climate=" + climate;
     }
-
     function showUnit(f, e) {
         var fID = f.selectedIndex;
         var fName = f.options[f.selectedIndex].text;
