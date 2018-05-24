@@ -175,11 +175,11 @@ public class DynamoHandler
 
         List scanResult = mapper.scan(FacilityToUnit.class,scanExpression);
 
+        System.out.println("\n\nUNITS: " + scanResult + "\n\n");
+
         eav = new HashMap<String, AttributeValue>();
 
         String filterExpression = "";
-        Map<String,String> ean = new HashMap<>();
-        ean.put("#t","type");
 
         System.out.println("SEARCH ID: " + f.getId() + " SIZE: " + scanResult.size());
 
@@ -193,6 +193,7 @@ public class DynamoHandler
                 filterExpression += " OR ";
             }
         }
+        System.out.println("\n\nFILTER EXPRESSION: " + filterExpression + "\n\n");
 
         if(scanResult.size() > 0) {
             scanResult = new ArrayList();
@@ -224,6 +225,20 @@ public class DynamoHandler
         return u;
     }
 
+    public List<FacilityToUnit> getFacilityToUnitsFromFacilityId(long facilityId)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+facilityId));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("facilityId = :val1").withExpressionAttributeValues(eav);
+
+        List scanResult = mapper.scan(FacilityToUnit.class, scanExpression);
+
+        return scanResult;
+    }
+
+    //DEPRECATED
     public FacilityToUnit getFacilityToUnitFromNames(String facilityName, String unitName)
     {
         Facility f = getFacilityFromFacilityName(facilityName);
@@ -234,7 +249,7 @@ public class DynamoHandler
         eav.put(":val1", new AttributeValue().withN(""+u.getId()));
         eav.put(":val2", new AttributeValue().withN(""+f.getId()));
 
-        System.out.println("QUERY\nFACILITY ID: " + f.getId() + " UNIT ID: " + u.getId());
+        System.out.println("QUERY\nFACILITY ID: " + f.getId() + " UNIT ID: " + u.getId() + "\nFACILITY NAME: " + facilityName + " UNIT NAME: " + unitName);
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("unitId = :val1 AND facilityId = :val2").withExpressionAttributeValues(eav);

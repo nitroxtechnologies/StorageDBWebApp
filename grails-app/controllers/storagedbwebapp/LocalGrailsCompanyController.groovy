@@ -131,8 +131,8 @@ class LocalGrailsCompanyController
      */
     def loadUnitTable()
     {
-        new LocalGrailsUnit(id: 0, name: "10x10", climate: "Climate", floor: 0, price: 10.00).save()
-        /*
+        //new LocalGrailsUnit(id: 0, name: "10x10", climate: "Climate", floor: 0, price: 10.00).save()
+
         println("----------------");
         println("LOAD UNIT TABLE")
         println("fName: " + params.fName);
@@ -142,14 +142,22 @@ class LocalGrailsCompanyController
         DynamoHandler dh = new DynamoHandler()
 
         Facility f = dh.getFacilityFromFacilityName(params.fName as String)
-        println("Facility ID: " + params.fName);
+        println("Facility ID: " + f.getId());
         println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
+        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
-            FacilityToUnit ftu = dh.getFacilityToUnitFromNames(f.getName(), u.getName())
-            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: ftu.getRateAmount()).save()
+            double price = 0.0;
+            for(FacilityToUnit ftu : facilityToUnitList)
+            {
+                if(ftu.unitId == u.getId())
+                {
+                    price = ftu.rateAmount;
+                }
+            }
+            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: price).save()
         }
         updateDropdownList(0, (params.fID as Integer), 0, 0)
         /*
