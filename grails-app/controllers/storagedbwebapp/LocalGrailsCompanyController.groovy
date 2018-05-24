@@ -147,17 +147,23 @@ class LocalGrailsCompanyController
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
-        for(Unit u : unitsArraylist)
-        {
+        for(Unit u : unitsArraylist) {
             double price = 0.0;
-            for(FacilityToUnit ftu : facilityToUnitList)
-            {
-                if(ftu.unitId == u.getId())
-                {
+            boolean canSet = true;
+            for (LocalGrailsUnit local : LocalGrailsUnit.list()) {
+                if (local.getId() == u.getId()) {
+                    canSet = false;
+                }
+            }
+            for (FacilityToUnit ftu : facilityToUnitList) {
+                if (ftu.unitId == u.getId()) {
                     price = ftu.rateAmount;
                 }
             }
-            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: price).save()
+            if (canSet)
+            {
+                new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: price).save()
+            }
         }
         updateDropdownList(0, (params.fID as Integer), 0, 0)
         /*
