@@ -178,6 +178,10 @@ class LocalGrailsCompanyController
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
 
+        if(compareInfo.facilityIds == null)
+        {
+            compareInfo.facilityIds = new ArrayList<Long>();
+        }
         compareInfo.facilityIds.add(params.fID as Long);
 
         DynamoHandler dh = new DynamoHandler();
