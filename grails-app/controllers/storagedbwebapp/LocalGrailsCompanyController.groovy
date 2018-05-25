@@ -4,6 +4,7 @@ import AWSAccessors.Company
 import AWSAccessors.DynamoHandler
 import AWSAccessors.Facility
 import AWSAccessors.FacilityToUnit
+import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.Unit
 
 /**
@@ -38,7 +39,7 @@ class LocalGrailsCompanyController
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
 
-        if(companyIndex > 0)
+        if(companyIndex >= 0)
         {
             dropdownInfo.companyIndex = companyIndex - 1;
         }
@@ -67,8 +68,7 @@ class LocalGrailsCompanyController
     /*
     PARAMS NEEDED WHEN LOADED: cID
      */
-    def loadFacilities()
-    {
+    def loadFacilities() {
         println("----------------");
         println("LOAD FACILITIES")
         println("CID = " + params.cID)
@@ -77,8 +77,7 @@ class LocalGrailsCompanyController
         DynamoHandler dh = new DynamoHandler()
         List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(params.cID as Integer)
         LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
-        for(Facility f : facilitiesArraylist)
-        {
+        for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
         }
         updateDropdownList((params.cID as Integer), 0, 0, 0)
@@ -134,7 +133,6 @@ class LocalGrailsCompanyController
         println("fName: " + params.fName);
         println("fID: " + params.fID);
 
-
         DynamoHandler dh = new DynamoHandler()
 
         Facility f = dh.getFacilityFromFacilityName(params.fName as String)
@@ -159,15 +157,49 @@ class LocalGrailsCompanyController
             if (canSet)
             {
                 System.out.println("UNIT: " + u);
-                new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: price).save()
+                new LocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), price).save()
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0)
+        updateDropdownList(-1, (params.fID as Integer), 0, 0)
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
         Unit u = dh.getUnitFromUnitName(params.uName as String);
         */
+        updateLocalTables()
+    }
+    /*
+    PARAMS NEEDED WHEN LOADED: fID
+     */
+    def compare()
+    {
+        CompareInfo compareInfo = DropdownInfo.list().get(0)
+        CompareInfo.executeUpdate('delete from DropdownInfo')
+        LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
+        LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
+
+        compareInfo.facilityIds.add(params.fID as Long);
+
+        DynamoHandler dh = new DynamoHandler();
+
+        ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(compareInfo.facilityIds);
+
+        for(JavaLocalGrailsUnit u : javaLocalGrailsUnitList)
+        {
+            new LocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), price).save()
+        }
+
+        /*
+        Sets facilities model to all the facilities that have been called by compare.
+         */
+        ArrayList<Facility> facilities = dh.getFacilitiesFromFacilityIds(compareInfo.facilityIds);
+
+        for(Facility f : facilities)
+        {
+            new LocalGrailsFacility(id: f.getId(), name: f.getName())
+        }
+
+        new CompareInfo(compareInfo.facilityIds).save()
         updateLocalTables()
     }
 

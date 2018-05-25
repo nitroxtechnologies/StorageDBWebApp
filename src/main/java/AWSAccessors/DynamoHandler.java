@@ -259,6 +259,85 @@ public class DynamoHandler
         return ((FacilityToUnit)scanResult.get(0));
     }
 
+    public ArrayList<JavaLocalGrailsUnit> getUnitsFromFacilityIds(ArrayList<Long> facilityIds)
+    {
+        String filterExpression = "";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+
+        for(int i = 0; i < facilityIds.size(); i++)
+        {
+            long facilityId = facilityIds.get(i);
+            filterExpression += ("facilityId = :val" + (i+1));
+            eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
+            if(i != facilityIds.size() - 1)
+            {
+                filterExpression += " OR ";
+            }
+        }
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List facilityToUnitsResult = mapper.scan(FacilityToUnit.class, scanExpression);
+
+        ArrayList<JavaLocalGrailsUnit> result = new ArrayList<>();
+        filterExpression = "";
+        eav = new HashMap<String,AttributeValue>();
+
+        for(int i = 0; i < facilityToUnitsResult.size(); i++)
+        {
+            long unitId = ((FacilityToUnit)facilityToUnitsResult.get(i)).getUnitId();
+            filterExpression += ("id = :val" + (i+1));
+            eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
+            if(i != facilityToUnitsResult.size() - 1)
+            {
+                filterExpression += " OR ";
+            }
+        }
+
+        scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List unitsResult = mapper.scan(Unit.class, scanExpression);
+
+        //Temporary: Code is inefficient
+        for(Object o : facilityToUnitsResult)
+        {
+            FacilityToUnit ftu = (FacilityToUnit) o;
+            for(Object o2 : unitsResult)
+            {
+                Unit u = (Unit) o2;
+                if(ftu.getUnitId() == u.getId())
+                {
+                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), ftu.getRateAmount()));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<Facility> getFacilitiesFromFacilityIds(ArrayList<Long> facilityIds)
+    {
+        String filterExpression = "";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+
+        for(int i = 0; i < facilityIds.size(); i++)
+        {
+            long facilityId = facilityIds.get(i);
+            filterExpression += ("id = :val" + (i+1));
+            eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
+            if(i != facilityIds.size() - 1)
+            {
+                filterExpression += " OR ";
+            }
+        }
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List facilities = mapper.scan(Facility.class, scanExpression);
+
+        return facilities;
+    }
+
     public void addFacility(Facility f)
     {
         mapper.save(f);
