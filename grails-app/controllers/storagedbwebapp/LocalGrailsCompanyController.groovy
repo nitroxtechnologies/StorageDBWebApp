@@ -17,6 +17,8 @@ class LocalGrailsCompanyController
 
         def companies = LocalGrailsCompany.list()
         def facilities = LocalGrailsFacility.list()
+        def units = LocalGrailsUnit.list()
+
         System.out.println("\n\nCOMPANIES INDEX: " + dropdownInfo.companyIndex + "\n\n");
         def company;
         if(companies.size() > dropdownInfo.companyIndex)
@@ -29,7 +31,7 @@ class LocalGrailsCompanyController
             facility = dropdownInfo.facilityIndex + 2
         }
 
-        [facility: facility, company: company, companies: companies, facilities: facilities]
+        [facility: facility, company: company, units: units, companies: companies, facilities: facilities]
     }
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex)
     {
@@ -156,6 +158,7 @@ class LocalGrailsCompanyController
             }
             if (canSet)
             {
+                System.out.println("UNIT: " + u);
                 new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), price: price).save()
             }
         }
