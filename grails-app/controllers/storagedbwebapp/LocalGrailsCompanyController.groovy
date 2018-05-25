@@ -203,7 +203,7 @@ class LocalGrailsCompanyController
             new LocalGrailsFacility(id: f.getId(), name: f.getName())
         }
 
-        new CompareInfo(compareInfo.facilityIds).save()
+        new CompareInfo(facilityIds: compareInfo.facilityIds).save()
         updateLocalTables()
     }
 
