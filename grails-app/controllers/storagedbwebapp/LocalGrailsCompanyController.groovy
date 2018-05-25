@@ -173,7 +173,7 @@ class LocalGrailsCompanyController
      */
     def compare()
     {
-        CompareInfo compareInfo = DropdownInfo.list().get(0)
+        CompareInfo compareInfo = CompareInfo.list().get(0)
         CompareInfo.executeUpdate('delete from DropdownInfo')
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
