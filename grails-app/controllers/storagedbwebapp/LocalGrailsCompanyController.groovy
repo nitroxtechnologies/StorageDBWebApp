@@ -190,7 +190,7 @@ class LocalGrailsCompanyController
 
         for(JavaLocalGrailsUnit u : javaLocalGrailsUnitList)
         {
-            new LocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), price).save()
+            new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
         }
 
         /*
