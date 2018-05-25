@@ -49,31 +49,48 @@
                     </form>
                 </div>
             </nav>
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
-                          name="companydropdown" from="${companies}"
-                          onChange= 'loadFacilities(document.getElementById("cDropdown"))'>
-                </g:select>
-                <label>Facility:</label>
-                <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
-                          name="facilitydropdown" from="${facilities}"
-                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
-                </g:select>
+            <div class="page-header">
+                %{--<h1>Comparing prices for...<small>${unitName} (${facilityName})</small></h1>--}%
             </div>
+            %{--<div class="col-lg-12 text-center" style="margin-top: 50px">--}%
+                %{--<label>Facility:</label>--}%
+                %{--<g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"--}%
+                          %{--name="facilitydropdown" from="${facilities}"--}%
+                          %{--onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>--}%
+                %{--</g:select>--}%
+            %{--</div>--}%
+
             <div class="col-lg-12 text-center" style="margin-top: 20px">
-                <label>Climate Controlled:</label>
-                <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
-                    <option selected value="all"> All </option>
+            <select data-placeholder="Filter your searches" class="chosen-select" multiple="" tabindex="-1" style="display: none;">
+                <option value=""></option>
+                <optgroup label="Climate Controlled?">
+                    <option value="all"> All </option>
                     <option value="yes">Climate</option>
                     <option value="no">Non-Climate</option>
-                </select>
-                <label>Unit:</label>
-                <g:select id = 'units' optionKey="id" optionValue="name"
-                          name="unitdropdown" from="${units}"
-                          onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
-                          noSelection="['null':'All']">
-                </g:select>
+                </optgroup>
+                <optgroup label="Facilities">
+                    <g:each in="${facilities}" var="facility" status="i">
+                        <option value ="${facility.name}"> ${facility.name} </option>
+                    </g:each>
+                </optgroup>
+                <optgroup label="Dimensions">
+                    <g:each in="${units}" var="unit" status="i">
+                        <option value ="${unit.name}"> ${unit.name} </option>
+                    </g:each>
+                </optgroup>
+            </select>
+                %{--<label>Climate Controlled:</label>--}%
+                %{--<select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>--}%
+                    %{--<option selected value="all"> All </option>--}%
+                    %{--<option value="yes">Climate</option>--}%
+                    %{--<option value="no">Non-Climate</option>--}%
+                %{--</select>--}%
+                %{--<label>Unit:</label>--}%
+                %{--<g:select id = 'units' optionKey="id" optionValue="name"--}%
+                          %{--name="unitdropdown" from="${units}"--}%
+                          %{--onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'--}%
+                          %{--noSelection="['null':'All']">--}%
+                %{--</g:select>--}%
             </div>
 
             <table id = "unitTable" class="table" style="margin-top: 50px">
@@ -90,12 +107,11 @@
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
                     <tr class = "entries ${unit.name} ${unit.climate}">
-                        %{--<th scope = "row"> ${unit.id}</th>--}%
                         <td class="text-left">${unit.name}</td>
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <td class="text-right">$${unit.price}</td>
-                        <td class="text-right"><button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare</button></td>
+                        <td class="text-right"><button onclick = "" type="button" class="btn btn-outline-success">Compare</button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -108,6 +124,10 @@
         </div>
     </footer>
     <g:javascript>
+        $(document).ready(function(){
+            $(".chosen-select").chosen();
+        });
+
        function loadFacilities(e){
             var cID = e.selectedIndex;
             var cName = e.options[e.selectedIndex].text;
@@ -142,20 +162,13 @@
                   tr[i].style.display = "none";
               }
           }
-
-    }
-
-    function compare(e) {
-        var fID = e.selectedIndex;
-        var fName = fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
-
     }
 
 </g:javascript>
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
     <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
     <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
-
+    <script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>
+    %{--<script type="text/javascript" src="/assets/chosen.proto.min.js?compile=true" ></script>--}%
     </body>
 </html>
