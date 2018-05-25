@@ -63,7 +63,7 @@
             </div>
             <div class="col-lg-12 text-center" style="margin-top: 20px">
                 <label>Climate Controlled:</label>
-                <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"))'>
+                <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
                     <option selected value="all"> All </option>
                     <option value="yes">Climate</option>
                     <option value="no">Non-Climate</option>
@@ -71,7 +71,7 @@
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="id" optionValue="name"
                           name="unitdropdown" from="${units}"
-                          onChange = 'filterTable(document.getElementById("units"))'
+                          onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
                           noSelection="['null':'All']">
                 </g:select>
             </div>
@@ -82,8 +82,8 @@
                     %{--<th scope="col">ID</th>--}%
                     <th scope="col">Dimensions</th>
                     <th scope="col">Floor</th>
-                    <th scope="col">Price</th>
                     <th scope="col">Climate Controlled?</th>
+                    <th scope="col" class="text-right">Price</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -93,7 +93,7 @@
                         <td class="text-left">${unit.name}</td>
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-left">${unit.climate}</td>
-                        <td class="text-left">${unit.price}</td>
+                        <td class="text-right">$${unit.price}</td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -120,76 +120,28 @@
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
 
-    function filterTable(e) {
+    function filterTable(e, o) {
         var i;
         var filter = e.options[e.selectedIndex].text;
+        var other = o.options[o.selectedIndex].text;
+
         if (filter == "All") filter = "entries";
+        if (other == "All") other = "entries";
 
-
-        // var units = document.getElementsByClassName("entries");
-        //
-        // for (i = 0; i < units.length; i++) {
-        //     hideRow(units[i], "show");
-        //     if (units[i].className.indexOf(filter) > -1) showRow(units[i], "show");
-        // }
-
-
-        // function showRow(element, name) {
-        //   var i, arr1, arr2;
-        //   arr1 = element.className.split(" ");
-        //   arr2 = name.split(" ");
-        //   for (i = 0; i < arr2.length; i++) {
-        //     if (arr1.indexOf(arr2[i]) == -1) {
-        //       element.className += " " + arr2[i];
-        //     }
-        //   }
-        // }
-        //
-        // // Hide elements that are not selected
-        // function hideRow(element, name) {
-        //   var i, arr1, arr2;
-        //   arr1 = element.className.split(" ");
-        //   arr2 = name.split(" ");
-        //   for (i = 0; i < arr2.length; i++) {
-        //     while (arr1.indexOf(arr2[i]) > -1) {
-        //       arr1.splice(arr1.indexOf(arr2[i]), 1);
-        //     }
-        //   }
-        //   element.className = arr1.join(" ");
-        // }
-
-        // var table = document.getElementById("unitTable");
-        // var tr = table.getElementsByTagName("tr");
         var tr = document.getElementsByClassName("entries");
 
           for (i = 0; i < tr.length; i++) {
               var array = tr[i].className.split(" ");
               if (array.indexOf(filter) > -1
-              && array[array.indexOf(filter)].length == filter.length) {
+              && array[array.indexOf(filter)].length == filter.length
+              && array.indexOf(other) > -1 && array[array.indexOf(other)].length == other.length) {
                   tr[i].style.display = "";
               } else {
                   tr[i].style.display = "none";
               }
-            // td = tr[i].getElementsByTagName("td");
-            // if (td) {
-            //   if (td.indexOf(filter) > -1) {
-            //     tr[i].style.display = "";
-            //   } else {
-            //     tr[i].style.display = "none";
-            //   }
-            // }
-        }
+          }
 
     }
-
-    %{--function showUnit(f, e) {--}%
-        %{--var fID = f.selectedIndex;--}%
-        %{--var fName = f.options[f.selectedIndex].text;--}%
-        %{--var uID = e.selectedIndex - 1;--}%
-        %{--var uName = e.options[e.selectedIndex].text;--}%
-        %{--window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?uID=" + uID + "&uName=" + uName + "&fID=" + fID + "&fName=" + fName;--}%
-
-    %{--}--}%
 </g:javascript>
     </body>
 </html>
