@@ -61,20 +61,24 @@
                           onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
                 </g:select>
             </div>
-            <div class="col-lg-12 text-center" style="margin-top: 20px">
-                <label>Climate Controlled:</label>
-                <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
-                    <option selected value="all"> All </option>
-                    <option value="yes">Climate</option>
-                    <option value="no">Non-Climate</option>
-                </select>
-                <label>Unit:</label>
-                <g:select id = 'units' optionKey="id" optionValue="name"
-                          name="unitdropdown" from="${units}"
-                          onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
-                          noSelection="['null':'All']">
-                </g:select>
+
+            <div class="col-lg-12 text-center" style="margin-top: 50px">
+                <button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare Prices!</button></td>
             </div>
+            %{--<div class="col-lg-12 text-center" style="margin-top: 20px">--}%
+                %{--<label>Climate Controlled:</label>--}%
+                %{--<select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>--}%
+                    %{--<option selected value="all"> All </option>--}%
+                    %{--<option value="yes">Climate</option>--}%
+                    %{--<option value="no">Non-Climate</option>--}%
+                %{--</select>--}%
+                %{--<label>Unit:</label>--}%
+                %{--<g:select id = 'units' optionKey="id" optionValue="name"--}%
+                          %{--name="unitdropdown" from="${units}"--}%
+                          %{--onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'--}%
+                          %{--noSelection="['null':'All']">--}%
+                %{--</g:select>--}%
+            %{--</div>--}%
 
             <table id = "unitTable" class="table" style="margin-top: 50px">
                 <thead>
@@ -95,7 +99,7 @@
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <td class="text-right">$${unit.price}</td>
-                        <td class="text-right"><button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare</button></td>
+                        %{--<td class="text-right"><button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare</button></td>--}%
                     </tr>
                 </g:each>
                 </tbody>

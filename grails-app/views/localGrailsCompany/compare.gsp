@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
+        <link rel="stylesheet" href="/assets/chosen.min.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
@@ -50,7 +51,7 @@
                 </div>
             </nav>
             <div class="page-header">
-                %{--<h1>Comparing prices for...<small>${unitName} (${facilityName})</small></h1>--}%
+                <h1>Comparing prices for...<small>${facilityName}'s units to</small></h1>
             </div>
             %{--<div class="col-lg-12 text-center" style="margin-top: 50px">--}%
                 %{--<label>Facility:</label>--}%
@@ -60,25 +61,75 @@
                 %{--</g:select>--}%
             %{--</div>--}%
 
-            <div class="col-lg-12 text-center" style="margin-top: 20px">
-            <select data-placeholder="Filter your searches" class="chosen-select" multiple="" tabindex="-1" style="display: none;">
-                <option value=""></option>
-                <optgroup label="Climate Controlled?">
-                    <option value="all"> All </option>
+            <div class="col-lg-12 text-center" style="margin-top: 50px">
+                <div class = "row">
+                <div class = "col-md-6 text-center">
+                    <div class="page-header">
+                        <h1>Add</h1>
+                    </div>
+                    <label>Company:</label>
+                    <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
+                              name="companydropdown" from="${compareCompanies}"
+                              onChange= ''>
+                    </g:select>
+                    <label>Facility:</label>
+                    <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
+                              name="facilitydropdown" from="${compareFacilities}"
+                              onChange= ''>
+                    </g:select>
+                </div>
+                <div class = "col-md-6 text-center">
+                    <div class="page-header">
+                        <h1>Remove</h1>
+                    </div>
+                    <label>Facility:</label>
+                    <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
+                              name="facilitydropdown" from="${compareFacilities}"
+                              onChange= ''>
+                    </g:select>
+                    <button type="button" class="btn btn-outline-danger">Remove</button>
+                </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-lg-12 text-center" style="margin-top: 60px">
+                <label>Climate Controlled:</label>
+                <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
+                    <option selected value="all"> All </option>
                     <option value="yes">Climate</option>
                     <option value="no">Non-Climate</option>
-                </optgroup>
-                <optgroup label="Facilities">
-                    <g:each in="${facilities}" var="facility" status="i">
-                        <option value ="${facility.name}"> ${facility.name} </option>
-                    </g:each>
-                </optgroup>
-                <optgroup label="Dimensions">
-                    <g:each in="${units}" var="unit" status="i">
-                        <option value ="${unit.name}"> ${unit.name} </option>
-                    </g:each>
-                </optgroup>
-            </select>
+                </select>
+                <label>Unit:</label>
+                <g:select id = 'units' optionKey="id" optionValue="name"
+                          name="unitdropdown" from="${units}"
+                          onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
+                          noSelection="['null':'All']">
+                </g:select>
+            </div>
+
+
+            %{--<div class="col-lg-12 text-center" style="margin-top: 50px">--}%
+            %{--<select data-placeholder="Filter your searches" class="chosen-select" multiple="" tabindex="-1">--}%
+                %{--<option value=""></option>--}%
+                %{--<optgroup label="Climate Controlled?">--}%
+                    %{--<option value="all"> All </option>--}%
+                    %{--<option value="yes">Climate</option>--}%
+                    %{--<option value="no">Non-Climate</option>--}%
+                %{--</optgroup>--}%
+                %{--<optgroup label="Facilities">--}%
+                    %{--<g:each in="${facilities}" var="facility" status="i">--}%
+                        %{--<option value ="${facility.name}"> ${facility.name} </option>--}%
+                    %{--</g:each>--}%
+                %{--</optgroup>--}%
+                %{--<optgroup label="Dimensions">--}%
+                    %{--<g:each in="${units}" var="unit" status="i">--}%
+                        %{--<option value ="${unit.name}"> ${unit.name} </option>--}%
+                    %{--</g:each>--}%
+                %{--</optgroup>--}%
+            %{--</select>--}%
                 %{--<label>Climate Controlled:</label>--}%
                 %{--<select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>--}%
                     %{--<option selected value="all"> All </option>--}%
@@ -91,7 +142,7 @@
                           %{--onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'--}%
                           %{--noSelection="['null':'All']">--}%
                 %{--</g:select>--}%
-            </div>
+            %{--</div>--}%
 
             <table id = "unitTable" class="table" style="margin-top: 50px">
                 <thead>
@@ -123,9 +174,16 @@
             <span class="text-muted">&copy;2018 Nitrox Technologies</span>
         </div>
     </footer>
+    <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
+    <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
+    <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
+    <script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>
     <g:javascript>
         $(document).ready(function(){
             $(".chosen-select").chosen();
+            $(".chosen-select").chosen().change(
+                // filterTable()
+             );
         });
 
        function loadFacilities(e){
@@ -165,10 +223,6 @@
     }
 
 </g:javascript>
-    <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
-    <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
-    <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
-    <script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>
     %{--<script type="text/javascript" src="/assets/chosen.proto.min.js?compile=true" ></script>--}%
     </body>
 </html>
