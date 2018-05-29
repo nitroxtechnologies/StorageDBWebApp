@@ -64,8 +64,8 @@
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <div class = "row">
                 <div class = "col-md-6 text-center">
-                    <div class="page-header">
-                        <h1>Add</h1>
+                    <div class="page-header" style = "margin-bottom: 20px">
+                        <button type="button" class="btn btn-outline-success">Add</button>
                     </div>
                     <label>Company:</label>
                     <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
@@ -79,15 +79,15 @@
                     </g:select>
                 </div>
                 <div class = "col-md-6 text-center">
-                    <div class="page-header">
-                        <h1>Remove</h1>
+                    <div class="page-header" style = "margin-bottom: 20px">
+                        <button type="button" class="btn btn-outline-danger">Remove</button>
                     </div>
                     <label>Facility:</label>
                     <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
                               name="facilitydropdown" from="${compareFacilities}"
                               onChange= ''>
                     </g:select>
-                    <button type="button" class="btn btn-outline-danger">Remove</button>
+                    %{--<button type="button" class="btn btn-outline-danger">Remove</button>--}%
                 </div>
                 </div>
 
