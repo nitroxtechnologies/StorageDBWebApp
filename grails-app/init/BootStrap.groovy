@@ -14,7 +14,7 @@ class BootStrap {
                 Company c = dh.getCompanyFromId(i);
                 new LocalGrailsCompany(id: c.getId(), name: c.getName()).save()
             }
-        new DropdownInfo(companyIndex: 0, facilityIndex: 0, climateIndex: 0, unitIndex: 0).save()
+        new DropdownInfo(companyIndex: 0, facilityIndex: 0, climateIndex: 0, unitIndex: 0, compareCompaniesIndex: 0).save()
         ArrayList<Long> facilityIds = new ArrayList<Long>();
         new CompareInfo(facilityIds: facilityIds).save()
     }

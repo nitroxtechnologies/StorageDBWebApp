@@ -32,9 +32,19 @@ class LocalGrailsCompanyController
             facility = dropdownInfo.facilityIndex + 2
         }
 
-        [facility: facility, company: company, units: units, companies: companies, facilities: facilities]
+        def addFacilities = CompareInfo.list().get(0).addFacilities;
+        def removeFacilities = CompareInfo.list().get(0).removeFacilities;
+        def compareCompany = dropdownInfo.compareCompaniesIndex;
+        DynamoHandler dh = new DynamoHandler();
+
+        def compareCompanies = dh.getCompaniesFromCompanyIds(CompareInfo.list().get(0).companyIds);
+
+
+        [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
+         compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
+         units: units, companies: companies, facilities: facilities]
     }
-    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex)
+    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex)
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
@@ -55,8 +65,12 @@ class LocalGrailsCompanyController
         {
             dropdownInfo.unitIndex = unitIndex - 1;
         }
+        if(compareCompaniesIndex > 0)
+        {
+            dropdownInfo.compareCompaniesIndex = compareCompaniesIndex - 1;
+        }
 
-        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex).save()
+        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex).save()
     }
     def index()
     {
@@ -80,7 +94,7 @@ class LocalGrailsCompanyController
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer), 0, 0, 0)
+        updateDropdownList((params.cID as Integer), 0, 0, 0, -1)
         updateLocalTables()
     }
     //Deprecated
@@ -160,7 +174,7 @@ class LocalGrailsCompanyController
                 new LocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), price).save()
             }
         }
-        updateDropdownList(-1, (params.fID as Integer), 0, 0)
+        updateDropdownList(-1, (params.fID as Integer), 0, 0, -1)
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -173,38 +187,81 @@ class LocalGrailsCompanyController
      */
     def compare()
     {
-        CompareInfo compareInfo = CompareInfo.list().get(0)
-        CompareInfo.executeUpdate('delete from CompareInfo')
-        LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
-        LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
+        System.out.println("\nCOMPARE: " + params.fID+"\n");
 
-        if(compareInfo.facilityIds == null)
+        if(params.cID != null)
         {
-            compareInfo.facilityIds = new ArrayList<Long>();
+            updateDropdownList(-1, -1, -1, -1, params.cID as Integer)
+            
         }
-        compareInfo.facilityIds.add(params.fID as Long);
-
-        DynamoHandler dh = new DynamoHandler();
-
-        ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(compareInfo.facilityIds);
-
-        for(JavaLocalGrailsUnit u : javaLocalGrailsUnitList)
+        else
         {
-            new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
+            CompareInfo compareInfo = CompareInfo.list().get(0);
+            CompareInfo.executeUpdate('delete from CompareInfo')
+            compareInfo.didUpdate = true;
+
+            DynamoHandler dh = new DynamoHandler();
+
+            String fName = params.fName as String;
+
+            Facility f = dh.getFacilityFromFacilityName(fName);
+
+            long fID = f.getId();
+
+            long companyId = f.getCompanyId();
+
+            //Update compareCompanies
+            if(compareInfo.removeFacilities == null)
+            {
+                compareInfo.removeFacilities = new ArrayList<Long>();
+                compareInfo.addFacilities = new ArrayList<Long>();
+                for(LocalGrailsFacility facil : LocalGrailsFacility.list())
+                {
+                    compareInfo.addFacilities.add(facil.id);
+                }
+                compareInfo.addFacilitiesHash = new HashSet<Long>();
+                for(Long l : compareInfo.addFacilities)
+                {
+                    compareInfo.addFacilitiesHash.add(l);
+                }
+                compareInfo.removeFacilitiesHash = new HashSet<Long>();
+                compareInfo.companyIds = new ArrayList<Long>();
+                for(LocalGrailsCompany comp : LocalGrailsCompany.list())
+                {
+                    compareInfo.companyIds.add(comp.id);
+                }
+            }
+
+            compareInfo.companyIds.remove(companyId);
+
+            //If fID is in addFacilities
+            //We need to add the units to the units model
+            if (compareInfo.addFacilitiesHash.contains(fID)) {
+                compareInfo.removeFacilitiesHash.add(fID);
+                compareInfo.removeFacilities.add(fID);
+                compareInfo.addFacilities.remove(fID);
+                compareInfo.addFacilitiesHash.remove(fID);
+            }
+            //If fID is in removeFacilities
+            //We need to remove the units from the units model
+            else {
+                compareInfo.removeFacilitiesHash.remove(fID);
+                compareInfo.removeFacilities.remove(fID);
+                compareInfo.addFacilities.add(fID);
+                compareInfo.addFacilitiesHash.add(fID);
+            }
+
+            LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
+            ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(compareInfo.removeFacilities);
+
+            for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
+                new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
+            }
+
+            new CompareInfo(didUpdate: compareInfo.didUpdate, addFacilities: compareInfo.addFacilities, addFacilitiesHash: compareInfo.addFacilitiesHash,
+                    removeFacilities: compareInfo.removeFacilities, removeFacilitiesHash: compareInfo.removeFacilitiesHash,
+                    companyIds: compareInfo.companyIds).save(failOnError: true)
         }
-
-        /*
-        Sets facilities model to all the facilities that have been called by compare.
-         */
-        ArrayList<Facility> facilities = dh.getFacilitiesFromFacilityIds(compareInfo.facilityIds);
-
-        for(Facility f : facilities)
-        {
-            new LocalGrailsFacility(id: f.getId(), name: f.getName())
-        }
-
-        new CompareInfo(facilityIds: compareInfo.facilityIds).save()
-
         updateLocalTables()
     }
 

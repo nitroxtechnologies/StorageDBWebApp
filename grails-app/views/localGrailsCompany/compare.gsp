@@ -58,7 +58,7 @@
                 <div class = "row">
                 <div class = "col-md-6 text-center">
                     <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-success" onclick="compareUnits(document.getElementById('cDropdown')">Add</button>
+                        <button type="button" class="btn btn-outline-success" onclick="compareUnits(document.getElementById('cDropdown'))">Add</button>
                     </div>
                     <label>Company:</label>
                     <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"

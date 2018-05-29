@@ -163,6 +163,33 @@ public class DynamoHandler
         return f;
     }
 
+    public Company getCompanyFromFacilityId(long fID)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+fID));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("id = :val1").withExpressionAttributeValues(eav);
+
+        List scanResult = mapper.scan(Facility.class, scanExpression);
+
+        Facility f = (Facility) scanResult.get(0);
+
+        long companyId = f.getCompanyId();
+
+        eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+companyId));
+
+        scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("id = :val1").withExpressionAttributeValues(eav);
+
+        scanResult = mapper.scan(Facility.class, scanExpression);
+
+        Company c = (Company) scanResult.get(0);
+
+        return c;
+    }
+
     public List<Unit> getUnitsFromFacilityName(String name)
     {
         Facility f = getFacilityFromFacilityName(name);
@@ -238,6 +265,34 @@ public class DynamoHandler
         return scanResult;
     }
 
+    public List<Company> getCompaniesFromCompanyIds(ArrayList<Long> companyIds)
+    {
+        if(companyIds == null || companyIds.size() == 0)
+        {
+            return new ArrayList<Company>();
+        }
+
+        String filterExpression = "";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+
+        for(int i = 0; i < companyIds.size(); i++)
+        {
+            long facilityId = companyIds.get(i);
+            filterExpression += ("id = :val" + (i+1));
+            eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
+            if(i != companyIds.size() - 1)
+            {
+                filterExpression += " OR ";
+            }
+        }
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List companies = mapper.scan(Company.class, scanExpression);
+
+        return companies;
+    }
+
     //DEPRECATED
     public FacilityToUnit getFacilityToUnitFromNames(String facilityName, String unitName)
     {
@@ -261,6 +316,11 @@ public class DynamoHandler
 
     public ArrayList<JavaLocalGrailsUnit> getUnitsFromFacilityIds(ArrayList<Long> facilityIds)
     {
+        if(facilityIds.size() == 0)
+        {
+            return new ArrayList<JavaLocalGrailsUnit>();
+        }
+
         String filterExpression = "";
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
 

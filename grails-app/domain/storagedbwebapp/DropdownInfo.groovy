@@ -5,4 +5,5 @@ class DropdownInfo {
     int facilityIndex
     int climateIndex
     int unitIndex
+    int compareCompaniesIndex
 }

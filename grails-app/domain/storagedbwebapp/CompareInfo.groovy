@@ -1,5 +1,11 @@
 package storagedbwebapp
 
 class CompareInfo {
-    ArrayList<Long> facilityIds;
+    boolean didUpdate;
+
+    ArrayList<Long> addFacilities;
+    HashSet<Long> addFacilitiesHash;
+    ArrayList<Long> removeFacilities;
+    HashSet<Long> removeFacilitiesHash;
+    ArrayList<Long> companyIds;
 }
