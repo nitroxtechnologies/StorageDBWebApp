@@ -53,28 +53,21 @@
             <div class="page-header">
                 <h1>Comparing prices for...<small>${facilityName}'s units to</small></h1>
             </div>
-            %{--<div class="col-lg-12 text-center" style="margin-top: 50px">--}%
-                %{--<label>Facility:</label>--}%
-                %{--<g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"--}%
-                          %{--name="facilitydropdown" from="${facilities}"--}%
-                          %{--onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>--}%
-                %{--</g:select>--}%
-            %{--</div>--}%
 
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <div class = "row">
                 <div class = "col-md-6 text-center">
                     <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-success">Add</button>
+                        <button type="button" class="btn btn-outline-success" onclick="compareUnits(document.getElementById('cDropdown')">Add</button>
                     </div>
                     <label>Company:</label>
                     <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
-                              name="companydropdown" from="${compareCompanies}"
+                              name="companydropdown" from="${companies}"
                               onChange= ''>
                     </g:select>
                     <label>Facility:</label>
                     <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
-                              name="facilitydropdown" from="${compareFacilities}"
+                              name="facilitydropdown" from="${addFacilities}"
                               onChange= ''>
                     </g:select>
                 </div>
@@ -84,24 +77,21 @@
                     </div>
                     <label>Facility:</label>
                     <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
-                              name="facilitydropdown" from="${compareFacilities}"
+                              name="facilitydropdown" from="${remmoveFacilities}"
                               onChange= ''>
                     </g:select>
-                    %{--<button type="button" class="btn btn-outline-danger">Remove</button>--}%
                 </div>
                 </div>
 
             </div>
 
-
-
             <div class="col-lg-12 text-center" style="margin-top: 60px">
                 <label>Climate Controlled:</label>
-                <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
-                    <option selected value="all"> All </option>
-                    <option value="yes">Climate</option>
-                    <option value="no">Non-Climate</option>
-                </select>
+                    <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
+                        <option selected value="all"> All </option>
+                        <option value="yes">Climate</option>
+                        <option value="no">Non-Climate</option>
+                    </select>
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="id" optionValue="name"
                           name="unitdropdown" from="${units}"
@@ -109,51 +99,15 @@
                           noSelection="['null':'All']">
                 </g:select>
             </div>
-
-
-            %{--<div class="col-lg-12 text-center" style="margin-top: 50px">--}%
-            %{--<select data-placeholder="Filter your searches" class="chosen-select" multiple="" tabindex="-1">--}%
-                %{--<option value=""></option>--}%
-                %{--<optgroup label="Climate Controlled?">--}%
-                    %{--<option value="all"> All </option>--}%
-                    %{--<option value="yes">Climate</option>--}%
-                    %{--<option value="no">Non-Climate</option>--}%
-                %{--</optgroup>--}%
-                %{--<optgroup label="Facilities">--}%
-                    %{--<g:each in="${facilities}" var="facility" status="i">--}%
-                        %{--<option value ="${facility.name}"> ${facility.name} </option>--}%
-                    %{--</g:each>--}%
-                %{--</optgroup>--}%
-                %{--<optgroup label="Dimensions">--}%
-                    %{--<g:each in="${units}" var="unit" status="i">--}%
-                        %{--<option value ="${unit.name}"> ${unit.name} </option>--}%
-                    %{--</g:each>--}%
-                %{--</optgroup>--}%
-            %{--</select>--}%
-                %{--<label>Climate Controlled:</label>--}%
-                %{--<select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>--}%
-                    %{--<option selected value="all"> All </option>--}%
-                    %{--<option value="yes">Climate</option>--}%
-                    %{--<option value="no">Non-Climate</option>--}%
-                %{--</select>--}%
-                %{--<label>Unit:</label>--}%
-                %{--<g:select id = 'units' optionKey="id" optionValue="name"--}%
-                          %{--name="unitdropdown" from="${units}"--}%
-                          %{--onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'--}%
-                          %{--noSelection="['null':'All']">--}%
-                %{--</g:select>--}%
-            %{--</div>--}%
-
             <table id = "unitTable" class="table" style="margin-top: 50px">
                 <thead>
-                <tr>
-                    %{--<th scope="col">ID</th>--}%
-                    <th scope="col">Dimensions</th>
-                    <th scope="col">Floor</th>
-                    <th scope="col" class="text-center">Climate Controlled?</th>
-                    <th scope="col" class="text-right">Price</th>
-                    <th scope="col" class="text-right"></th>
-                </tr>
+                    <tr>
+                        %{--<th scope="col">ID</th>--}%
+                        <th scope="col">Dimensions</th>
+                        <th scope="col">Floor</th>
+                        <th scope="col" class="text-center">Climate Controlled?</th>
+                        <th scope="col" class="text-right">${facilityName}</th>
+                    </tr>
                 </thead>
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
@@ -162,7 +116,6 @@
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <td class="text-right">$${unit.price}</td>
-                        <td class="text-right"><button onclick = "" type="button" class="btn btn-outline-success">Compare</button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -179,13 +132,6 @@
     <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
     <script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>
     <g:javascript>
-        $(document).ready(function(){
-            $(".chosen-select").chosen();
-            $(".chosen-select").chosen().change(
-                // filterTable()
-             );
-        });
-
        function loadFacilities(e){
             var cID = e.selectedIndex;
             var cName = e.options[e.selectedIndex].text;
@@ -198,6 +144,12 @@
         var fID = e.selectedIndex;
         var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
+    }
+
+    function compareUnits(e) {
+        var cID = e.selectedIndex;
+        var cName = e.options[c.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
     function filterTable(e, o) {
@@ -223,6 +175,5 @@
     }
 
 </g:javascript>
-    %{--<script type="text/javascript" src="/assets/chosen.proto.min.js?compile=true" ></script>--}%
     </body>
 </html>
