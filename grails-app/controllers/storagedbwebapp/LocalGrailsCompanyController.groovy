@@ -24,21 +24,31 @@ class LocalGrailsCompanyController
         def company;
         if(companies.size() > dropdownInfo.companyIndex)
         {
-            company = dropdownInfo.companyIndex + 2;
+            company = dropdownInfo.companyIndex + 1;
         }
         def facility;
         if(facilities.size() > dropdownInfo.facilityIndex)
         {
-            facility = dropdownInfo.facilityIndex + 2
+            facility = dropdownInfo.facilityIndex + 1
         }
 
         def addFacilities = CompareInfo.list().get(0).addFacilities;
+
         def removeFacilities = CompareInfo.list().get(0).removeFacilities;
         def compareCompany = dropdownInfo.compareCompaniesIndex;
         DynamoHandler dh = new DynamoHandler();
 
         def compareCompanies = dh.getCompaniesFromCompanyIds(CompareInfo.list().get(0).companyIds);
+        /*def addFacilitiesIds = dh.getFacilitiesFromCompanyID(compareInfo)
 
+        if(dropdownInfo.compareCompaniesIndex >= 0)
+        {
+            ArrayList<LocalGrailsFacility> result = ArrayList<LocalGrailsFacility>();
+            for(LocalGrailsFacility f : addFacilities)
+            {
+                if(f.)
+            }
+        }*/
 
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
@@ -49,7 +59,7 @@ class LocalGrailsCompanyController
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
 
-        if(companyIndex >= 0)
+        if(companyIndex > 0)
         {
             dropdownInfo.companyIndex = companyIndex - 1;
         }
@@ -187,19 +197,39 @@ class LocalGrailsCompanyController
      */
     def compare()
     {
-        System.out.println("\nCOMPARE: " + params.fID+"\n");
+        CompareInfo compareInfo = CompareInfo.list().get(0);
+        CompareInfo.executeUpdate('delete from CompareInfo')
+        compareInfo.didUpdate = true;
+
+        if(compareInfo.removeFacilities == null)
+        {
+            compareInfo.removeFacilities = new ArrayList<Long>();
+            compareInfo.addFacilities = new ArrayList<Long>();
+            for(LocalGrailsFacility facil : LocalGrailsFacility.list())
+            {
+                compareInfo.addFacilities.add(facil.id);
+            }
+            compareInfo.addFacilitiesHash = new HashSet<Long>();
+            for(Long l : compareInfo.addFacilities)
+            {
+                compareInfo.addFacilitiesHash.add(l);
+            }
+            compareInfo.removeFacilitiesHash = new HashSet<Long>();
+            compareInfo.companyIds = new ArrayList<Long>();
+            for(LocalGrailsCompany comp : LocalGrailsCompany.list())
+            {
+                compareInfo.companyIds.add(comp.id);
+            }
+        }
 
         if(params.cID != null)
         {
             updateDropdownList(-1, -1, -1, -1, params.cID as Integer)
-            
+
+
         }
         else
         {
-            CompareInfo compareInfo = CompareInfo.list().get(0);
-            CompareInfo.executeUpdate('delete from CompareInfo')
-            compareInfo.didUpdate = true;
-
             DynamoHandler dh = new DynamoHandler();
 
             String fName = params.fName as String;
@@ -211,26 +241,7 @@ class LocalGrailsCompanyController
             long companyId = f.getCompanyId();
 
             //Update compareCompanies
-            if(compareInfo.removeFacilities == null)
-            {
-                compareInfo.removeFacilities = new ArrayList<Long>();
-                compareInfo.addFacilities = new ArrayList<Long>();
-                for(LocalGrailsFacility facil : LocalGrailsFacility.list())
-                {
-                    compareInfo.addFacilities.add(facil.id);
-                }
-                compareInfo.addFacilitiesHash = new HashSet<Long>();
-                for(Long l : compareInfo.addFacilities)
-                {
-                    compareInfo.addFacilitiesHash.add(l);
-                }
-                compareInfo.removeFacilitiesHash = new HashSet<Long>();
-                compareInfo.companyIds = new ArrayList<Long>();
-                for(LocalGrailsCompany comp : LocalGrailsCompany.list())
-                {
-                    compareInfo.companyIds.add(comp.id);
-                }
-            }
+
 
             compareInfo.companyIds.remove(companyId);
 
