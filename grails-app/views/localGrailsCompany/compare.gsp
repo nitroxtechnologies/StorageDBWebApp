@@ -51,24 +51,23 @@
                 </div>
             </nav>
             <div class="page-header">
-                <h1>Comparing prices for...<small>${facilityName}'s units to</small></h1>
+                <h1>Comparing prices for...<small>${facility}'s units to</small></h1>
             </div>
 
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <div class = "row">
                 <div class = "col-md-6 text-center">
                     <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-success" onclick="compareUnits(document.getElementById('cDropdown'))">Add</button>
+                        <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
                     </div>
                     <label>Company:</label>
-                    <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
+                    <g:select id = "company" optionKey="id" optionValue="name" value ="${company}"
                               name="companydropdown" from="${companies}"
-                              onChange= ''>
+                              onChange= 'addCompany(document.getElementById("company"))'>
                     </g:select>
                     <label>Facility:</label>
-                    <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
-                              name="facilitydropdown" from="${addFacilities}"
-                              onChange= ''>
+                    <g:select id = 'addFacilitiy' optionKey="id" optionValue="name"
+                              name="addF" from="${addFacilities}">
                     </g:select>
                 </div>
                 <div class = "col-md-6 text-center">
@@ -76,9 +75,8 @@
                         <button type="button" class="btn btn-outline-danger">Remove</button>
                     </div>
                     <label>Facility:</label>
-                    <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
-                              name="facilitydropdown" from="${remmoveFacilities}"
-                              onChange= ''>
+                    <g:select id = 'removeFacility' optionKey="id" optionValue="name"
+                              name="removeF" from="${removeFacilities}">
                     </g:select>
                 </div>
                 </div>
@@ -130,7 +128,7 @@
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
     <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
     <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
-    <script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>
+    %{--<script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>--}%
     <g:javascript>
        function loadFacilities(e){
             var cID = e.selectedIndex;
@@ -146,10 +144,16 @@
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
     }
 
-    function compareUnits(e) {
+    function addCompany(e) {
         var cID = e.selectedIndex;
         var cName = e.options[c.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?cID=" + cID + "&cName=" + cName;
+    }
+
+    function addUnit(e) {
+        var fID = e.selectedIndex;
+        var fName = e.options[c.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
     }
 
     function filterTable(e, o) {

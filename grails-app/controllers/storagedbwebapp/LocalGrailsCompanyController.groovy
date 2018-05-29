@@ -225,8 +225,6 @@ class LocalGrailsCompanyController
         if(params.cID != null)
         {
             updateDropdownList(-1, -1, -1, -1, params.cID as Integer)
-
-
         }
         else
         {
