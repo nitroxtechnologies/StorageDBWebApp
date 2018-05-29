@@ -146,13 +146,13 @@
 
     function addCompany(e) {
         var cID = e.selectedIndex;
-        var cName = e.options[c.selectedIndex].text;
+        var cName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?cID=" + cID + "&cName=" + cName;
     }
 
     function addUnit(e) {
         var fID = e.selectedIndex;
-        var fName = e.options[c.selectedIndex].text;
+        var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
     }
 
