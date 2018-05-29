@@ -377,6 +377,11 @@ public class DynamoHandler
 
     public List<Facility> getFacilitiesFromFacilityIds(ArrayList<Long> facilityIds)
     {
+        if(facilityIds == null || facilityIds.size() == 0)
+        {
+            return new ArrayList<Facility>();
+        }
+
         String filterExpression = "";
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
 

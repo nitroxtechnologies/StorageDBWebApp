@@ -7,6 +7,8 @@ import AWSAccessors.FacilityToUnit
 import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.Unit
 
+import java.lang.reflect.Array
+
 /**
  * Created by spencersharp on 8/19/17.
  */
@@ -14,6 +16,7 @@ class LocalGrailsCompanyController
 {
     def updateLocalTables()
     {
+        DynamoHandler dh = new DynamoHandler();
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
 
         def companies = LocalGrailsCompany.list()
@@ -24,7 +27,7 @@ class LocalGrailsCompanyController
         def company;
         if(companies.size() > dropdownInfo.companyIndex)
         {
-            company = dropdownInfo.companyIndex + 1;
+            company = dropdownInfo.companyIndex + 2;
         }
         def facility;
         if(facilities.size() > dropdownInfo.facilityIndex)
@@ -32,23 +35,28 @@ class LocalGrailsCompanyController
             facility = dropdownInfo.facilityIndex + 1
         }
 
-        def addFacilities = CompareInfo.list().get(0).addFacilities;
-
-        def removeFacilities = CompareInfo.list().get(0).removeFacilities;
-        def compareCompany = dropdownInfo.compareCompaniesIndex;
-        DynamoHandler dh = new DynamoHandler();
-
-        def compareCompanies = dh.getCompaniesFromCompanyIds(CompareInfo.list().get(0).companyIds);
-        /*def addFacilitiesIds = dh.getFacilitiesFromCompanyID(compareInfo)
-
-        if(dropdownInfo.compareCompaniesIndex >= 0)
+        def addFacilitiesArrayList = dh.getFacilitiesFromFacilityIds(CompareInfo.list().get(0).addFacilities);
+        def addFacilities = new ArrayList<LocalGrailsFacility>();
+        for(Facility f : addFacilitiesArrayList)
         {
-            ArrayList<LocalGrailsFacility> result = ArrayList<LocalGrailsFacility>();
-            for(LocalGrailsFacility f : addFacilities)
-            {
-                if(f.)
-            }
-        }*/
+            addFacilities.add(new LocalGrailsFacility(id: f.getId(), name: f.getName()));
+        }
+
+        def removeFacilitiesArrayList = dh.getFacilitiesFromFacilityIds(CompareInfo.list().get(0).removeFacilities);
+        def removeFacilities = new ArrayList<LocalGrailsFacility>();
+        for(Facility f : removeFacilitiesArrayList)
+        {
+            removeFacilities.add(new LocalGrailsFacility(id: f.getId(), name: f.getName()));
+        }
+
+        def compareCompany = dropdownInfo.compareCompaniesIndex;
+
+        def compareCompaniesArrayList = dh.getCompaniesFromCompanyIds(CompareInfo.list().get(0).companyIds);
+        def compareCompanies = new ArrayList<LocalGrailsCompany>();
+        for(Company c : compareCompaniesArrayList)
+        {
+            compareCompanies.add(new LocalGrailsCompany(id: c.getId(), name: c.getName()));
+        }
 
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
@@ -205,15 +213,7 @@ class LocalGrailsCompanyController
         {
             compareInfo.removeFacilities = new ArrayList<Long>();
             compareInfo.addFacilities = new ArrayList<Long>();
-            for(LocalGrailsFacility facil : LocalGrailsFacility.list())
-            {
-                compareInfo.addFacilities.add(facil.id);
-            }
             compareInfo.addFacilitiesHash = new HashSet<Long>();
-            for(Long l : compareInfo.addFacilities)
-            {
-                compareInfo.addFacilitiesHash.add(l);
-            }
             compareInfo.removeFacilitiesHash = new HashSet<Long>();
             compareInfo.companyIds = new ArrayList<Long>();
             for(LocalGrailsCompany comp : LocalGrailsCompany.list())
@@ -221,15 +221,29 @@ class LocalGrailsCompanyController
                 compareInfo.companyIds.add(comp.id);
             }
         }
-
+        DynamoHandler dh = new DynamoHandler();
         if(params.cID != null)
         {
             updateDropdownList(-1, -1, -1, -1, params.cID as Integer)
+
+            ArrayList<Facility> facilities = dh.getFacilitiesFromCompanyID((long)(params.cID as Integer));
+            compareInfo.addFacilities = new ArrayList<Long>();
+            compareInfo.addFacilitiesHash = new HashSet<Long>();
+
+            for(LocalGrailsFacility facil : LocalGrailsFacility.list())
+            {
+                for(Facility f : facilities)
+                {
+                    if(facil.id == f.getId())
+                    {
+                        compareInfo.addFacilities.add(facil);
+                        compareInfo.addFacilitiesHash.add(facil);
+                    }
+                }
+            }
         }
         else
         {
-            DynamoHandler dh = new DynamoHandler();
-
             String fName = params.fName as String;
 
             Facility f = dh.getFacilityFromFacilityName(fName);
@@ -238,26 +252,44 @@ class LocalGrailsCompanyController
 
             long companyId = f.getCompanyId();
 
+
+
             //Update compareCompanies
 
 
-            compareInfo.companyIds.remove(companyId);
-
-            //If fID is in addFacilities
+            //If fID is not in removeFacilities
             //We need to add the units to the units model
-            if (compareInfo.addFacilitiesHash.contains(fID)) {
+            if (!compareInfo.removeFacilitiesHash.contains(fID)) {
                 compareInfo.removeFacilitiesHash.add(fID);
                 compareInfo.removeFacilities.add(fID);
-                compareInfo.addFacilities.remove(fID);
-                compareInfo.addFacilitiesHash.remove(fID);
+
+                boolean anyLeftForCompany = false;
+
+                ArrayList<Facility> facilities = dh.getFacilitiesFromCompanyID(companyId);
+
+                for(Facility facility : facilities)
+                {
+                    if(facility.getCompanyId() == companyId)
+                    {
+                        if(!compareInfo.removeFacilitiesHash.contains(facility.getId()))
+                        {
+                            anyLeftForCompany = true;
+                        }
+                    }
+                }
+
+                if(!anyLeftForCompany)
+                {
+                    compareInfo.companyIds.remove(companyId);
+                }
             }
             //If fID is in removeFacilities
             //We need to remove the units from the units model
             else {
                 compareInfo.removeFacilitiesHash.remove(fID);
                 compareInfo.removeFacilities.remove(fID);
-                compareInfo.addFacilities.add(fID);
-                compareInfo.addFacilitiesHash.add(fID);
+
+                compareInfo.companyIds.add(companyId);
             }
 
             LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')

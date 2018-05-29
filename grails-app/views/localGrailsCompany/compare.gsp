@@ -61,8 +61,8 @@
                         <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
                     </div>
                     <label>Company:</label>
-                    <g:select id = "company" optionKey="id" optionValue="name" value ="${company}"
-                              name="companydropdown" from="${companies}"
+                    <g:select id = "company" optionKey="id" optionValue="name" value ="${compareCompany}"
+                              name="companydropdown" from="${compareCompanies}"
                               onChange= 'addCompany(document.getElementById("company"))'>
                     </g:select>
                     <label>Facility:</label>
