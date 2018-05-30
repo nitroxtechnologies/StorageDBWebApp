@@ -208,7 +208,9 @@ class LocalGrailsCompanyController
             if (canSet)
             {
                 System.out.println("UNIT: " + u);
-                new LocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), price).save()
+                ArrayList<Price> prices = new ArrayList<Price>();
+                prices.add(new Price(val: price));
+                new CompareUnit(dbId:  u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
             }
         }
         updateDropdownList(-1, (params.fID as Integer), 0, 0, -1)
