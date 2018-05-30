@@ -335,6 +335,11 @@ class LocalGrailsCompanyController
     }
 
 
+    def input() {
+
+    }
+
+
     def render()
     {
         //render "CONTROLLER RENDER"

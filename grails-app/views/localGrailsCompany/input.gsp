@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="compare"/>
+        <meta name="layout" content="input"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
@@ -50,74 +50,71 @@
                     </form>
                 </div>
             </nav>
-            <div class="page-header">
-                <h1>Comparing prices for...<small>${facility}'s units to</small></h1>
+            <div class="page-header" style="margin-top:20px; margin-bottom: 30px;">
+                <h1>Submit a single unit</h1>
             </div>
-
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <div class = "row">
-                <div class = "col-md-6 text-center">
-                    <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
+            <form>
+                <div class="form-row">
+                    <div class="col-md-3 mb-3">
+                        <label for="validationDefault01">Company name</label>
+                        <input type="text" class="form-control" id="validationDefault01" placeholder="Company name" value="Green Storage Plus" required>
                     </div>
-                    <label>Company:</label>
-                    <g:select id = "company" optionKey="dbId" optionValue="name" value ="${compareCompany}"
-                              name="companydropdown" from="${compareCompanies}"
-                              onChange= 'addCompany(document.getElementById("company"))'>
-                    </g:select>
-                    <label>Facility:</label>
-                    <g:select id = 'addFacility' optionKey="dbId" optionValue="name"
-                              name="addF" from="${addFacilities}">
-                    </g:select>
-                </div>
-                <div class = "col-md-6 text-center">
-                    <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-danger" onclick="addUnit(document.getElementById('removeFacility'))">Remove</button>
+                    <div class="col-md-3 mb-3">
+                        <label for="validationDefault02">Facility name</label>
+                        <input type="text" class="form-control" id="validationDefault02" placeholder="Facility name" value="Green Storage" required>
                     </div>
-                    <label>Facility:</label>
-                    <g:select id = 'removeFacility' optionKey="dbId" optionValue="name"
-                              name="removeF" from="${removeFacilities}">
-                    </g:select>
+                    <div class="col-md-3 mb-3">
+                        <label for="validationDimensions">Unit Dimensions</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroupPrepend2">inches</span>
+                            </div>
+                            <input type="text" class="form-control" id="validationDimensions" placeholder="10'x 5'" aria-describedby="inputGroupPrepend2" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text">W x L</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="validationFloor">Floor</label>
+                        <input type="text" class="form-control" id="validationFloor" placeholder="Floor" required>
+                    </div>
                 </div>
+                <div class="form-row">
+                    <div class="input-group col-md-6 mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+                    <div class="form-check col-md-6" style="padding-left: 50px;">
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                        <label class="form-check-label" for="defaultCheck1">
+                            Climate controlled
+                        </label>
+                    </div>
                 </div>
+                <button class="btn btn-primary" type="submit">Submit unit</button>
+            </form>
 
+            <div class="page-header" style = "margin-top:50px; margin-bottom:30px">
+                <h1>Submit multiple units</h1>
             </div>
 
-            <div class="col-lg-12 text-center" style="margin-top: 60px">
-                <label>Climate Controlled:</label>
-                    <select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>
-                        <option selected value="all"> All </option>
-                        <option value="yes">Climate</option>
-                        <option value="no">Non-Climate</option>
-                    </select>
-                <label>Unit:</label>
-                <g:select id = 'units' optionKey="dbId" optionValue="name"
-                          name="unitdropdown" from="${units}"
-                          onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
-                          noSelection="['null':'All']">
-                </g:select>
-            </div>
-            <table id = "unitTable" class="table" style="margin-top: 50px">
-                <thead>
-                    <tr>
-                        %{--<th scope="col">ID</th>--}%
-                        <th scope="col">Dimensions</th>
-                        <th scope="col">Floor</th>
-                        <th scope="col" class="text-center">Climate Controlled?</th>
-                        <th scope="col" class="text-right">${facilityName}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <g:each in="${units}" var="unit" status="i">
-                    <tr class = "entries ${unit.name} ${unit.climate}">
-                        <td class="text-left">${unit.name}</td>
-                        <td class="text-left">${unit.floor}</td>
-                        <td class="text-center">${unit.climate}</td>
-                        <td class="text-right">$${unit.price}</td>
-                    </tr>
-                </g:each>
-                </tbody>
-            </table>
+            <form>
+                <div class="form-group">
+                    <label for="exampleFormControlFile1">For multiple units, upload spreadsheet</label>
+                    <input type="file" class="form-control-file" id="exampleFormControlFile1">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit units</button>
+                %{--<div class="custom-file">--}%
+                    %{--<input type="file" class="custom-file-input" id="customFile">--}%
+                    %{--<label class="custom-file-label" for="customFile">Choose file</label>--}%
+                %{--</div>--}%
+            </form>
 
         </div>
     <footer class="footer">
