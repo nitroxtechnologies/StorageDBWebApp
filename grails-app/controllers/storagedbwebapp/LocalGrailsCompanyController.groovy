@@ -96,9 +96,9 @@ class LocalGrailsCompanyController
         int floor = 9;
 
 
-        new CompareUnit(dbId: 5, name: name, climate: climate, floor: floor, prices: prices).save(failOnError:true, flush: true)
+//        new CompareUnit(dbId: 5, name: name, climate: climate, floor: floor, prices: prices).save(failOnError:true, flush: true)
 
-        System.out.println(CompareUnit.list().get(0));
+//        System.out.println(CompareUnit.list().get(0));
 
         def result = CompareUnit.findByDbId(5);
 
@@ -380,6 +380,10 @@ class LocalGrailsCompanyController
 
 
     def input() {
+
+    }
+
+    def graph() {
 
     }
 

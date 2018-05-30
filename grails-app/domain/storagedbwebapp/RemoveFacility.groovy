@@ -1,6 +1,6 @@
 package storagedbwebapp
 
-class RemoveFacility {
+class  RemoveFacility {
 
     long dbId
     String name

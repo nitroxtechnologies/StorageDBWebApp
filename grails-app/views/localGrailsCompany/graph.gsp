@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="loadUnitTable"/>
+        <meta name="layout" content="graph"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
+        <link rel="stylesheet" href="/assets/chosen.min.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
@@ -49,68 +50,41 @@
                     </form>
                 </div>
             </nav>
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="dbId" optionValue="name" value ="${company}"
-                          name="companydropdown" from="${companies}"
-                          onChange= 'loadFacilities(document.getElementById("cDropdown"))'>
-                </g:select>
-                <label>Facility:</label>
-                <g:select id = 'facilitiesDropdown' optionKey="dbId" optionValue="name" value = "${facility}"
-                          name="facilitydropdown" from="${facilities}"
-                          onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
-                </g:select>
-            </div>
-
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare Prices!</button></td>
-            </div>
-            %{--<div class="col-lg-12 text-center" style="margin-top: 20px">--}%
-                %{--<label>Climate Controlled:</label>--}%
-                %{--<select name="climate" id="climate" onChange='filterTable(document.getElementById("climate"), document.getElementById("units"))'>--}%
-                    %{--<option selected value="all"> All </option>--}%
-                    %{--<option value="yes">Climate</option>--}%
-                    %{--<option value="no">Non-Climate</option>--}%
-                %{--</select>--}%
-                %{--<label>Unit:</label>--}%
-                %{--<g:select id = 'units' optionKey="dbId" optionValue="name"--}%
-                          %{--name="unitdropdown" from="${units}"--}%
-                          %{--onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'--}%
-                          %{--noSelection="['null':'All']">--}%
-                %{--</g:select>--}%
-            %{--</div>--}%
-
-            <table id = "unitTable" class="table" style="margin-top: 50px">
-                <thead>
-                <tr>
-                    %{--<th scope="col">ID</th>--}%
-                    <th scope="col">Dimensions</th>
-                    <th scope="col">Floor</th>
-                    <th scope="col" class="text-center">Climate Controlled?</th>
-                    <th scope="col" class="text-right">Price</th>
-                </tr>
-                </thead>
-                <tbody>
-                <g:each in="${units}" var="unit" status="i">
-                    <tr class = "entries ${unit.name} ${unit.climate}">
-                        <td class="text-left">${unit.name}</td>
-                        <td class="text-left">${unit.floor}</td>
-                        <td class="text-center">${unit.climate}</td>
-                        <g:each in="${unit.prices}" var="price" status="j">
-                            <td class="text-right">$${price.val}</td>
-                        </g:each>
-                    </tr>
-                </g:each>
-                </tbody>
-            </table>
-
+            <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+            <script>
+            </script>
         </div>
     <footer class="footer">
         <div class="container">
             <span class="text-muted">&copy;2018 Nitrox Technologies</span>
         </div>
     </footer>
+    <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
+    <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
+    <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
+    <script type="text/javascript"src="/assets/plotly-latest.min.js?compile=true"></script>
+    %{--<script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>--}%
     <g:javascript>
+                var trace1 = {
+                    x: [1, 2, 3, 4],
+                    y: [10, 15, 13, 17],
+                    type: 'scatter',
+                    name: 'Price'
+                };
+                // var trace2 = {
+                //     x: [1, 2, 3, 4],
+                //     y: [16, 5, 11, 9],
+                //     type: 'scatter'
+                // };
+
+                var data = [trace1];
+                var layout = {
+                  title: 'Green Storage Plus'
+                };
+                Plotly.newPlot('myDiv', data, layout);
+
+
+
        function loadFacilities(e){
             var cID = e.selectedIndex;
             var cName = e.options[e.selectedIndex].text;
@@ -123,6 +97,18 @@
         var fID = e.selectedIndex;
         var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
+    }
+
+    function addCompany(e) {
+        var cID = e.selectedIndex;
+        var cName = e.options[e.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?cID=" + cID + "&cName=" + cName;
+    }
+
+    function addUnit(e) {
+        var fID = e.selectedIndex;
+        var fName = e.options[e.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
     }
 
     function filterTable(e, o) {
@@ -145,20 +131,8 @@
                   tr[i].style.display = "none";
               }
           }
-
-    }
-
-    function compare(e) {
-        var fID = e.selectedIndex;
-        var fName = fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
-
     }
 
 </g:javascript>
-    <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
-    <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
-    <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
-
     </body>
 </html>

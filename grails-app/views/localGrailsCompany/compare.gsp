@@ -104,7 +104,9 @@
                         <th scope="col">Dimensions</th>
                         <th scope="col">Floor</th>
                         <th scope="col" class="text-center">Climate Controlled?</th>
-                        <th scope="col" class="text-right">${facilityName}</th>
+                        <g:each in="${removeFacilities}" var="f" status="i">
+                        <th scope="col" class="text-right">${f.name}</th>
+                        </g:each>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,7 +115,9 @@
                         <td class="text-left">${unit.name}</td>
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
-                        <td class="text-right">$${unit.price}</td>
+                        <g:each in="${unit.prices}" var="price" status="j">
+                        <td class="text-right">$${price.val}</td>
+                        </g:each>
                     </tr>
                 </g:each>
                 </tbody>
