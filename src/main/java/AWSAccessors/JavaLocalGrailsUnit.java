@@ -5,7 +5,7 @@ public class JavaLocalGrailsUnit {
     public String name;
     public String climate;
     public int floor;
-    public  double price;
+    public double price;
 
     public JavaLocalGrailsUnit(long id, String name, String climate, int floor, double price)
     {

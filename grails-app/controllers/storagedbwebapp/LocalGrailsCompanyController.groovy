@@ -31,7 +31,7 @@ class LocalGrailsCompanyController
 
         def companies = LocalGrailsCompany.list()
         def facilities = LocalGrailsFacility.list()
-        def units = LocalGrailsUnit.list()
+        def units = CompareUnit.list()
 
         System.out.println("\n\nCOMPANIES INDEX: " + dropdownInfo.companyIndex + "\n\n");
         def company;
@@ -87,6 +87,26 @@ class LocalGrailsCompanyController
     }
     def index()
     {
+        ArrayList<Price> prices = new ArrayList<>();
+
+        prices.add(new Price(val: 77.0));
+
+        String name = "thing";
+        String climate = "cold";
+        int floor = 9;
+
+
+        new CompareUnit(dbId: 5, name: name, climate: climate, floor: floor, prices: prices).save(failOnError:true, flush: true)
+
+        System.out.println(CompareUnit.list().get(0));
+
+        def result = CompareUnit.findByDbId(5);
+
+        for(CompareUnit compareUnit : result)
+        {
+            System.out.println("COMPAREUNIT: " + compareUnit);
+        }
+
         println("----------------");
         println("INDEX")
         println("----------------");
@@ -319,6 +339,7 @@ class LocalGrailsCompanyController
 
             LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
             AddFacility.executeUpdate('delete from AddFacility')
+            CompareUnit.executeUpdate('delete from CompareUnit')
 
             ArrayList<Long> removeFacilityIds = new ArrayList<>();
 
@@ -328,6 +349,25 @@ class LocalGrailsCompanyController
             }
 
             ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(removeFacilityIds);
+
+            for(JavaLocalGrailsUnit local : javaLocalGrailsUnitList)
+            {
+                def result = CompareUnit.findByDbId(local.id);
+
+                CompareUnit found;
+                for(CompareUnit compareUnit : result)
+                {
+                    found = compareUnit;
+                }
+                if(found == null)
+                {
+                    List<Price> prices = new ArrayList<>();
+                    found = new CompareUnit(dbId: local.id, name: local.name, climate: local.climate, floor: local.floor, prices: prices);
+                }
+                found.prices.add(new Price(val: local.price));
+
+                found.save(failOnError:true, flush: true);
+            }
 
             for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
                 new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
