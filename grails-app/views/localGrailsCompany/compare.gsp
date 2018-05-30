@@ -116,7 +116,12 @@
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
-                        <td class="text-right">$${price.val}</td>
+                            <g:if test = "${price.val > 0}">
+                                <td class="text-right">$${price.val}</td>
+                            </g:if>
+                            <g:else>
+                                <td class="text-right"> </td>
+                            </g:else>
                         </g:each>
                     </tr>
                 </g:each>
