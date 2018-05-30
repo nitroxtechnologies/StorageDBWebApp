@@ -187,7 +187,7 @@ public class DynamoHandler
         eav.put(":val1", new AttributeValue().withN(""+fID));
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
-                .withFilterExpression("dbId = :val1").withExpressionAttributeValues(eav);
+                .withFilterExpression("id = :val1").withExpressionAttributeValues(eav);
 
         List scanResult = mapper.scan(Facility.class, scanExpression);
 
@@ -199,7 +199,7 @@ public class DynamoHandler
         eav.put(":val1", new AttributeValue().withN(""+companyId));
 
         scanExpression = new DynamoDBScanExpression()
-                .withFilterExpression("dbId = :val1").withExpressionAttributeValues(eav);
+                .withFilterExpression("id = :val1").withExpressionAttributeValues(eav);
 
         scanResult = mapper.scan(Facility.class, scanExpression);
 
@@ -231,7 +231,7 @@ public class DynamoHandler
         for(int i = 0; i < scanResult.size(); i++)
         {
             long unitId = ((FacilityToUnit)scanResult.get(i)).getUnitId();
-            filterExpression += ("dbId = :val" + (i+1));
+            filterExpression += ("id = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != scanResult.size() - 1)
             {
@@ -296,7 +296,7 @@ public class DynamoHandler
         for(int i = 0; i < companyIds.size(); i++)
         {
             long facilityId = companyIds.get(i);
-            filterExpression += ("dbId = :val" + (i+1));
+            filterExpression += ("id = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
             if(i != companyIds.size() - 1)
             {
@@ -364,7 +364,7 @@ public class DynamoHandler
         for(int i = 0; i < facilityToUnitsResult.size(); i++)
         {
             long unitId = ((FacilityToUnit)facilityToUnitsResult.get(i)).getUnitId();
-            filterExpression += ("dbId = :val" + (i+1));
+            filterExpression += ("id = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != facilityToUnitsResult.size() - 1)
             {
@@ -406,7 +406,7 @@ public class DynamoHandler
         for(int i = 0; i < facilityIds.size(); i++)
         {
             long facilityId = facilityIds.get(i);
-            filterExpression += ("dbId = :val" + (i+1));
+            filterExpression += ("id = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
             if(i != facilityIds.size() - 1)
             {

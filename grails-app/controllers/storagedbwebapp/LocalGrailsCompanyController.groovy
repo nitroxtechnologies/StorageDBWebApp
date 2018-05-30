@@ -168,11 +168,15 @@ class LocalGrailsCompanyController
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
+        System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
+        System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
+            System.out.println("LOOP");
             double price = 0.0;
             boolean canSet = true;
             for (LocalGrailsUnit local : LocalGrailsUnit.list()) {
                 if (local.name.equals(u.getName())) {
+                    System.out.println("BIG FAIL");
                     canSet = false;
                 }
             }
