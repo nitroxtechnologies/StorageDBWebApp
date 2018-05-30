@@ -43,12 +43,12 @@
             </nav>
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
+                <g:select id = "cDropdown" optionKey="dbId" optionValue="name" value ="${company}"
                           name="companydropdown" from="${companies}"
                           onChange= 'loadFacilities(document.getElementById("cDropdown"))'>
                 </g:select>
                 <label>Facility:</label>
-                <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
+                <g:select id = 'facilitiesDropdown' optionKey="dbId" optionValue="name" value = "${facility}"
                           name="facilitydropdown" from="${facilities}"
                           onChange= 'loadUnits(document.getElementById("cDropdown"),
                     document.getElementById("facilitiesDropdown"), document.getElementById("climate"))'>
@@ -63,7 +63,7 @@
                     <option value="no">No</option>
                 </select>
                 <label>Unit:</label>
-                <g:select id = 'units' optionKey="id" optionValue="name"
+                <g:select id = 'units' optionKey="dbId" optionValue="name"
                           name="unitdropdown" from="${units}" noSelection="['null':'Select a Unit']"
                           onChange = 'showUnit(document.getElementById("facilitiesDropdown"), document.getElementById("units"))'>
                 </g:select>

@@ -61,21 +61,21 @@
                         <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
                     </div>
                     <label>Company:</label>
-                    <g:select id = "company" optionKey="id" optionValue="name" value ="${compareCompany}"
+                    <g:select id = "company" optionKey="dbId" optionValue="name" value ="${compareCompany}"
                               name="companydropdown" from="${compareCompanies}"
                               onChange= 'addCompany(document.getElementById("company"))'>
                     </g:select>
                     <label>Facility:</label>
-                    <g:select id = 'addFacilitiy' optionKey="id" optionValue="name"
+                    <g:select id = 'addFacility' optionKey="dbId" optionValue="name"
                               name="addF" from="${addFacilities}">
                     </g:select>
                 </div>
                 <div class = "col-md-6 text-center">
                     <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-danger">Remove</button>
+                        <button type="button" class="btn btn-outline-danger" onclick="addUnit(document.getElementById('removeFacility'))">Remove</button>
                     </div>
                     <label>Facility:</label>
-                    <g:select id = 'removeFacility' optionKey="id" optionValue="name"
+                    <g:select id = 'removeFacility' optionKey="dbId" optionValue="name"
                               name="removeF" from="${removeFacilities}">
                     </g:select>
                 </div>
@@ -91,7 +91,7 @@
                         <option value="no">Non-Climate</option>
                     </select>
                 <label>Unit:</label>
-                <g:select id = 'units' optionKey="id" optionValue="name"
+                <g:select id = 'units' optionKey="dbId" optionValue="name"
                           name="unitdropdown" from="${units}"
                           onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
                           noSelection="['null':'All']">

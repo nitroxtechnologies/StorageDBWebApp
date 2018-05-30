@@ -1,13 +1,13 @@
 package AWSAccessors;
 
-class JavaLocalGrailsUnit {
-    long id;
-    String name;
-    String climate;
-    int floor;
-    double price;
+public class JavaLocalGrailsUnit {
+    public long id;
+    public String name;
+    public String climate;
+    public int floor;
+    public  double price;
 
-    JavaLocalGrailsUnit(long id, String name, String climate, int floor, double price)
+    public JavaLocalGrailsUnit(long id, String name, String climate, int floor, double price)
     {
         this.id = id;
         this.name = name;

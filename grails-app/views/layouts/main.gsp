@@ -18,7 +18,7 @@
             <a class="navbar-brand" style='color:black;'>    <img src="/assets/icon.png?compile=true" width="30" height="30" class="d-inline-block align-top" alt="">
                 PriceDB</a>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse" dbId="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
                         <a class="nav-link" href="/LocalGrailsCompany">Home <span class="sr-only">(current)</span></a>
@@ -27,7 +27,7 @@
                         <a class="nav-link" href="#">Link</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" dbId="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Menu
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -46,7 +46,7 @@
         </nav>
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="id" optionValue="name"
+                <g:select id = "cDropdown" optionKey="dbId" optionValue="name"
                           name="companydropdown" from="${companies}" value = ""
                           onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
                 </g:select>

@@ -7,13 +7,23 @@ import AWSAccessors.FacilityToUnit
 import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.Unit
 
-import java.lang.reflect.Array
-
 /**
  * Created by spencersharp on 8/19/17.
  */
 class LocalGrailsCompanyController
 {
+    public static ArrayList<java.lang.Long> makeArrayList(List<Long> list)
+    {
+        ArrayList<java.lang.Long> retList = new ArrayList<>();
+
+        for(Long aLong : list)
+        {
+            retList.add(aLong.val);
+        }
+
+        return retList;
+    }
+
     def updateLocalTables()
     {
         DynamoHandler dh = new DynamoHandler();
@@ -27,7 +37,7 @@ class LocalGrailsCompanyController
         def company;
         if(companies.size() > dropdownInfo.companyIndex)
         {
-            company = dropdownInfo.companyIndex + 2;
+            company = dropdownInfo.companyIndex + 1;
         }
         def facility;
         if(facilities.size() > dropdownInfo.facilityIndex)
@@ -35,28 +45,13 @@ class LocalGrailsCompanyController
             facility = dropdownInfo.facilityIndex + 1
         }
 
-        def addFacilitiesArrayList = dh.getFacilitiesFromFacilityIds(CompareInfo.list().get(0).addFacilities);
-        def addFacilities = new ArrayList<LocalGrailsFacility>();
-        for(Facility f : addFacilitiesArrayList)
-        {
-            addFacilities.add(new LocalGrailsFacility(id: f.getId(), name: f.getName()));
-        }
+        def addFacilities = AddFacility.list()
 
-        def removeFacilitiesArrayList = dh.getFacilitiesFromFacilityIds(CompareInfo.list().get(0).removeFacilities);
-        def removeFacilities = new ArrayList<LocalGrailsFacility>();
-        for(Facility f : removeFacilitiesArrayList)
-        {
-            removeFacilities.add(new LocalGrailsFacility(id: f.getId(), name: f.getName()));
-        }
+        def removeFacilities = RemoveFacility.list()
 
-        def compareCompany = dropdownInfo.compareCompaniesIndex;
+        def compareCompany = dropdownInfo.compareCompaniesIndex + 2;
 
-        def compareCompaniesArrayList = dh.getCompaniesFromCompanyIds(CompareInfo.list().get(0).companyIds);
-        def compareCompanies = new ArrayList<LocalGrailsCompany>();
-        for(Company c : compareCompaniesArrayList)
-        {
-            compareCompanies.add(new LocalGrailsCompany(id: c.getId(), name: c.getName()));
-        }
+        def compareCompanies = CompareCompany.list()
 
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
@@ -110,7 +105,7 @@ class LocalGrailsCompanyController
         List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(params.cID as Integer)
         LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
         for (Facility f : facilitiesArraylist) {
-            new LocalGrailsFacility(id: f.getId(), name: f.getName()).save()
+            new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
         }
         updateDropdownList((params.cID as Integer), 0, 0, 0, -1)
         updateLocalTables()
@@ -140,7 +135,7 @@ class LocalGrailsCompanyController
         LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
         for(Unit u : unitsArraylist)
         {
-            new LocalGrailsUnit(id: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor()).save()
+            new LocalGrailsUnit(dbId: u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor()).save()
         }
 
         units = LocalGrailsUnit.list()
@@ -158,7 +153,7 @@ class LocalGrailsCompanyController
      */
     def loadUnitTable()
     {
-        //new LocalGrailsUnit(id: 0, name: "10x10", climate: "Climate", floor: 0, price: 10.00).save()
+        //new LocalGrailsUnit(dbId: 0, name: "10x10", climate: "Climate", floor: 0, price: 10.00).save()
 
         println("----------------");
         println("LOAD UNIT TABLE")
@@ -177,12 +172,12 @@ class LocalGrailsCompanyController
             double price = 0.0;
             boolean canSet = true;
             for (LocalGrailsUnit local : LocalGrailsUnit.list()) {
-                if (local.getName().equals(u.getName())) {
+                if (local.name.equals(u.getName())) {
                     canSet = false;
                 }
             }
             for (FacilityToUnit ftu : facilityToUnitList) {
-                if (ftu.unitId == u.getId()) {
+                if (ftu.getUnitId() == u.getId()) {
                     price = ftu.rateAmount;
                 }
             }
@@ -205,45 +200,48 @@ class LocalGrailsCompanyController
      */
     def compare()
     {
-        CompareInfo compareInfo = CompareInfo.list().get(0);
-        CompareInfo.executeUpdate('delete from CompareInfo')
-        compareInfo.didUpdate = true;
+        System.out.println("----------\nCompare block start");
 
-        if(compareInfo.removeFacilities == null)
+        if(CompareCompany.list().size() == 0)
         {
-            compareInfo.removeFacilities = new ArrayList<Long>();
-            compareInfo.addFacilities = new ArrayList<Long>();
-            compareInfo.addFacilitiesHash = new HashSet<Long>();
-            compareInfo.removeFacilitiesHash = new HashSet<Long>();
-            compareInfo.companyIds = new ArrayList<Long>();
             for(LocalGrailsCompany comp : LocalGrailsCompany.list())
             {
-                compareInfo.companyIds.add(comp.id);
+                new CompareCompany(dbId: comp.dbId, name: comp.name).save()
             }
         }
         DynamoHandler dh = new DynamoHandler();
         if(params.cID != null)
         {
+            System.out.println("\n\nCOMPARE: CID\n\n");
+
             updateDropdownList(-1, -1, -1, -1, params.cID as Integer)
 
-            ArrayList<Facility> facilities = dh.getFacilitiesFromCompanyID((long)(params.cID as Integer));
-            compareInfo.addFacilities = new ArrayList<Long>();
-            compareInfo.addFacilitiesHash = new HashSet<Long>();
+            Company c = dh.getCompanyFromName(params.cName as String);
 
-            for(LocalGrailsFacility facil : LocalGrailsFacility.list())
+            ArrayList<Facility> facilities = dh.getFacilitiesFromCompanyID(c.getId());
+            AddFacility.executeUpdate('delete from AddFacility')
+
+            ArrayList<RemoveFacility> removeFacilities = RemoveFacility.list();
+
+            for(Facility facility : facilities)
             {
-                for(Facility f : facilities)
+                boolean hasAlreadyBeenAdded = false;
+                for(RemoveFacility f : removeFacilities) //Check if its in removeFacilities
                 {
-                    if(facil.id == f.getId())
+                    if(facility.getId() == f.dbId)
                     {
-                        compareInfo.addFacilities.add(facil);
-                        compareInfo.addFacilitiesHash.add(facil);
+                        hasAlreadyBeenAdded = true;
                     }
                 }
+
+                //If its not, add it to addFacilities
+                if(!hasAlreadyBeenAdded)
+                    new AddFacility(dbId: facility.getId(), name: facility.getName()).save();
             }
         }
         else
         {
+            System.out.println("\n\nCOMPARE: FID\n\n");
             String fName = params.fName as String;
 
             Facility f = dh.getFacilityFromFacilityName(fName);
@@ -252,16 +250,26 @@ class LocalGrailsCompanyController
 
             long companyId = f.getCompanyId();
 
-
-
             //Update compareCompanies
-
-
+            boolean isAlreadyAdded = false;
+            ArrayList<RemoveFacility> removeFacilities = RemoveFacility.list();
+            for(RemoveFacility facility : removeFacilities) //Check if its in removeFacilities
+            {
+                System.out.println("GOTTA CHECK THE LOOP");
+                System.out.println("REMOVE FACILITY ID: " + facility.dbId);
+                System.out.println("FACILITY ID: " + f.getId() + "\n");
+                if(facility.dbId == f.getId())
+                {
+                    System.out.println("FOUND THE OFFENDER");
+                    isAlreadyAdded = true;
+                }
+            }
+            System.out.println("REMOVE FACILITIES SIZE: " + removeFacilities.size());
             //If fID is not in removeFacilities
             //We need to add the units to the units model
-            if (!compareInfo.removeFacilitiesHash.contains(fID)) {
-                compareInfo.removeFacilitiesHash.add(fID);
-                compareInfo.removeFacilities.add(fID);
+            if (!isAlreadyAdded) {
+                System.out.println("FOUND A NEW ONE");
+                new RemoveFacility(dbId: f.getId(), name: f.getName()).save();
 
                 boolean anyLeftForCompany = false;
 
@@ -271,38 +279,58 @@ class LocalGrailsCompanyController
                 {
                     if(facility.getCompanyId() == companyId)
                     {
-                        if(!compareInfo.removeFacilitiesHash.contains(facility.getId()))
-                        {
+                        //if there is a facility for this company that is not in remove facilities
+                        //then there is something left for the company
+                        boolean canFindInRemoveFacilities = false;
+                        for(RemoveFacility facil : removeFacilities)
+                            if(facil.dbId == facility.getId())
+                                canFindInRemoveFacilities = true;
+                        if(!canFindInRemoveFacilities && facility.getId() != fID)
                             anyLeftForCompany = true;
-                        }
                     }
                 }
 
                 if(!anyLeftForCompany)
                 {
-                    compareInfo.companyIds.remove(companyId);
+                    CompareCompany.executeUpdate("delete CompareCompany c where c.dbId = :badId",[badId:companyId])
                 }
             }
             //If fID is in removeFacilities
             //We need to remove the units from the units model
             else {
-                compareInfo.removeFacilitiesHash.remove(fID);
-                compareInfo.removeFacilities.remove(fID);
+                System.out.println("ALREADY GOT THIS ONE");
+                RemoveFacility.executeUpdate("delete RemoveFacility c where c.dbId = :badId",[badId:fID])
 
-                compareInfo.companyIds.add(companyId);
+                boolean isCompanyAleadyInCompareCompanies = false;
+                for(CompareCompany cc : CompareCompany.list())
+                {
+                    if(cc.dbId == companyId)
+                    {
+                        isCompanyAleadyInCompareCompanies = true;
+                    }
+                }
+                if(!isCompanyAleadyInCompareCompanies)
+                    new CompareCompany(dbId: companyId, name: dh.getCompanyFromId(companyId).getName()).save();
             }
 
             LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
-            ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(compareInfo.removeFacilities);
+            AddFacility.executeUpdate('delete from AddFacility')
+
+            ArrayList<Long> removeFacilityIds = new ArrayList<>();
+
+            for(RemoveFacility rf : RemoveFacility.list())
+            {
+                removeFacilityIds.add(rf.dbId);
+            }
+
+            ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(removeFacilityIds);
 
             for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
                 new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
             }
-
-            new CompareInfo(didUpdate: compareInfo.didUpdate, addFacilities: compareInfo.addFacilities, addFacilitiesHash: compareInfo.addFacilitiesHash,
-                    removeFacilities: compareInfo.removeFacilities, removeFacilitiesHash: compareInfo.removeFacilitiesHash,
-                    companyIds: compareInfo.companyIds).save(failOnError: true)
         }
+
+        System.out.println("Compare block end\n----------");
         updateLocalTables()
     }
 

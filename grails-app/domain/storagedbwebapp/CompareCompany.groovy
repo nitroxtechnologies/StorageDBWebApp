@@ -1,11 +1,11 @@
 package storagedbwebapp
 
-class LocalGrailsFacility {
+class CompareCompany {
     long dbId
     String name
 
     public String toString()
     {
-        return dbId + " " + name;
+        return "COMPARECOMPANY " + id + " " + name;
     }
 }

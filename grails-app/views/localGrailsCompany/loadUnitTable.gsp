@@ -51,12 +51,12 @@
             </nav>
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
+                <g:select id = "cDropdown" optionKey="dbId" optionValue="name" value ="${company}"
                           name="companydropdown" from="${companies}"
                           onChange= 'loadFacilities(document.getElementById("cDropdown"))'>
                 </g:select>
                 <label>Facility:</label>
-                <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name" value = "${facility}"
+                <g:select id = 'facilitiesDropdown' optionKey="dbId" optionValue="name" value = "${facility}"
                           name="facilitydropdown" from="${facilities}"
                           onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
                 </g:select>
@@ -73,7 +73,7 @@
                     %{--<option value="no">Non-Climate</option>--}%
                 %{--</select>--}%
                 %{--<label>Unit:</label>--}%
-                %{--<g:select id = 'units' optionKey="id" optionValue="name"--}%
+                %{--<g:select id = 'units' optionKey="dbId" optionValue="name"--}%
                           %{--name="unitdropdown" from="${units}"--}%
                           %{--onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'--}%
                           %{--noSelection="['null':'All']">--}%
@@ -94,7 +94,7 @@
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
                     <tr class = "entries ${unit.name} ${unit.climate}">
-                        %{--<th scope = "row"> ${unit.id}</th>--}%
+                        %{--<th scope = "row"> ${unit.dbId}</th>--}%
                         <td class="text-left">${unit.name}</td>
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>

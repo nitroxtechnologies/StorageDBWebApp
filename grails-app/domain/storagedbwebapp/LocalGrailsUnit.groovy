@@ -1,15 +1,15 @@
 package storagedbwebapp
 
 class LocalGrailsUnit {
-    long id
+    long dbId
     String name
     String climate
     int floor
     double price
 
-    LocalGrailsUnit(id, name, climate, floor, price)
+    LocalGrailsUnit(dbId, name, climate, floor, price)
     {
-        this.id = id
+        this.dbId = dbId
         this.name = name
         this.climate = climate
         this.floor = floor

@@ -44,12 +44,12 @@
             </nav>
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="id" optionValue="name" value ="${company}"
+                <g:select id = "cDropdown" optionKey="dbId" optionValue="name" value ="${company}"
                           name="companydropdown" from="${companies}" onChange= 'loadFacilities(document.getElementById("cDropdown"))'
                 >
                 </g:select>
                 <label>Facility:</label>
-                <g:select id = 'facilitiesDropdown' optionKey="id" optionValue="name"
+                <g:select id = 'facilitiesDropdown' optionKey="dbId" optionValue="name"
                           name="facilitydropdown" from="${facilities}"
                           onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'
                           noSelection="['null':'Select a Facility']">

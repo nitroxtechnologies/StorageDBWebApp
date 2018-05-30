@@ -1,11 +1,11 @@
 package storagedbwebapp
 
 class LocalGrailsCompany {
-    long id
+    long dbId
     String name
 
     public String toString()
     {
-        return id + " " + name;
+        return dbId + " " + name;
     }
 }

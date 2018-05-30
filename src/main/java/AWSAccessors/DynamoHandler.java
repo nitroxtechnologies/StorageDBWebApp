@@ -41,13 +41,13 @@ public class DynamoHandler
                 .withRegion(Regions.US_WEST_1).withCredentials(new EnvironmentVariableCredentialsProvider())
                 .build();
 
-        Company c = new Company();
-        c.setName("Qualcomm");
-        c.setId(16);
+        //Company c = new Company();
+        //c.setName("Qualcomm");
+        //c.setId(16);
 
         mapper = new DynamoDBMapper(client);
 
-        mapper.save(c);
+        //mapper.save(c);
     }
 
     protected static void setEnv(Map<String, String> newenv)
@@ -145,6 +145,24 @@ public class DynamoHandler
         return scanResult;
     }
 
+    public Company getCompanyFromName(String name)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withS(""+name));
+
+        Map<String,String> ean = new HashMap<>();
+        ean.put("#n","name");
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("#n = :val1").withExpressionAttributeValues(eav).withExpressionAttributeNames(ean);
+
+        List scanResult = mapper.scan(Company.class, scanExpression);
+
+        Company c = (Company) scanResult.get(0);
+
+        return c;
+    }
+
     public Facility getFacilityFromFacilityName(String name)
     {
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
@@ -169,7 +187,7 @@ public class DynamoHandler
         eav.put(":val1", new AttributeValue().withN(""+fID));
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
-                .withFilterExpression("id = :val1").withExpressionAttributeValues(eav);
+                .withFilterExpression("dbId = :val1").withExpressionAttributeValues(eav);
 
         List scanResult = mapper.scan(Facility.class, scanExpression);
 
@@ -181,7 +199,7 @@ public class DynamoHandler
         eav.put(":val1", new AttributeValue().withN(""+companyId));
 
         scanExpression = new DynamoDBScanExpression()
-                .withFilterExpression("id = :val1").withExpressionAttributeValues(eav);
+                .withFilterExpression("dbId = :val1").withExpressionAttributeValues(eav);
 
         scanResult = mapper.scan(Facility.class, scanExpression);
 
@@ -213,7 +231,7 @@ public class DynamoHandler
         for(int i = 0; i < scanResult.size(); i++)
         {
             long unitId = ((FacilityToUnit)scanResult.get(i)).getUnitId();
-            filterExpression += ("id = :val" + (i+1));
+            filterExpression += ("dbId = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != scanResult.size() - 1)
             {
@@ -278,7 +296,7 @@ public class DynamoHandler
         for(int i = 0; i < companyIds.size(); i++)
         {
             long facilityId = companyIds.get(i);
-            filterExpression += ("id = :val" + (i+1));
+            filterExpression += ("dbId = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
             if(i != companyIds.size() - 1)
             {
@@ -346,7 +364,7 @@ public class DynamoHandler
         for(int i = 0; i < facilityToUnitsResult.size(); i++)
         {
             long unitId = ((FacilityToUnit)facilityToUnitsResult.get(i)).getUnitId();
-            filterExpression += ("id = :val" + (i+1));
+            filterExpression += ("dbId = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != facilityToUnitsResult.size() - 1)
             {
@@ -388,7 +406,7 @@ public class DynamoHandler
         for(int i = 0; i < facilityIds.size(); i++)
         {
             long facilityId = facilityIds.get(i);
-            filterExpression += ("id = :val" + (i+1));
+            filterExpression += ("dbId = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityId));
             if(i != facilityIds.size() - 1)
             {
