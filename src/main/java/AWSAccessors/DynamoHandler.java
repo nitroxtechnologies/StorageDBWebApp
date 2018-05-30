@@ -353,6 +353,8 @@ public class DynamoHandler
             }
         }
 
+        System.out.println("FILTER EXPRESSION: " + filterExpression);
+
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
         List facilityToUnitsResult = mapper.scan(FacilityToUnit.class, scanExpression);
@@ -385,7 +387,7 @@ public class DynamoHandler
                 Unit u = (Unit) o2;
                 if(ftu.getUnitId() == u.getId())
                 {
-                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), ftu.getRateAmount()));
+                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), ftu.getRateAmount(), ftu.getFacilityId()));
                 }
             }
         }

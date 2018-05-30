@@ -187,30 +187,17 @@ class LocalGrailsCompanyController
         println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
-        LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
+        CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
             System.out.println("LOOP");
-            double price = 0.0;
-            boolean canSet = true;
-            for (LocalGrailsUnit local : LocalGrailsUnit.list()) {
-                if (local.name.equals(u.getName())) {
-                    System.out.println("BIG FAIL");
-                    canSet = false;
-                }
-            }
             for (FacilityToUnit ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
-                    price = ftu.rateAmount;
+                    ArrayList<Price> prices = new ArrayList<Price>();
+                    prices.add(new Price(val: ftu.getRateAmount()));
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
                 }
-            }
-            if (canSet)
-            {
-                System.out.println("UNIT: " + u);
-                ArrayList<Price> prices = new ArrayList<Price>();
-                prices.add(new Price(val: price));
-                new CompareUnit(dbId:  u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
             }
         }
         updateDropdownList(-1, (params.fID as Integer), 0, 0, -1)
@@ -348,28 +335,52 @@ class LocalGrailsCompanyController
             for(RemoveFacility rf : RemoveFacility.list())
             {
                 removeFacilityIds.add(rf.dbId);
+                System.out.println("RFID: " + rf.dbId);
             }
 
             ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(removeFacilityIds);
 
-            for(JavaLocalGrailsUnit local : javaLocalGrailsUnitList)
+            for(Long rfId : removeFacilityIds)
             {
-                def result = CompareUnit.findByDbId(local.id);
-
-                CompareUnit found;
-                for(CompareUnit compareUnit : result)
+                for(JavaLocalGrailsUnit local : javaLocalGrailsUnitList)
                 {
-                    found = compareUnit;
-                }
-                if(found == null)
-                {
-                    List<Price> prices = new ArrayList<>();
-                    found = new CompareUnit(dbId: local.id, name: local.name, climate: local.climate, floor: local.floor, prices: prices);
-                }
-                found.prices.add(new Price(val: local.price));
+                    System.out.println("LOCAL FACILITY ID: " + local.facilityId);
 
-                found.save(failOnError:true, flush: true);
+                    def result = CompareUnit.findByDbId(local.id);
+
+                    CompareUnit found;
+                    for(CompareUnit compareUnit : result)
+                    {
+                        found = compareUnit;
+                    }
+                    if(found == null)
+                    {
+                        List<Price> prices = new ArrayList<>();
+                        found = new CompareUnit(dbId: local.id, name: local.name, climate: local.climate, floor: local.floor, prices: prices);
+                    }
+                    if(local.facilityId == rfId)
+                    {
+                        found.prices.add(new Price(val: local.price));
+                    }
+                    else
+                    {
+                        boolean hasOne = false;
+                        for(JavaLocalGrailsUnit local2 : javaLocalGrailsUnitList)
+                        {
+                            if(local2.id == local.id && local2.facilityId == rfId)
+                            {
+                                hasOne = true;
+                            }
+                        }
+                        if(!hasOne)
+                            found.prices.add(new Price(val: -1.0));
+                    }
+
+
+                    found.save(failOnError:true, flush: true);
+                }
             }
+
 
             for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
                 new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
