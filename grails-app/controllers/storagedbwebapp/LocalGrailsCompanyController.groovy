@@ -49,6 +49,9 @@ class LocalGrailsCompanyController
 
         def removeFacilities = RemoveFacility.list()
 
+        if(RemoveFacility.list().size() > 0)
+            removeFacilities.remove(0);
+
         def compareCompany = dropdownInfo.compareCompaniesIndex;
 
         def compareCompanies = CompareCompany.list()
