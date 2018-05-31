@@ -402,7 +402,6 @@ class LocalGrailsCompanyController
                         found.prices.add(new Price(val: local.price));
                         if(rfId != idOfBaseFacility)
                         {
-
                             double price = 12732136;
                             for(JavaLocalGrailsUnit local2 : javaLocalGrailsUnitList)
                             {
@@ -414,7 +413,7 @@ class LocalGrailsCompanyController
                             }
                             if(price != 12732136)
                             {
-                                found.prices.add(new Price(val: local.price - price));
+                                found.prices.add(new Price(val: Math.round(local.price - price)));
                             }
                             else
                             {
