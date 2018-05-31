@@ -210,7 +210,7 @@ class LocalGrailsCompanyController
             for (FacilityToUnit ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
-                    prices.add(new Price(val: ftu.getRateAmount()));
+                    prices.add(new Price(val: ftu.getRateAmount(), color: 0));
                     new CompareUnit(dbId:  u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
                 }
             }
@@ -399,7 +399,7 @@ class LocalGrailsCompanyController
                     }
                     if(local.facilityId == rfId)
                     {
-                        found.prices.add(new Price(val: local.price));
+                        found.prices.add(new Price(val: local.price, color: 0));
                         if(rfId != idOfBaseFacility)
                         {
                             double price = 12732136;
@@ -417,7 +417,12 @@ class LocalGrailsCompanyController
                                 val = val * 100;
                                 val = Math.round(val);
                                 val = val / 100;
-                                found.prices.add(new Price(val: val));
+                                int color = 0;
+                                if(val > 0)
+                                    color = 1;
+                                else
+                                    color = 2;
+                                found.prices.add(new Price(val: val, color: color));
                             }
                             else
                             {
@@ -449,10 +454,10 @@ class LocalGrailsCompanyController
                             if(!foundIds.contains(local.id))
                             {
                                 foundIds.add(local.id);
-                                found.prices.add(new Price(val: -1.0));
+                                found.prices.add(new Price(val: -1.0, color: 0));
                                 if(removeFacilityIds.size() > 1)
                                     if(rfId != removeFacilityIds.get(0))// && rfId != removeFacilityIds.get(1))
-                                        found.prices.add(new Price(val: -1.0));
+                                        found.prices.add(new Price(val: -1.0, color: 0));
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
                         }
