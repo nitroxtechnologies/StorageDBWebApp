@@ -416,6 +416,7 @@ class LocalGrailsCompanyController
                                 double val = local.price - price;
                                 val = val * 100;
                                 val = Math.round(val);
+                                val = val / 100;
                                 found.prices.add(new Price(val: val));
                             }
                             else
