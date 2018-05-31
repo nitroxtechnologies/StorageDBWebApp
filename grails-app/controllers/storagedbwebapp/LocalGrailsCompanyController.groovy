@@ -413,7 +413,10 @@ class LocalGrailsCompanyController
                             }
                             if(price != 12732136)
                             {
-                                found.prices.add(new Price(val: Math.round(local.price - price)));
+                                double val = local.price - price;
+                                val = val * 100;
+                                val = Math.round(val);
+                                found.prices.add(new Price(val: val));
                             }
                             else
                             {
