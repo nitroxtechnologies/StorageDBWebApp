@@ -97,30 +97,40 @@
                           noSelection="['null':'All']">
                 </g:select>
             </div>
-            <table id = "unitTable" class="table" style="margin-top: 50px">
+            <table id = "unitTable" class="table table-bordered" style="margin-top: 50px">
                 <thead>
                     <tr>
                         %{--<th scope="col">ID</th>--}%
                         <th scope="col">Dimensions</th>
                         <th scope="col">Floor</th>
                         <th scope="col" class="text-center">Climate Controlled?</th>
+                        <th scope="col" class="text-center">${compareFacility.name}</th>
                         <g:each in="${removeFacilities}" var="f" status="i">
-                        <th scope="col" class="text-right">${f.name}</th>
+                            <th scope="col" class="text-center">${f.name}</th>
+                            <th scope="col" class="text-center"></th>
                         </g:each>
                     </tr>
                 </thead>
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
                     <tr class = "entries ${unit.name} ${unit.climate}">
-                        <td class="text-left">${unit.name}</td>
-                        <td class="text-left">${unit.floor}</td>
+                        <td class="text-center">${unit.name}</td>
+                        <td class="text-center">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
-                            <g:if test = "${price.val != -1.0}">
-                                <td class="text-right">$${price.val}</td>
+                            <g:if test = "${price.val != 123456.0}">
+                                <g:if test = "${price.color == 1}">
+                                    <td class="text-center" style = "color:red">$${price.val}0</td>
+                                </g:if>
+                                <g:elseif test = "${price.color == 2}">
+                                    <td class="text-center" style = "color:green">$${price.val}0</td>
+                                </g:elseif>
+                                <g:else>
+                                    <td class="text-center">$${price.val}0</td>
+                                </g:else>
                             </g:if>
                             <g:else>
-                                <td class="text-right"> </td>
+                                <td class="text-center"> </td>
                             </g:else>
                         </g:each>
                     </tr>
