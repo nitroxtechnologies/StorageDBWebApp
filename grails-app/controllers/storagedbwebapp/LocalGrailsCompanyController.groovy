@@ -49,13 +49,21 @@ class LocalGrailsCompanyController
 
         def removeFacilities = RemoveFacility.list()
 
-        def compareCompany = dropdownInfo.compareCompaniesIndex + 2;
+        def compareCompany = dropdownInfo.compareCompaniesIndex;
 
         def compareCompanies = CompareCompany.list()
 
+        def compareFacility = null
+
+        if(RemoveFacility.list().size() > 0)
+            compareFacility = RemoveFacility.list().get(0)
+
+        if(compareFacility == null)
+            compareFacility = new LocalGrailsFacility(dbId: Long.MAX_VALUE, name: "None")
+
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
-         units: units, companies: companies, facilities: facilities]
+         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
     }
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex)
     {
@@ -80,7 +88,7 @@ class LocalGrailsCompanyController
         }
         if(compareCompaniesIndex > 0)
         {
-            dropdownInfo.compareCompaniesIndex = compareCompaniesIndex - 1;
+            dropdownInfo.compareCompaniesIndex = compareCompaniesIndex;
         }
 
         new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex).save()
@@ -127,7 +135,7 @@ class LocalGrailsCompanyController
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer), 0, 0, 0, -1)
+        updateDropdownList((params.cID as Integer), 0, 0, 0, 0)
         updateLocalTables()
     }
     //Deprecated
@@ -200,7 +208,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(-1, (params.fID as Integer), 0, 0, -1)
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0)
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -215,19 +223,21 @@ class LocalGrailsCompanyController
     {
         System.out.println("----------\nCompare block start");
 
-        if(CompareCompany.list().size() == 0)
+
+        if(CompareCompany.list().size() == 0 && RemoveFacility.list().size() <= 1)
         {
+            long index = 1;
             for(LocalGrailsCompany comp : LocalGrailsCompany.list())
             {
-                new CompareCompany(dbId: comp.dbId, name: comp.name).save()
+                new CompareCompany(dbId: comp.dbId, index: index++, name: comp.name).save()
             }
         }
         DynamoHandler dh = new DynamoHandler();
         if(params.cID != null)
         {
-            System.out.println("\n\nCOMPARE: CID\n\n");
+            System.out.println("\n\nCOMPARE: CID - " + (params.cID as Integer) + "\n\n");
 
-            updateDropdownList(-1, -1, -1, -1, params.cID as Integer)
+            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1)
 
             Company c = dh.getCompanyFromName(params.cName as String);
 
@@ -305,7 +315,19 @@ class LocalGrailsCompanyController
 
                 if(!anyLeftForCompany)
                 {
-                    CompareCompany.executeUpdate("delete CompareCompany c where c.dbId = :badId",[badId:companyId])
+                    for (CompareCompany cc : CompareCompany.list())
+                    {
+                        if(cc.dbId > companyId)
+                        {
+                            cc.index--;
+                            cc.save();
+                        }
+                        if(cc.dbId == companyId)
+                        {
+                            cc.delete();
+                        }
+                    }
+                    //CompareCompany.executeUpdate("delete CompareCompany c where c.dbId = :badId",[badId:companyId])
                 }
             }
             //If fID is in removeFacilities
@@ -323,7 +345,16 @@ class LocalGrailsCompanyController
                     }
                 }
                 if(!isCompanyAleadyInCompareCompanies)
-                    new CompareCompany(dbId: companyId, name: dh.getCompanyFromId(companyId).getName()).save();
+                {
+                    Company c = dh.getCompanyFromId(companyId);
+                    long newIndex = 1;
+                    for(CompareCompany cc : CompareCompany.list())
+                    {
+                        newIndex++;
+                    }
+                    new CompareCompany(dbId: companyId, index: newIndex, name: c.getName()).save();
+                }
+
             }
 
             LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
@@ -375,7 +406,6 @@ class LocalGrailsCompanyController
                         }
                         if(!hasOne)
                         {
-
                             HashSet<Long> foundIds;
                             if(alreadyAddedTemps.get(rfId) == null)
                             {
@@ -391,7 +421,6 @@ class LocalGrailsCompanyController
                                 found.prices.add(new Price(val: -1.0));
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
-
                         }
 
                     }
@@ -407,7 +436,7 @@ class LocalGrailsCompanyController
             }
         }
 
-        System.out.println("Compare block end\n----------");
+        System.out.println("Compare block end\n----------\n\n\n\n\n");
         updateLocalTables()
     }
 

@@ -51,7 +51,7 @@
                 </div>
             </nav>
             <div class="page-header">
-                <h1>Comparing prices for...<small>${facility}'s units to</small></h1>
+                <h1>Comparing prices for...<small>${compareFacility.name}'s units to</small></h1>
             </div>
 
             <div class="col-lg-12 text-center" style="margin-top: 50px">
@@ -61,7 +61,7 @@
                         <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
                     </div>
                     <label>Company:</label>
-                    <g:select id = "company" optionKey="dbId" optionValue="name" value ="${compareCompany}"
+                    <g:select id = "company" optionKey="index" optionValue="name" value ="${compareCompany}"
                               name="companydropdown" from="${compareCompanies}"
                               onChange= 'addCompany(document.getElementById("company"))'>
                     </g:select>
