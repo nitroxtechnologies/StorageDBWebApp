@@ -12,6 +12,8 @@ import AWSAccessors.Unit
  */
 class LocalGrailsCompanyController
 {
+    static final double PRICE_DIFFERENCE_TO_SKIP = 123456.0;
+
     public static ArrayList<java.lang.Long> makeArrayList(List<Long> list)
     {
         ArrayList<java.lang.Long> retList = new ArrayList<>();
@@ -426,7 +428,7 @@ class LocalGrailsCompanyController
                             }
                             else
                             {
-                                found.prices.add(new Price(val: -1.0));
+                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP));
                             }
                         }
                     }
@@ -454,10 +456,10 @@ class LocalGrailsCompanyController
                             if(!foundIds.contains(local.id))
                             {
                                 foundIds.add(local.id);
-                                found.prices.add(new Price(val: -1.0, color: 0));
+                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0));
                                 if(removeFacilityIds.size() > 1)
                                     if(rfId != removeFacilityIds.get(0))// && rfId != removeFacilityIds.get(1))
-                                        found.prices.add(new Price(val: -1.0, color: 0));
+                                        found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0));
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
                         }
