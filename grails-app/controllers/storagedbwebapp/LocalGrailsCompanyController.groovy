@@ -339,6 +339,7 @@ class LocalGrailsCompanyController
             }
 
             ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(removeFacilityIds);
+            HashMap<Long, HashSet<Long>> alreadyAddedTemps = new HashMap<>();
 
             for(Long rfId : removeFacilityIds)
             {
@@ -373,7 +374,26 @@ class LocalGrailsCompanyController
                             }
                         }
                         if(!hasOne)
-                            found.prices.add(new Price(val: -1.0));
+                        {
+
+                            HashSet<Long> foundIds;
+                            if(alreadyAddedTemps.get(rfId) == null)
+                            {
+                                foundIds = new HashSet<>();
+                            }
+                            else
+                            {
+                                foundIds = alreadyAddedTemps.get(rfId);
+                            }
+                            if(!foundIds.contains(local.id))
+                            {
+                                foundIds.add(local.id);
+                                found.prices.add(new Price(val: -1.0));
+                                alreadyAddedTemps.put(rfId, foundIds);
+                            }
+
+                        }
+
                     }
 
 
