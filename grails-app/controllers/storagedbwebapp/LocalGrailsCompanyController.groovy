@@ -98,6 +98,10 @@ class LocalGrailsCompanyController
     }
     def index()
     {
+        CompareCompany.executeUpdate('delete from CompareCompany')
+        RemoveFacility.executeUpdate('delete from RemoveFacility')
+        AddFacility.executeUpdate('delete from AddFacility')
+
         ArrayList<Price> prices = new ArrayList<>();
 
         prices.add(new Price(val: 77.0));
@@ -374,7 +378,7 @@ class LocalGrailsCompanyController
 
             ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(removeFacilityIds);
             HashMap<Long, HashSet<Long>> alreadyAddedTemps = new HashMap<>();
-
+            long idOfBaseFacility = removeFacilityIds.get(0);
             for(Long rfId : removeFacilityIds)
             {
                 for(JavaLocalGrailsUnit local : javaLocalGrailsUnitList)
@@ -396,6 +400,27 @@ class LocalGrailsCompanyController
                     if(local.facilityId == rfId)
                     {
                         found.prices.add(new Price(val: local.price));
+                        if(rfId != idOfBaseFacility)
+                        {
+
+                            double price = 12732136;
+                            for(JavaLocalGrailsUnit local2 : javaLocalGrailsUnitList)
+                            {
+                                if(local2.id == local.id && local2.facilityId == idOfBaseFacility)
+                                {
+                                    System.out.println("XXXXXXXXXXX");
+                                    price = local2.price;
+                                }
+                            }
+                            if(price != 12732136)
+                            {
+                                found.prices.add(new Price(val: local.price - price));
+                            }
+                            else
+                            {
+                                found.prices.add(new Price(val: -1.0));
+                            }
+                        }
                     }
                     else
                     {
@@ -422,6 +447,9 @@ class LocalGrailsCompanyController
                             {
                                 foundIds.add(local.id);
                                 found.prices.add(new Price(val: -1.0));
+                                if(removeFacilityIds.size() > 1)
+                                    if(rfId != removeFacilityIds.get(0))// && rfId != removeFacilityIds.get(1))
+                                        found.prices.add(new Price(val: -1.0));
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
                         }

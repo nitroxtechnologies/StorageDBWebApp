@@ -7,6 +7,7 @@ class CompareUnit {
     String climate
     int floor
     List prices
+
     static hasMany = [prices: Price]
 
     public String toString()
