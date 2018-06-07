@@ -73,7 +73,7 @@ class LocalGrailsCompanyController
 
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
-         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
+         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities, facilityToUnits: facilityToUnits]
     }
 
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId)
@@ -760,6 +760,38 @@ class LocalGrailsCompanyController
     }
 
     def graph() {
+        long facilityId = 4;
+        long unitId = 0;
+        String facilityName = "Stowaway Storage/Lakeway Self Storage";
+
+        ArrayList<Double> prices = new ArrayList<Double>();
+        ArrayList<String> dates = new ArrayList<String>();
+
+        DynamoHandler dh = new DynamoHandler();
+
+        ArrayList<FacilityToUnit> historicalPrices = dh.getFacilityToUnitsFromFacilityIdAndUnitId(facilityId, unitId);
+        FacilityToUnitRecent mostRecent = dh.getFacilityToUnitRecentByFacilityIdAndUnitId(facilityId, unitId);
+
+        while(historicalPrices.size() > 0)
+        {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date minDate = new Date(Integer.MAX_VALUE);
+            double price = 0.0;
+            for(int i = 0; i < historicalPrices.size(); i++)
+            {
+                Date date = dateFormat.parse(historicalPrices.get(i).timeCreated);
+                if(date.compareTo(minDate) < 0)
+                {
+                    minDate = date;
+                    price = historicalPrices.get(i).rateAmount;
+                }
+            }
+            String toSend = dateFormat.format(minDate);
+            dates.add(toSend);
+            prices.add(price);
+        }
+
+        [prices: prices, dates: dates, facilityName: facilityName]
 
     }
 

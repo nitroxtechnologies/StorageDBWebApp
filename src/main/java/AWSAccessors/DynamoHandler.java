@@ -464,6 +464,34 @@ public class DynamoHandler
         return result;
     }
 
+    public FacilityToUnitRecent getFacilityToUnitRecentByFacilityIdAndUnitId(long facilityId, long unitId)
+    {
+        String filterExpression = "facilityId = :val1 AND unitId = :val2";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+facilityId));
+        eav.put(":val2", new AttributeValue().withN(""+unitId));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List result = mapper.scan(FacilityToUnit.class, scanExpression);
+
+        return (FacilityToUnitRecent)result.get(0);
+    }
+
+    public List<FacilityToUnit> getFacilityToUnitsFromFacilityIdAndUnitId(long facilityId, long unitId)
+    {
+        String filterExpression = "facilityId = :val1 AND unitId = :val2";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+facilityId));
+        eav.put(":val2", new AttributeValue().withN(""+unitId));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List result = mapper.scan(FacilityToUnit.class, scanExpression);
+
+        return result;
+    }
+
     public void batchDeleteFacilityToUnitsRecent(ArrayList<FacilityToUnitRecent> toDelete)
     {
         mapper.batchDelete(toDelete);
