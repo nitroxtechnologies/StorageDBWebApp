@@ -81,14 +81,14 @@
                         <td contenteditable="true" class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
                                 <span>
-                                    <td style ="color:gray" contenteditable="false" class="text-center">$${price.val}
+                                    <td style ="color:gray" contenteditable="false" class="text-right">$${price.val}
                                     <button type="submit" class = "btn btn-link" onclick="copyPrice(${i})">
                                         <i style="vertical-align: top" class="fa fa-arrow-right" aria-hidden="true"></i>
                                     </button>
                                 </span>
                             </td>
                         </g:each>
-                        <td contenteditable="true" class="text-center"></td>
+                        <td contenteditable="true" class="text-right"></td>
                         <td class="text-center"><button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
@@ -118,7 +118,7 @@
         }
 
         $('.btn-outline-primary').click(function () {
-            $('#unitTable').append('<tr class = "entries"><td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-center"></td><td contenteditable="false" class="text-center">N/A</td><td contenteditable="true" class="text-center"></td><td class="text-center"><button type="button" class="btn btn-outline-danger">Delete</button></td></tr>')
+            $('#unitTable').append('<tr class = "entries"><td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-center"></td><td contenteditable="false" class="text-center">N/A</td><td contenteditable="true" class="text-right"></td><td class="text-center"><button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td></tr>')
         });
 
         function saveTable() {

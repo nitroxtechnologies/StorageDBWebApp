@@ -65,73 +65,19 @@
     <script type="text/javascript"src="/assets/plotly-latest.min.js?compile=true"></script>
     %{--<script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>--}%
     <g:javascript>
-                var trace1 = {
-                    x: [1, 2, 3, 4],
-                    y: [10, 15, 13, 17],
+                var data = [
+                  {
+                    x: ${dates},
+                    y: ${prices},
                     type: 'scatter',
                     name: 'Price'
-                };
-                // var trace2 = {
-                //     x: [1, 2, 3, 4],
-                //     y: [16, 5, 11, 9],
-                //     type: 'scatter'
-                // };
+                  }
+                ];
 
-                var data = [trace1];
                 var layout = {
-                  title: 'Green Storage Plus'
+                  title: ${facilityName}
                 };
                 Plotly.newPlot('myDiv', data, layout);
-
-
-
-       function loadFacilities(e){
-            var cID = e.selectedIndex;
-            var cName = e.options[e.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
-    }
-
-    function loadUnits(c, e) {
-        var cID = c.selectedIndex;
-        var cName = c.options[c.selectedIndex].text;
-        var fID = e.selectedIndex;
-        var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadUnitTable')}" + "?cID=" + cID + "&cName=" + cName + "&fID=" + fID + "&fName=" + fName;
-    }
-
-    function addCompany(e) {
-        var cID = e.selectedIndex;
-        var cName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?cID=" + cID + "&cName=" + cName;
-    }
-
-    function addUnit(e) {
-        var fID = e.selectedIndex;
-        var fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
-    }
-
-    function filterTable(e, o) {
-        var i;
-        var filter = e.options[e.selectedIndex].text;
-        var other = o.options[o.selectedIndex].text;
-
-        if (filter == "All") filter = "entries";
-        if (other == "All") other = "entries";
-
-        var tr = document.getElementsByClassName("entries");
-
-          for (i = 0; i < tr.length; i++) {
-              var array = tr[i].className.split(" ");
-              if (array.indexOf(filter) > -1
-              && array[array.indexOf(filter)].length == filter.length
-              && array.indexOf(other) > -1 && array[array.indexOf(other)].length == other.length) {
-                  tr[i].style.display = "";
-              } else {
-                  tr[i].style.display = "none";
-              }
-          }
-    }
 
 </g:javascript>
     </body>
