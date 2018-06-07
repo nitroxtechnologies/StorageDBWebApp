@@ -219,7 +219,7 @@ class LocalGrailsCompanyController
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
                 }
             }
         }
@@ -402,7 +402,7 @@ class LocalGrailsCompanyController
                     if(found == null)
                     {
                         List<Price> prices = new ArrayList<>();
-                        found = new CompareUnit(dbId: local.id, name: local.name, climate: local.type, floor: local.floor, prices: prices);
+                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height, climate: local.type, floor: local.floor, prices: prices);
                     }
                     if(local.facilityId == rfId)
                     {
@@ -474,7 +474,7 @@ class LocalGrailsCompanyController
             }
 
             for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
-                new LocalGrailsUnit(u.id, u.name, u.type, u.floor, u.price).save()
+                new LocalGrailsUnit(u.id, u.name, u.width, u.depth, u.height, u.type, u.floor, u.price).save()
             }
         }
 
@@ -656,6 +656,9 @@ class LocalGrailsCompanyController
                 foundUnit = new Unit();
                 foundUnit.id = ++newIdUnit;
                 foundUnit.name = javaLocalGrailsUnit.name;
+                foundUnit.width = javaLocalGrailsUnit.width;
+                foundUnit.depth = javaLocalGrailsUnit.depth;
+                foundUnit.height = javaLocalGrailsUnit.height;
                 foundUnit.type = javaLocalGrailsUnit.type;
                 foundUnit.floor = javaLocalGrailsUnit.floor;
                 newUnits.add(foundUnit);

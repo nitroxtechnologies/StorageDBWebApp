@@ -4,6 +4,9 @@ class CompareUnit {
 
     long dbId
     String name
+    double width;
+    double depth;
+    double height;
     String climate
     int floor
     List prices
