@@ -65,19 +65,30 @@
     <script type="text/javascript"src="/assets/plotly-latest.min.js?compile=true"></script>
     %{--<script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>--}%
     <g:javascript>
-                var data = [
-                  {
-                    x: ${dates},
-                    y: ${prices},
-                    type: 'scatter',
-                    name: 'Price'
-                  }
-                ];
+        var dates = [];
+        var prices = [];
+        
+        <g:each in="${dates}" var="date">
+            dates.push("${date}");
+        </g:each>
 
-                var layout = {
-                  title: ${facilityName}
-                };
-                Plotly.newPlot('myDiv', data, layout);
+        <g:each in="${prices}" var="price">
+            prices.push("${price}");
+        </g:each>
+
+        var data = [
+          {
+            x: dates,
+            y: prices,
+            type: 'scatter',
+            name: 'Price'
+          }
+        ];
+
+        var layout = {
+          title: "${facilityName}"
+        };
+        Plotly.newPlot('myDiv', data, layout);
 
 </g:javascript>
     </body>
