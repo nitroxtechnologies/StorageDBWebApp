@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
+        <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.css?compile=true">
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
 

@@ -486,8 +486,88 @@ class LocalGrailsCompanyController
 
     }
 
+    def edit() {
+
+        println("----------------");
+        println("LOAD UNIT TABLE")
+        println("fName: " + params.fName);
+        println("fID: " + params.fID);
+
+        DynamoHandler dh = new DynamoHandler()
+
+        Facility f = dh.getFacilityFromFacilityName(params.fName as String)
+        println("Facility ID: " + f.getId());
+        println("----------------");
+        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
+        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
+        CompareUnit.executeUpdate('delete from CompareUnit')
+        System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
+        System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
+        for(Unit u : unitsArraylist) {
+            System.out.println("LOOP");
+            for (FacilityToUnit ftu : facilityToUnitList) {
+                if (ftu.getUnitId() == u.getId()) {
+                    ArrayList<Price> prices = new ArrayList<Price>();
+                    prices.add(new Price(val: ftu.getRateAmount(), color: 0));
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
+                }
+            }
+        }
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0)
+        /*
+        FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
+
+        Unit u = dh.getUnitFromUnitName(params.uName as String);
+        */
+        updateLocalTables()
+    }
+
     def graph() {
 
+    }
+
+
+    def save() {
+        println("RUNNING SAVE")
+        int index = 0;
+        Collection keys = params.keySet();
+        println(params.toString())
+        JavaLocalGrailsUnit temp;
+        ArrayList<JavaLocalGrailsUnit> list = new ArrayList<>();
+        double MAGIC_NUMBER = Math.random();
+        for(Object key : keys)
+        {
+
+            int mod = index % 4;
+            switch(mod)
+            {
+                case 0:
+                    temp = new JavaLocalGrailsUnit(0, "", "",0, 0, 0);
+                    temp.name = (String) params.get(key);
+                    break;
+                case 1:
+                    temp.floor = (int) params.get(key);
+                    break;
+                case 2:
+                    temp.climate = (String) params.get(key);
+                    break;
+                case 3:
+                    String price = (String) params.get(key);
+                    if(price.equals(""))
+                    {
+                        temp.price = MAGIC_NUMBER;
+                    }
+                    else
+                    {
+                        temp.price = Double.parseDouble(price);
+                    }
+                    list.add(temp);
+                    break;
+            }
+            index++;
+        }
+
+        println(list);
     }
 
 

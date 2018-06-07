@@ -7,16 +7,14 @@
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
         <link rel="stylesheet" href="/assets/chosen.min.css?compile=true" />
+        <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.min.css?compile=true">
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
-            /*.show {*/
-                /*display: block;*/
-            /*}*/
-            /*.entries {*/
-                /*!*display: none;*!*/
-            /*}*/
-        </style>
+        td:nth-of-type(odd) {
+            background-color:#ccc;
+        }
+    </style>
     </head>
     <body>
         <div class="container">
@@ -66,18 +64,25 @@
                               onChange= 'addCompany(document.getElementById("company"))'>
                     </g:select>
                     <label>Facility:</label>
+
                     <g:select id = 'addFacility' optionKey="dbId" optionValue="name"
                               name="addF" from="${addFacilities}">
                     </g:select>
                 </div>
                 <div class = "col-md-6 text-center">
-                    <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-danger" onclick="addUnit(document.getElementById('removeFacility'))">Remove</button>
-                    </div>
-                    <label>Facility:</label>
-                    <g:select id = 'removeFacility' optionKey="dbId" optionValue="name"
-                              name="removeF" from="${removeFacilities}">
-                    </g:select>
+                    %{--<div class="page-header" style = "margin-bottom: 20px">--}%
+                        %{--<button type="button" class="btn btn-outline-danger" onclick="addUnit(document.getElementById('removeFacility'))">Remove</button>--}%
+                    %{--</div>--}%
+                    <g:each in="${removeFacilities}" var = "f" status = "i">
+                        <span>${f.name}
+                            <button style = "color:red" qtype="button" class = "btn btn-link" onclick="addUnitWithButton(${i}, '${f.name}')">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </span><br>
+                    </g:each>
+                    %{--<g:select id = 'removeFacility' optionKey="dbId" optionValue="name"--}%
+                              %{--name="removeF" from="${removeFacilities}">--}%
+                    %{--</g:select>--}%
                 </div>
                 </div>
 
@@ -173,6 +178,10 @@
         var fID = e.selectedIndex;
         var fName = e.options[e.selectedIndex].text;
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
+    }
+
+    function addUnitWithButton(i, n) {
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + i + "&fName=" + n;
     }
 
     function filterTable(e, o) {

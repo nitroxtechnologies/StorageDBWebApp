@@ -61,9 +61,16 @@
                           onChange= 'loadUnits(document.getElementById("cDropdown"), document.getElementById("facilitiesDropdown"))'>
                 </g:select>
             </div>
-
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare Prices!</button></td>
+            <div class ="row">
+                <div class="col-sm text-center" style="margin-top: 50px">
+                    <button onclick = "compare(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-success">Compare Prices!</button></td>
+                </div>
+                <div class="col-sm text-center" style="margin-top: 50px">
+                    <button onclick = "edit(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-primary">Edit Facility</button></td>
+                </div>
+                <div class="col-sm text-center" style="margin-top: 50px">
+                    <button onclick = "graph(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-secondary">See Pricing History</button></td>
+                </div>
             </div>
             %{--<div class="col-lg-12 text-center" style="margin-top: 20px">--}%
                 %{--<label>Climate Controlled:</label>--}%
@@ -79,7 +86,6 @@
                           %{--noSelection="['null':'All']">--}%
                 %{--</g:select>--}%
             %{--</div>--}%
-
             <table id = "unitTable" class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
@@ -154,6 +160,21 @@
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
 
     }
+
+    function edit(e) {
+        var fID = e.selectedIndex;
+        var fName = fName = e.options[e.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'edit')}" + "?fID=" + fID + "&fName=" + fName;
+
+    }
+
+    function graph(e) {
+        var fID = e.selectedIndex;
+        var fName = fName = e.options[e.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}" + "?fID=" + fID + "&fName=" + fName;
+
+    }
+
 
 </g:javascript>
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
