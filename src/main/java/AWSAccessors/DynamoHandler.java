@@ -473,7 +473,7 @@ public class DynamoHandler
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
-        List result = mapper.scan(FacilityToUnit.class, scanExpression);
+        List result = mapper.scan(FacilityToUnitRecent.class, scanExpression);
 
         return (FacilityToUnitRecent)result.get(0);
     }

@@ -73,7 +73,7 @@ class LocalGrailsCompanyController
 
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
-         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities, facilityToUnits: facilityToUnits]
+         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
     }
 
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId)
@@ -775,8 +775,9 @@ class LocalGrailsCompanyController
         while(historicalPrices.size() > 0)
         {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            Date minDate = new Date(Integer.MAX_VALUE);
+            Date minDate = new Date(Long.MAX_VALUE);
             double price = 0.0;
+            int index = 0;
             for(int i = 0; i < historicalPrices.size(); i++)
             {
                 Date date = dateFormat.parse(historicalPrices.get(i).timeCreated);
@@ -784,12 +785,20 @@ class LocalGrailsCompanyController
                 {
                     minDate = date;
                     price = historicalPrices.get(i).rateAmount;
+                    index = i;
                 }
             }
             String toSend = dateFormat.format(minDate);
             dates.add(toSend);
             prices.add(price);
+            System.out.println(index + " " + historicalPrices.size());
+            System.out.println(historicalPrices.remove(index));
         }
+        prices.add(mostRecent.rateAmount);
+        dates.add(mostRecent.timeCreated);
+
+        System.out.println(prices);
+        System.out.println(dates);
 
         [prices: prices, dates: dates, facilityName: facilityName]
 
