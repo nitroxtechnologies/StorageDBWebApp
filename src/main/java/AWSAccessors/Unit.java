@@ -106,6 +106,21 @@ public class Unit
         this.doorWidth = doorWidth;
     }
 
+    public boolean isEqualToJavaLocalGrailsUnit(JavaLocalGrailsUnit other)
+    {
+        if(other.type.equals(type))
+        {
+            if(other.floor == floor)
+            {
+                if(other.name.equals(name))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public String toString()
     {
         return id + " " + name + " " + type + " " + floor;

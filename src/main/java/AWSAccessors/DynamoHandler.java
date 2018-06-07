@@ -46,6 +46,7 @@ public class DynamoHandler
         //c.setId(16);
 
         mapper = new DynamoDBMapper(client);
+        incrementVersion();
 
         //mapper.save(c);
     }
@@ -218,7 +219,7 @@ public class DynamoHandler
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("facilityId = :val1").withExpressionAttributeValues(eav);
 
-        List scanResult = mapper.scan(FacilityToUnit.class,scanExpression);
+        List scanResult = mapper.scan(FacilityToUnitRecent.class,scanExpression);
 
         //System.out.println("\n\nUNITS: " + scanResult + "\n\n");
 
@@ -230,7 +231,7 @@ public class DynamoHandler
 
         for(int i = 0; i < scanResult.size(); i++)
         {
-            long unitId = ((FacilityToUnit)scanResult.get(i)).getUnitId();
+            long unitId = ((FacilityToUnitRecent)scanResult.get(i)).getUnitId();
             filterExpression += ("id = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != scanResult.size() - 1)
@@ -279,6 +280,19 @@ public class DynamoHandler
                 .withFilterExpression("facilityId = :val1").withExpressionAttributeValues(eav);
 
         List scanResult = mapper.scan(FacilityToUnit.class, scanExpression);
+
+        return scanResult;
+    }
+
+    public List<FacilityToUnit> getFacilityToUnitRecentsFromFacilityId(long facilityId)
+    {
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+facilityId));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("facilityId = :val1").withExpressionAttributeValues(eav);
+
+        List scanResult = mapper.scan(FacilityToUnitRecent.class, scanExpression);
 
         return scanResult;
     }
@@ -357,7 +371,7 @@ public class DynamoHandler
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
-        List facilityToUnitsResult = mapper.scan(FacilityToUnit.class, scanExpression);
+        List facilityToUnitsResult = mapper.scan(FacilityToUnitRecent.class, scanExpression);
 
         ArrayList<JavaLocalGrailsUnit> result = new ArrayList<>();
         filterExpression = "";
@@ -365,7 +379,7 @@ public class DynamoHandler
 
         for(int i = 0; i < facilityToUnitsResult.size(); i++)
         {
-            long unitId = ((FacilityToUnit)facilityToUnitsResult.get(i)).getUnitId();
+            long unitId = ((FacilityToUnitRecent)facilityToUnitsResult.get(i)).getUnitId();
             filterExpression += ("id = :val" + (i+1));
             eav.put(":val"+(i+1), new AttributeValue().withN(""+unitId));
             if(i != facilityToUnitsResult.size() - 1)
@@ -381,18 +395,161 @@ public class DynamoHandler
         //Temporary: Code is inefficient
         for(Object o : facilityToUnitsResult)
         {
-            FacilityToUnit ftu = (FacilityToUnit) o;
+            FacilityToUnitRecent ftu = (FacilityToUnitRecent) o;
             for(Object o2 : unitsResult)
             {
                 Unit u = (Unit) o2;
                 if(ftu.getUnitId() == u.getId())
                 {
-                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), ftu.getRateAmount(), ftu.getFacilityId()));
+                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getType(), u.getFloor(), ftu.getRateAmount(), ftu.getFacilityId(), ftu.getRateType()));
                 }
             }
         }
 
         return result;
+    }
+
+    //Gets all the Units that match in name, floor, climate
+    public List<Unit> getUnitsWithInfo(ArrayList<JavaLocalGrailsUnit> list)
+    {
+        if(list.size() == 0)
+        {
+            return new ArrayList<Unit>();
+        }
+
+        String filterExpression = "";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+
+        Map<String,String> ean = new HashMap<>();
+        ean.put("#n","name");
+        ean.put("#t","type");
+
+        for(int i = 0; i < list.size()*3; i+=3)
+        {
+            filterExpression += ("#n = :val" + (i+1));
+            filterExpression += (" AND floor = :val" + (i+2));
+            filterExpression += (" AND #t = :val" + (i+3));
+            eav.put(":val"+(i+1), new AttributeValue().withS(""+list.get(i/3).name));
+            eav.put(":val"+(i+2), new AttributeValue().withN(""+list.get(i/3).floor));
+            eav.put(":val"+(i+3), new AttributeValue().withS(""+list.get(i/3).type));
+            if(i != list.size()*3 - 3)
+            {
+                filterExpression += " OR ";
+            }
+        }
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav).withExpressionAttributeNames(ean);
+        List units = mapper.scan(Unit.class, scanExpression);
+
+        return units;
+    }
+
+    public List<FacilityToUnitRecent> getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude)
+    {
+        String filterExpression = "facilityId = :val1";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+facilityId));
+
+        for(int i = 0; i < idsToExclude.size(); i++)
+        {
+            filterExpression += " AND unitId <> :val" + (i+2);
+            eav.put(":val"+(i+2), new AttributeValue().withN(""+idsToExclude.get(i)));
+        }
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List result = mapper.scan(FacilityToUnitRecent.class, scanExpression);
+
+        return result;
+    }
+
+    public void batchDeleteFacilityToUnitsRecent(ArrayList<FacilityToUnitRecent> toDelete)
+    {
+        mapper.batchDelete(toDelete);
+    }
+
+    public void batchSaveUnits(ArrayList<Unit> toSave)
+    {
+        mapper.batchSave(toSave);
+    }
+
+    public void batchSaveFacilityToUnitsRecent(ArrayList<FacilityToUnitRecent> toSave)
+    {
+        mapper.batchSave(toSave);
+    }
+
+    public void batchSaveValues(ArrayList<Value> values)
+    {
+        mapper.batchSave(values);
+    }
+
+    //Find all FTUs that will be overwritten (facilityId, unitId, rateType)
+    //Write them all to the non recent table
+    public void batchSaveFacilityToUnits(/*ArrayList<Long> idsNotOverwritten, */ArrayList<FacilityToUnit> facilityToUnits)
+    {
+        for(FacilityToUnit ftu : facilityToUnits)
+        {
+            if(ftu == null)
+            {
+                System.out.println("NULL ELEMENT FOUND");
+            }
+        }
+        mapper.batchSave(facilityToUnits);
+
+        /*
+        if(facilityToUnits.size() > 0)
+        {
+
+            String filterExpression = "";
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+
+            for(int i = 0; i < idsNotOverwritten.size(); i++)
+            {
+                filterExpression += "id = :val" + (i+1);
+                eav.put(":val"+(i+1), new AttributeValue().withN(""+idsNotOverwritten.get(i)));
+                if(i != idsNotOverwritten.size() - 1)
+                {
+                    filterExpression += " OR ";
+                }
+            }
+
+            DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+            List oldFacilityToUnits = mapper.scan(FacilityToUnitRecent.class, scanExpression);
+
+            //Delete all of these
+            //Write all of new ones?
+
+            for(int i = 0; i < facilityToUnits.size()*3; i+=3)
+            {
+                filterExpression += ("facilityId = :val" + (i+1));
+                filterExpression += ("AND unitId = :val" + (i+2));
+                filterExpression += ("AND rateType = :val" + (i+3));
+                eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityToUnits.get(i/3).getFacilityId()));
+                eav.put(":val"+(i+1), new AttributeValue().withN(""+facilityToUnits.get(i/3).getUnitId()));
+                eav.put(":val"+(i+1), new AttributeValue().withS(""+facilityToUnits.get(i/3).getRateType()));
+                if(i != facilityToUnits.size()*3 - 3)
+                {
+                    filterExpression += " OR ";
+                }
+            }
+
+            scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+            List oldFacilityToUnits = mapper.scan(FacilityToUnitRecent.class, scanExpression);
+
+            for(Object oldFTU : oldFacilityToUnits)
+            {
+                boolean canFindOneWithId = false;
+                boolean canFindMatch = false;
+                //If can't find one with id
+                    //Remove from FacilityToUnitRecent
+                //If can't find match
+                    //Error?
+            }
+        }
+        */
     }
 
     public List<Facility> getFacilitiesFromFacilityIds(ArrayList<Long> facilityIds)
@@ -421,6 +578,20 @@ public class DynamoHandler
         List facilities = mapper.scan(Facility.class, scanExpression);
 
         return facilities;
+    }
+
+    public long getMaxFacilityToUnitId()
+    {
+        Value value = mapper.load(Value.class, "maxFacilityToUnitId");
+
+        return value.getValue();
+    }
+
+    public long getMaxUnitId()
+    {
+        Value value = mapper.load(Value.class, "maxUnitId");
+
+        return value.getValue();
     }
 
     public void addFacility(Facility f)

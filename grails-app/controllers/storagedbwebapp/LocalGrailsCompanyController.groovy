@@ -4,8 +4,13 @@ import AWSAccessors.Company
 import AWSAccessors.DynamoHandler
 import AWSAccessors.Facility
 import AWSAccessors.FacilityToUnit
+import AWSAccessors.FacilityToUnitRecent
 import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.Unit
+import AWSAccessors.Value
+
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 /**
  * Created by spencersharp on 8/19/17.
@@ -70,7 +75,8 @@ class LocalGrailsCompanyController
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
          compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
     }
-    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex)
+
+    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId)
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
@@ -96,7 +102,7 @@ class LocalGrailsCompanyController
             dropdownInfo.compareCompaniesIndex = compareCompaniesIndex;
         }
 
-        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex).save()
+        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: facilityId).save()
     }
     def index()
     {
@@ -144,7 +150,7 @@ class LocalGrailsCompanyController
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer), 0, 0, 0, 0)
+        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l)
         updateLocalTables()
     }
     //Deprecated
@@ -203,13 +209,13 @@ class LocalGrailsCompanyController
         println("Facility ID: " + f.getId());
         println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
+        List<FacilityToUnitRecent> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
         CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
             System.out.println("LOOP");
-            for (FacilityToUnit ftu : facilityToUnitList) {
+            for (FacilityToUnitRecent ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
@@ -217,7 +223,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0)
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, -1l)
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -246,7 +252,7 @@ class LocalGrailsCompanyController
         {
             System.out.println("\n\nCOMPARE: CID - " + (params.cID as Integer) + "\n\n");
 
-            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1)
+            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l)
 
             Company c = dh.getCompanyFromName(params.cName as String);
 
@@ -363,7 +369,6 @@ class LocalGrailsCompanyController
                     }
                     new CompareCompany(dbId: companyId, index: newIndex, name: c.getName()).save();
                 }
-
             }
 
             LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
@@ -397,7 +402,7 @@ class LocalGrailsCompanyController
                     if(found == null)
                     {
                         List<Price> prices = new ArrayList<>();
-                        found = new CompareUnit(dbId: local.id, name: local.name, climate: local.climate, floor: local.floor, prices: prices);
+                        found = new CompareUnit(dbId: local.id, name: local.name, climate: local.type, floor: local.floor, prices: prices);
                     }
                     if(local.facilityId == rfId)
                     {
@@ -463,17 +468,13 @@ class LocalGrailsCompanyController
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
                         }
-
                     }
-
-
                     found.save(failOnError:true, flush: true);
                 }
             }
 
-
             for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
-                new LocalGrailsUnit(u.id, u.name, u.climate, u.floor, u.price).save()
+                new LocalGrailsUnit(u.id, u.name, u.type, u.floor, u.price).save()
             }
         }
 
@@ -481,6 +482,242 @@ class LocalGrailsCompanyController
         updateLocalTables()
     }
 
+    def save()
+    {
+        int index = 0;
+        Collection keys = params.keySet();
+        JavaLocalGrailsUnit temp;
+        ArrayList<JavaLocalGrailsUnit> list = new ArrayList<>();
+        long facilityId = DropdownInfo.list().get(0).facilityId;
+        System.out.println("FACILITY ID IS: " + facilityId);
+        double MAGIC_NUMBER = Math.random();
+        for(Object key : keys)
+        {
+            if(key.equals("controller"))
+                break;
+            int mod = index % 4;
+            switch(mod)
+            {
+                case 0:
+                    temp = new JavaLocalGrailsUnit();
+                    temp.name = (String) params.get(key);
+                    break;
+                case 1:
+                    temp.floor = Integer.parseInt((String) params.get(key));
+                    break;
+                case 2:
+                    temp.type = (String) params.get(key);
+                    break;
+                case 3:
+                    String price = (String) params.get(key);
+                    if(price.equals(""))
+                    {
+                        temp.price = MAGIC_NUMBER;
+                    }
+                    else
+                    {
+                        temp.price = Double.parseDouble(price);
+                    }
+                    temp.facilityId = facilityId;
+                    list.add(temp);
+                    System.out.println(temp);
+                    break;
+            }
+            index++;
+        }
+        System.out.println("------------");
+
+
+
+
+        //NEW IDEA FOR CODE STRUCTURE
+        //Get all the FTU ids for the facility, this way we know what IDs to use for our new FTUs
+
+        //Find all the matching FTUs for our JavaLocalGrailsUnits - DO BY SEARCHING FACILITYID?
+        //For the JavaLocalGrailsUnits with the magic number price, we must
+            //Remove their ids from the possible list for new IDs?
+            //Add them into the batch write at the end?
+
+        //Go through all JavaLocalGrailsUnits
+            //For each one, we must find a matching unit or make a new unit
+            //DONT FORGET TO CHECK EXISTING UNITS WE'RE GONNA ADD
+        //Once we finish this, we have a list of all the units we need to add as well as the FTUs we must add
+        //Then just write them to the database
+        //Save the new max IDs
+
+
+
+        DynamoHandler dh = new DynamoHandler();
+        //Gets all the Units that match in name, floor, climate
+        List<Unit> unitList = dh.getUnitsWithInfo(list);
+        System.out.println("NUMBER OF FOUND UNITS: " + unitList.size());
+        for(Unit u : unitList)
+        {
+            System.out.println(u);
+        }
+        System.out.println("----------");
+
+        //Set up the ArrayLists to save
+        ArrayList<Unit> newUnits = new ArrayList<Unit>();
+        ArrayList<FacilityToUnitRecent> newFacilityToUnits = new ArrayList<FacilityToUnitRecent>();
+        //Get max IDs to use later
+        long newIdFTU = dh.getMaxFacilityToUnitId();
+        long newIdUnit = dh.getMaxUnitId();
+
+        //Sets ids of all JavaLocalGrailsUnits that have corresponding units to correct id
+        for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
+        {
+            //Try and find a unit with same
+            Unit foundUnit = null;
+            for(Unit u : unitList)
+            {
+                //See if they match up
+                if(u.isEqualToJavaLocalGrailsUnit(javaLocalGrailsUnit))
+                {
+                    foundUnit = u;
+                    break;
+                }
+                else
+                {
+                    System.out.println("NOT FOUND");
+                }
+            }
+            if(foundUnit != null)
+            {
+                javaLocalGrailsUnit.id = foundUnit.id;
+            }
+            else
+            {
+                System.out.println("MAJOR FINDING ERROR!!!!");
+            }
+        }
+
+        ArrayList<Long> onesToNotChange = new ArrayList<Long>();
+        ArrayList<JavaLocalGrailsUnit> listCopy = new ArrayList<JavaLocalGrailsUnit>();
+        for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
+        {
+            System.out.println(javaLocalGrailsUnit.id);
+            if(javaLocalGrailsUnit.price == MAGIC_NUMBER)
+            {
+                System.out.println("ONE THAT SHOULD NOT BE CHANGED");
+                onesToNotChange.add(javaLocalGrailsUnit.id);
+            }
+            else
+            {
+                listCopy.add(javaLocalGrailsUnit);
+            }
+        }
+        list = listCopy;
+
+        //Now check all FTUs for facilityId == facility && unitId != magic number dudes id (USE <> FOR NOT EQUAL TO aka !=)
+        //If they meet these criteria add them to this list
+        //With this list we know which IDs to overwrite, and which IDs that will be unchanged (magic number dudes)
+        ArrayList<FacilityToUnitRecent> facilityToUnits = dh.getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(facilityId, onesToNotChange);
+        System.out.println("ONES TO OVERWRITE: " + facilityToUnits.size());
+        //NOW SAVE ALL GUYS WITH THESE IDS TO OLD TABLE
+        ArrayList<FacilityToUnit> oldFacilityToUnits = new ArrayList<FacilityToUnit>();
+        ArrayList<Long> facilityToUnitIds = new ArrayList<Long>();
+        for(int i = 0; i < facilityToUnits.size(); i++)
+        {
+            System.out.println(facilityToUnits.get(i));
+            facilityToUnitIds.add(facilityToUnits.get(i).id);
+            oldFacilityToUnits.add(new FacilityToUnit().createFromFacilityToUnitRecent(facilityToUnits.get(i)));
+        }
+        System.out.println("AMOUNT TO WRITE TO OLD TABLE IN FACILITYTOUNIT FORM: " + oldFacilityToUnits.size());
+        System.out.println("AMOUNT THAT HAVE TO BE CREATED FOR: " + list.size());
+        dh.batchSaveFacilityToUnits(oldFacilityToUnits);
+
+        for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
+        {
+            //Try and find a unit with same
+            Unit foundUnit = null;
+            for(Unit u : unitList)
+            {
+                //See if they match up
+                if(u.isEqualToJavaLocalGrailsUnit(javaLocalGrailsUnit))
+                {
+                    foundUnit = u;
+                    break;
+                }
+                //If they don't AND THIS IS THE RIGHT PAIR, then create a new unit
+
+                //Make a new FTU
+            }
+            for(Unit u : newUnits)
+            {
+                if(u.isEqualToJavaLocalGrailsUnit(javaLocalGrailsUnit))
+                {
+                    foundUnit = u;
+                    break;
+                }
+            }
+            if(foundUnit == null)
+            {
+                foundUnit = new Unit();
+                foundUnit.id = ++newIdUnit;
+                foundUnit.name = javaLocalGrailsUnit.name;
+                foundUnit.type = javaLocalGrailsUnit.type;
+                foundUnit.floor = javaLocalGrailsUnit.floor;
+                newUnits.add(foundUnit);
+            }
+            FacilityToUnitRecent toAdd = new FacilityToUnitRecent();
+            if(facilityToUnitIds.size() > 0)
+            {
+                toAdd.id = facilityToUnitIds.remove(facilityToUnitIds.size()-1);
+            }
+            else
+            {
+                toAdd.id = ++newIdFTU;
+            }
+
+            toAdd.facilityId = javaLocalGrailsUnit.facilityId;
+            toAdd.unitId = foundUnit.id;
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            String dateString = dateFormat.format(date);
+            toAdd.timeCreated = dateString;
+            toAdd.rateAmount = javaLocalGrailsUnit.price;
+            toAdd.rateType = javaLocalGrailsUnit.rateType;
+            newFacilityToUnits.add(toAdd);
+        }
+        System.out.println("--------");
+        ArrayList<FacilityToUnitRecent> toDelete = new ArrayList<FacilityToUnit>();
+        for(int i = 0; i < facilityToUnitIds.size(); i++)
+        {
+            FacilityToUnitRecent newFTU = new FacilityToUnitRecent();
+            newFTU.id = facilityToUnitIds.get(i);
+            toDelete.add(newFTU);
+            System.out.println(newFTU);
+        }
+        System.out.println("AMOUNT TO DELETE: " + toDelete.size());
+        System.out.println("AMOUNT WE ARE ADDING: " + newFacilityToUnits.size());
+        dh.batchDeleteFacilityToUnitsRecent(toDelete);
+
+        //Update old FTUs instead of making new ones
+        //If we go over, increment on max FTU id to make new FTUs for table
+        //If we're under, use BatchWriteItem in amounts of exactly 25 to delete all the FTUs not being used
+        //Can just call batchSave
+
+        dh.batchSaveUnits(newUnits);
+        //Find all FTUs that will be overwritten (facilityId, unitId, rateType)
+        //Write them all to the non recent table
+        dh.batchSaveFacilityToUnitsRecent(newFacilityToUnits);
+
+        Value maxUnitId = new Value();
+        maxUnitId.name = "maxUnitId";
+        maxUnitId.value = newIdUnit;
+
+        Value maxFacilityToUnitId = new Value();
+        maxFacilityToUnitId.name = "maxFacilityToUnitId";
+        maxFacilityToUnitId.value = newIdFTU;
+
+        ArrayList<Value> values = new ArrayList<Value>();
+        values.add(maxUnitId);
+        values.add(maxFacilityToUnitId);
+
+        dh.batchSaveValues(values);
+    }
 
     def input() {
 
@@ -499,13 +736,13 @@ class LocalGrailsCompanyController
         println("Facility ID: " + f.getId());
         println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitsFromFacilityId(f.getId())
+        List<FacilityToUnitRecent> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
         CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
             System.out.println("LOOP");
-            for (FacilityToUnit ftu : facilityToUnitList) {
+            for (FacilityToUnitRecent ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
@@ -513,7 +750,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0)
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId())
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -524,50 +761,6 @@ class LocalGrailsCompanyController
 
     def graph() {
 
-    }
-
-
-    def save() {
-        println("RUNNING SAVE")
-        int index = 0;
-        Collection keys = params.keySet();
-        println(params.toString())
-        JavaLocalGrailsUnit temp;
-        ArrayList<JavaLocalGrailsUnit> list = new ArrayList<>();
-        double MAGIC_NUMBER = Math.random();
-        for(Object key : keys)
-        {
-
-            int mod = index % 4;
-            switch(mod)
-            {
-                case 0:
-                    temp = new JavaLocalGrailsUnit(0, "", "",0, 0, 0);
-                    temp.name = (String) params.get(key);
-                    break;
-                case 1:
-                    temp.floor = (int) params.get(key);
-                    break;
-                case 2:
-                    temp.climate = (String) params.get(key);
-                    break;
-                case 3:
-                    String price = (String) params.get(key);
-                    if(price.equals(""))
-                    {
-                        temp.price = MAGIC_NUMBER;
-                    }
-                    else
-                    {
-                        temp.price = Double.parseDouble(price);
-                    }
-                    list.add(temp);
-                    break;
-            }
-            index++;
-        }
-
-        println(list);
     }
 
 
