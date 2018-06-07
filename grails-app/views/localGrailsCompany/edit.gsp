@@ -81,7 +81,7 @@
                         <td contenteditable="true" class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
                                 <span>
-                                    <td style ="color:gray" contenteditable="false" class="text-right">$${price.val}
+                                    <td style ="color:gray" contenteditable="false" class="text-right">$${String.format("%.02f", price.val)}
                                     <button type="submit" class = "btn btn-link" onclick="copyPrice(${i})">
                                         <i style="vertical-align: top" class="fa fa-arrow-right" aria-hidden="true"></i>
                                     </button>

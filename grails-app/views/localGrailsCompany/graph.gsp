@@ -67,7 +67,7 @@
     <g:javascript>
         var dates = [];
         var prices = [];
-        
+
         <g:each in="${dates}" var="date">
             dates.push("${date}");
         </g:each>

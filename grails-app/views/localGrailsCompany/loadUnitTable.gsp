@@ -103,7 +103,7 @@
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
-                            <td class="text-right">$${price.val}</td>
+                            <td class="text-right">$${String.format("%.02f", price.val)}</td>
                         </g:each>
                     </tr>
                 </g:each>

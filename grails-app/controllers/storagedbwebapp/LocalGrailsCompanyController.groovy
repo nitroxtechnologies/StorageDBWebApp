@@ -799,7 +799,6 @@ class LocalGrailsCompanyController
 
         System.out.println(prices);
         System.out.println(dates);
-
         [prices: prices, dates: dates, facilityName: facilityName]
 
     }
