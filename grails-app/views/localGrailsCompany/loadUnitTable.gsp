@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
+        <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.min.css?compile=true">
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
@@ -68,9 +69,6 @@
                 <div class="col-sm text-center" style="margin-top: 50px">
                     <button onclick = "edit(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-primary">Edit Facility</button></td>
                 </div>
-                <div class="col-sm text-center" style="margin-top: 50px">
-                    <button onclick = "graph(document.getElementById('facilitiesDropdown'))" type="button" class="btn btn-outline-secondary">See Pricing History</button></td>
-                </div>
             </div>
             %{--<div class="col-lg-12 text-center" style="margin-top: 20px">--}%
                 %{--<label>Climate Controlled:</label>--}%
@@ -111,6 +109,8 @@
                         <g:each in="${unit.prices}" var="price" status="j">
                             <td class="text-right">$${String.format("%.02f", price.val)}</td>
                         </g:each>
+                        <td class="text-center"><button onclick="graph(${unit.dbId})" type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
+
                     </tr>
                 </g:each>
                 </tbody>
@@ -174,10 +174,10 @@
 
     }
 
-    function graph(e) {
-        var fID = e.selectedIndex;
-        var fName = fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}" + "?fID=" + fID + "&fName=" + fName;
+    function graph(id) {
+        // var fID = e.selectedIndex;
+        // var fName = fName = e.options[e.selectedIndex].text;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}" + "?uID=" + id;
 
     }
 

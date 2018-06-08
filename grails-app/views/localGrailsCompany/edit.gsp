@@ -12,11 +12,12 @@
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
         .focusedInput {
-            border-color: rgba(82,168,236,.8);
-            outline: 0;
-            outline: thin dotted \9;
-            -moz-box-shadow: 0 0 8px rgba(82,168,236,.6);
-            box-shadow: 0 0 8px rgba(82,168,236,.6) !important;
+            /*border-color: rgba(82,168,236,.8);*/
+            /*outline: 0;*/
+            /*outline: thin dotted \9;*/
+            /*-moz-box-shadow: 0 0 8px rgba(82,168,236,.6);*/
+            /*box-shadow: 0 0 8px rgba(82,168,236,.6) !important;*/
+            outline-offset: -15px;
         }
         </style>
     </head>
@@ -84,7 +85,7 @@
                         <td contenteditable="true" class="text-left">${unit.width}</td>
                         <td contenteditable="true" class="text-left">${unit.depth}</td>
                         <td contenteditable="true" class="text-left">${unit.floor}</td>
-                        <td contenteditable="false" class="text-center">
+                        <td contenteditable="false" class="text-center" style="width: 10px">
                             <div class="dropdown">
                                 <button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     ${unit.climate}
@@ -105,7 +106,14 @@
                                 </span>
                             </td>
                         </g:each>
-                        <td contenteditable="true" class="text-right focusedInput"></td>
+                        <td contenteditable="true" class="text-right focusedInput" id = "focused">
+                            <div class="input-group">
+                                <div contenteditable="false" class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input style="width: 10px" type="number" step=".01"  onkeypress="return validateFloatKeyPress(this,event);" class="form-control text-right" aria-label="Amount">
+                            </div>
+                        </td>
                         <td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
@@ -123,7 +131,34 @@
     <script type="text/javascript" src="/assets/bootstrap.js?compile=true" ></script>
     <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
     <g:javascript>
+        function validateFloatKeyPress(el, evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode;
+            var number = el.value.split('.');
+            if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            //just one dot
+            if(number.length>1 && charCode == 46){
+                 return false;
+            }
+            //get the carat position
+            var caratPos = getSelectionStart(el);
+            var dotPos = el.value.indexOf(".");
+            if( caratPos > dotPos && dotPos>-1 && (number[1].length > 1)){
+                return false;
+            }
+            return true;
+        }
 
+        //thanks: http://javascript.nwbox.com/cursor_position/
+        function getSelectionStart(o) {
+            if (o.createTextRange) {
+                var r = document.selection.createRange().duplicate()
+                r.moveEnd('character', o.value.length)
+                if (r.text == '') return o.value.length
+                return o.value.lastIndexOf(r.text)
+            } else return o.selectionStart
+        }
         function changeText(s, i) {
             var dropdown = document.getElementById(i);
             dropdown.innerText = s;
