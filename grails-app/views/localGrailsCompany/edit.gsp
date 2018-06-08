@@ -133,7 +133,7 @@
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].getElementsByTagName("td");
                 for (var j = 0; j < cells.length; j++) {
-                    if (j == 0 || (j%3 != 0 && j%5 != 0)) {
+                    if (j == 0 || j%7 != 0) {
                         // alert(cells[j].innerText);
                         if (first) {
                             params += "?";
