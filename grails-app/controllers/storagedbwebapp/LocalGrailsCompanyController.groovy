@@ -533,6 +533,10 @@ class LocalGrailsCompanyController
                     break;
                 case 4:
                     temp.type = "" + params.get(key);
+                    while(temp.type.charAt(temp.type.length()-1) == ' ')
+                    {
+                        temp.type = temp.type.substring(0,temp.type.length()-1);
+                    }
                     break;
                 case 5:
                     break;
