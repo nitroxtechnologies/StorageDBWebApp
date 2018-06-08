@@ -797,14 +797,23 @@ class LocalGrailsCompanyController
     }
 
     def graph() {
-        long facilityId = 4;
-        long unitId = 0;
-        String facilityName = "Stowaway Storage/Lakeway Self Storage";
+        DynamoHandler dh = new DynamoHandler();
+
+        long facilityId = DropdownInfo.list().get(0).facilityId;
+        JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
+        temp.name = (String) params.uName;
+        temp.floor = Integer.parseInt((String) params.uFloor);
+        temp.type = (String) params.uType;
+        ArrayList<JavaLocalGrailsUnit> tempList = new JavaLocalGrailsUnit();
+        tempList.add(temp);
+        long unitId = dh.getUnitsWithInfo(tempList);
+
+        String facilityName = dh.getFacilityFromId(facilityId).getName();
 
         ArrayList<Double> prices = new ArrayList<Double>();
         ArrayList<String> dates = new ArrayList<String>();
 
-        DynamoHandler dh = new DynamoHandler();
+
 
         ArrayList<FacilityToUnit> historicalPrices = dh.getFacilityToUnitsFromFacilityIdAndUnitId(facilityId, unitId);
         FacilityToUnitRecent mostRecent = dh.getFacilityToUnitRecentByFacilityIdAndUnitId(facilityId, unitId);
