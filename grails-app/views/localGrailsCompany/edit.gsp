@@ -119,7 +119,7 @@
                                 <input style="width: 10px" type="number" step=".01" onkeypress="return validateFloatKeyPress(this,event);" class="form-control text-right" aria-label="Amount">
                             </div>
                         </td>
-                        <td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button type="submit" onclick="return confirm('Are you sure you want to delete this unit?');" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -143,13 +143,13 @@
                 return false;
             }
             //just one dot
-            if(number.length>1 && charCode == 46){
+            if(number.length > 1 && charCode == 46){
                  return false;
             }
             //get the carat position
             var caratPos = getSelectionStart(el);
             var dotPos = el.value.indexOf(".");
-            if( caratPos > dotPos && dotPos>-1 && (number[1].length > 1)){
+            if( caratPos > dotPos && dotPos > -1 && (number[1].length > 1)){
                 return false;
             }
             return true;
@@ -158,19 +158,24 @@
         //thanks: http://javascript.nwbox.com/cursor_position/
         function getSelectionStart(o) {
             if (o.createTextRange) {
-                var r = document.selection.createRange().duplicate()
-                r.moveEnd('character', o.value.length)
+                var r = document.selection.createRange().duplicate();
+                r.moveEnd('character', o.value.length);
                 if (r.text == '') return o.value.length
-                return o.value.lastIndexOf(r.text)
-            } else return o.selectionStart
+                    return o.value.lastIndexOf(r.text);
+            } else return o.selectionStart;
         }
         function changeText(s, i) {
             var dropdown = document.getElementById(i);
             dropdown.innerText = s;
         }
 
+
         $('#unitTable').on('click', 'button[type="submit"]', function () {
             $(this).closest('tr').remove();
+        })
+
+        $('#unitTable').on('click', 'button[class="dropdown-item"]', function () {
+            // alert($(this).closest('.dropdown-toggle').toString());
         })
 
         function copyPrice(val) {
@@ -181,7 +186,20 @@
         }
 
         $('.btn-outline-primary').click(function () {
-            $('#unitTable').append('<tr class = "entries"><td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-center"></td><td contenteditable="false" class="text-center">N/A</td><td contenteditable="true" class="text-right"></td><td class="text-center"><button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td></tr>')
+            $('#unitTable').append('<tr class = "entries"><td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-center"></td><td contenteditable="true" class="text-center"></td>' +
+             '<td contenteditable="false" class="text-center" style="width: 10px"><div class="dropdown"><button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Climate</button>' + '<div class="dropdown-menu" aria-labelledby="dropdownMenu2">' +
+            '<button onclick="changeText()" class="dropdown-item" type="button">Climate</button>' +
+            '<button onclick="changeText()" class="dropdown-item" type="button">Non-Climate</button>' +
+            '<button onclick="changeText()" class="dropdown-item" type="button">Parking</button>' +
+        '<td contenteditable="false" class="text-center">N/A</td><td contenteditable="true" class="text-right focusedInput">' +
+            '<div class="input-group">' +
+                '<div contenteditable="false" class="input-group-prepend">' +
+                    '<span class="input-group-text">$</span>' +
+                '</div>' +
+                '<input style="width: 10px" type="number" step=".01" onkeypress="return validateFloatKeyPress(this,event);" class="form-control text-right" aria-label="Amount">' +
+            '</div>' +
+        '</td>' +
+        '</div></div></td><td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td></tr>');
         });
 
         function saveTable() {
