@@ -123,6 +123,6 @@ public class Unit
 
     public String toString()
     {
-        return id + " " + name + " " + type + " " + floor;
+        return "ID: " + id + " NAME: " + name + " TYPE: " + type + " FLOOR: " + floor;
     }
 }

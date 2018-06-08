@@ -34,6 +34,6 @@ public class JavaLocalGrailsUnit {
 
     public String toString()
     {
-        return id + " " + name + " " + width + " " + depth + " " + height + " " + type + " " + type + " " + floor + " " + price + " " + facilityId + " " + rateType;
+        return "ID: " + id + " NAME: " + name + " WIDTH: " + width + " DEPTH: " + depth + " HEIGHT: " + height + " TYPE: " + type + " FLOOR: " + floor + " PRICE: " + price + " FACILITYID: " + facilityId + " RATETYPE: " + rateType;
     }
 }

@@ -512,20 +512,20 @@ class LocalGrailsCompanyController
                     long thing = (long) (temp.width * 2);
                     if(thing%2 == 1l)
                     {
-                        temp.name = (thing-1) + ".5'x";
+                        temp.name = ((thing-1)/2) + ".5'x";
                     }
                     else
                     {
-                        temp.name = thing + "'x";
+                        temp.name = (thing/2) + "'x";
                     }
                     thing = (long) (temp.depth * 2);
                     if(thing%2 == 1l)
                     {
-                        temp.name += (thing-1) + ".5'";
+                        temp.name += ((thing-1)/2) + ".5'";
                     }
                     else
                     {
-                        temp.name += thing + "'";
+                        temp.name += (thing/2) + "'";
                     }
                     break;
                 case 3:
