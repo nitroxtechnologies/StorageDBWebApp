@@ -12,6 +12,7 @@ public class JavaLocalGrailsUnit {
     public int floor;
     public BigDecimal price;
     public long facilityId;
+    public String timeCreated;
 
     public String rateType;
 
@@ -20,7 +21,7 @@ public class JavaLocalGrailsUnit {
 
     }
 
-    public JavaLocalGrailsUnit(long id, String name, double width, double depth, double height, String type, int floor, BigDecimal price, long facilityId, String rateType)
+    public JavaLocalGrailsUnit(long id, String name, double width, double depth, double height, String type, int floor, BigDecimal price, long facilityId, String rateType, String timeCreated)
     {
         this.id = id;
         this.name = name;
@@ -32,6 +33,7 @@ public class JavaLocalGrailsUnit {
         this.price = price;
         this.facilityId = facilityId;
         this.rateType = rateType;
+        this.timeCreated = timeCreated;
     }
 
     public String toString()

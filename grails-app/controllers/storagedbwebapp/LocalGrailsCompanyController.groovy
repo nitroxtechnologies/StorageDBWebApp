@@ -9,6 +9,7 @@ import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.Unit
 import AWSAccessors.Value
 
+import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
@@ -17,7 +18,7 @@ import java.text.SimpleDateFormat
  */
 class LocalGrailsCompanyController
 {
-    static final double PRICE_DIFFERENCE_TO_SKIP = 123456.0;
+    static final BigDecimal PRICE_DIFFERENCE_TO_SKIP = new BigDecimal(""+123456.0);
 
     public static ArrayList<java.lang.Long> makeArrayList(List<Long> list)
     {
@@ -400,14 +401,14 @@ class LocalGrailsCompanyController
                     if(found == null)
                     {
                         List<Price> prices = new ArrayList<>();
-                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height, climate: local.type, floor: local.floor, prices: prices);
+                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height, climate: local.type, floor: local.floor, prices: prices, time: local.timeCreated);
                     }
                     if(local.facilityId == rfId)
                     {
                         found.prices.add(new Price(val: local.price, color: 0));
                         if(rfId != idOfBaseFacility)
                         {
-                            double price = 12732136;
+                            BigDecimal price = new BigDecimal("12732136");
                             for(JavaLocalGrailsUnit local2 : javaLocalGrailsUnitList)
                             {
                                 if(local2.id == local.id && local2.facilityId == idOfBaseFacility)
@@ -416,14 +417,12 @@ class LocalGrailsCompanyController
                                     price = local2.price;
                                 }
                             }
-                            if(price != 12732136)
+                            if(!price.equals(new BigDecimal("12732136")))
                             {
-                                double val = local.price - price;
-                                val = val * 100;
-                                val = Math.round(val);
-                                val = val / 100;
-                                int color = 0;
-                                if(val > 0)
+                                BigDecimal val = local.price.subtract(price);
+                                long color = 0;
+                                val = val.round(RoundingMode.HALF_EVEN);
+                                if(val.compareTo(new BigDecimal(""+0)) > 0)
                                     color = 1;
                                 else
                                     color = 2;
@@ -628,7 +627,7 @@ class LocalGrailsCompanyController
         for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
         {
             System.out.println(javaLocalGrailsUnit.id);
-            if(javaLocalGrailsUnit.price == MAGIC_NUMBER)
+            if(javaLocalGrailsUnit.price.equals(new BigDecimal(""+MAGIC_NUMBER)))
             {
                 System.out.println("ONE THAT SHOULD NOT BE CHANGED");
                 onesToNotChange.add(javaLocalGrailsUnit.id);
