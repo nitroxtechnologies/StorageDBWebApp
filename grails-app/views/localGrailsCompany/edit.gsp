@@ -19,6 +19,11 @@
             /*box-shadow: 0 0 8px rgba(82,168,236,.6) !important;*/
             outline-offset: -15px;
         }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         </style>
     </head>
     <body>
@@ -111,7 +116,7 @@
                                 <div contenteditable="false" class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
-                                <input style="width: 10px" type="number" step=".01"  onkeypress="return validateFloatKeyPress(this,event);" class="form-control text-right" aria-label="Amount">
+                                <input style="width: 10px" type="number" step=".01" onkeypress="return validateFloatKeyPress(this,event);" class="form-control text-right" aria-label="Amount">
                             </div>
                         </td>
                         <td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
@@ -171,7 +176,8 @@
         function copyPrice(val) {
             var row = document.getElementsByClassName(val);
             var cells = row[0].getElementsByTagName("td");
-            cells[6].innerText = cells[5].innerText;
+            // var price = cells[5].innerText.substring(1);
+            cells[6].getElementsByClassName("form-control")[0].setAttribute("value", cells[5].innerText.substring(1, cells[5].innerText.length-2));
         }
 
         $('.btn-outline-primary').click(function () {
