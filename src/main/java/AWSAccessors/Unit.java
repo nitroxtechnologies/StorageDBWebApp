@@ -112,7 +112,7 @@ public class Unit
         {
             if(other.floor == floor)
             {
-                if(other.width == width && other.depth == depth && other.height == height)
+                if(other.name.equals(name))
                 {
                     return true;
                 }

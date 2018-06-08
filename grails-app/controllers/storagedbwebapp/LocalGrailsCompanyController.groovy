@@ -496,8 +496,8 @@ class LocalGrailsCompanyController
             if(key.equals("controller"))
                 break;
             System.out.println(params.get(key));
-            /*
-            int mod = index % 4;
+
+            int mod = index % 7;
             switch(mod)
             {
                 case 0:
@@ -505,12 +505,38 @@ class LocalGrailsCompanyController
                     temp.name = (String) params.get(key);
                     break;
                 case 1:
-                    temp.floor = Integer.parseInt((String) params.get(key));
+                    temp.width = Double.parseDouble((String) params.get(key));
                     break;
                 case 2:
-                    temp.type = (String) params.get(key);
+                    temp.depth = Double.parseDouble((String) params.get(key));
+                    long thing = (long) (temp.width * 2);
+                    if(thing%2 == 1l)
+                    {
+                        temp.name = (thing-1) + ".5'x";
+                    }
+                    else
+                    {
+                        temp.name = thing + "'x";
+                    }
+                    thing = (long) (temp.depth * 2);
+                    if(thing%2 == 1l)
+                    {
+                        temp.name += (thing-1) + ".5'";
+                    }
+                    else
+                    {
+                        temp.name += thing + "'";
+                    }
                     break;
                 case 3:
+                    temp.floor = Integer.parseInt(""+params.get(key));
+                    break;
+                case 4:
+                    temp.type = "" + params.get(key);
+                    break;
+                case 5:
+                    break;
+                case 6:
                     String price = (String) params.get(key);
                     if(price.equals(""))
                     {
@@ -526,7 +552,7 @@ class LocalGrailsCompanyController
                     break;
             }
             index++;
-            */
+
         }
         System.out.println("------------");
 

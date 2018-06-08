@@ -31,4 +31,9 @@ public class JavaLocalGrailsUnit {
         this.facilityId = facilityId;
         this.rateType = rateType;
     }
+
+    public String toString()
+    {
+        return id + " " + name + " " + width + " " + depth + " " + height + " " + type + " " + type + " " + floor + " " + price + " " + facilityId + " " + rateType;
+    }
 }
