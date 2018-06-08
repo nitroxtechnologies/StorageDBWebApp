@@ -8,7 +8,7 @@ class LocalGrailsUnit {
     double height;
     String climate
     int floor
-    double price
+    BigDecimal price
 
     LocalGrailsUnit(dbId, name, width, depth, height, climate, floor, price)
     {

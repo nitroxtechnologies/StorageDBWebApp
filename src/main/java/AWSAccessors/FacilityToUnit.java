@@ -5,6 +5,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
+import java.math.BigDecimal;
+
 @DynamoDBTable(tableName = "FacilitiesUnits")
 public class FacilityToUnit
 {
@@ -12,7 +14,7 @@ public class FacilityToUnit
     private long facilityId;
     private long unitId;
     private String timeCreated;
-    private double rateAmount;
+    private BigDecimal rateAmount;
     private String rateType;
 
     public FacilityToUnit()
@@ -65,12 +67,12 @@ public class FacilityToUnit
     }
 
     @DynamoDBAttribute(attributeName = "rateAmount")
-    public double getRateAmount()
+    public BigDecimal getRateAmount()
     {
         return rateAmount;
     }
 
-    public void setRateAmount(double rateAmount)
+    public void setRateAmount(BigDecimal rateAmount)
     {
         this.rateAmount = rateAmount;
     }

@@ -112,8 +112,6 @@ class LocalGrailsCompanyController
 
         ArrayList<Price> prices = new ArrayList<>();
 
-        prices.add(new Price(val: 77.0));
-
         String name = "thing";
         String climate = "cold";
         int floor = 9;
@@ -544,11 +542,11 @@ class LocalGrailsCompanyController
                     String price = (String) params.get(key);
                     if(price.equals(""))
                     {
-                        temp.price = MAGIC_NUMBER;
+                        temp.price = new BigDecimal(""+MAGIC_NUMBER);
                     }
                     else
                     {
-                        temp.price = Double.parseDouble(price);
+                        temp.price = new BigDecimal((String) params.get(key));
                     }
                     temp.facilityId = facilityId;
                     list.add(temp);
@@ -786,7 +784,7 @@ class LocalGrailsCompanyController
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight(), climate: u.getType(), floor: u.getFloor(), prices: prices).save()
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight(), climate: u.getType(), floor: u.getFloor(), prices: prices, time: ftu.getTimeCreated()).save()
                 }
             }
         }

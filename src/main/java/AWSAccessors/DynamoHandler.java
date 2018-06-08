@@ -488,7 +488,7 @@ public class DynamoHandler
                 .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
         List result = mapper.scan(FacilityToUnitRecent.class, scanExpression);
 
-        return (FacilityToUnitRecent)result.get(0);
+        return (FacilityToUnitRecent) result.get(0);
     }
 
     public List<FacilityToUnit> getFacilityToUnitsFromFacilityIdAndUnitId(long facilityId, long unitId)

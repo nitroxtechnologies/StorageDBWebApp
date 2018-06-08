@@ -2,7 +2,7 @@ package storagedbwebapp
 
 class Price {
 
-    double val
+    BigDecimal val
     int color
     //0 = black (normal)
     //1 = Red
