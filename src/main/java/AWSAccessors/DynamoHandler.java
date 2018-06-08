@@ -401,7 +401,7 @@ public class DynamoHandler
                 Unit u = (Unit) o2;
                 if(ftu.getUnitId() == u.getId())
                 {
-                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getWidth(), u.getDepth(), u.getHeight(), u.getType(), u.getFloor(), ftu.getRateAmount(), ftu.getFacilityId(), ftu.getRateType()));
+                    result.add(new JavaLocalGrailsUnit(u.getId(), u.getName(), u.getWidth(), u.getDepth(), u.getHeight(), u.getType(), u.getFloor(), ftu.getRateAmount(), ftu.getFacilityId(), ftu.getRateType(), ftu.getTimeCreated()));
                 }
             }
         }
