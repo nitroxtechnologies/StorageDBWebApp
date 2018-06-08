@@ -109,7 +109,7 @@
                         <g:each in="${unit.prices}" var="price" status="j">
                             <td class="text-right">$${String.format("%.02f", price.val)}</td>
                         </g:each>
-                        <td class="text-center"><button onclick="graph(${unit.name}, ${unit.climate}, ${unit.floor})" type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button onclick='graph("${unit.name}", "${unit.climate}", "${unit.floor}")' type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
 
                     </tr>
                 </g:each>

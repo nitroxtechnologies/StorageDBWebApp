@@ -798,7 +798,6 @@ class LocalGrailsCompanyController
 
     def graph() {
         DynamoHandler dh = new DynamoHandler();
-
         long facilityId = DropdownInfo.list().get(0).facilityId;
         JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
         temp.name = (String) params.uName;
