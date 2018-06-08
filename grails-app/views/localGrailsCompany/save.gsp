@@ -46,11 +46,7 @@
             </div>
         </nav>
             <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="dbId" optionValue="name"
-                          name="companydropdown" from="${companies}" value = ""
-                          onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
-                </g:select>
+                Loading...
             </div>
     </div>
 
@@ -60,11 +56,7 @@
         </div>
     </footer>
     <g:javascript>
-       function loadFacilities(e){
-            var cID = e.selectedIndex - 1;
-            var cName = e.options[e.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
-    }
+        %{--window.location.href = "${createLink(controller:'LocalGrailsCompany' ,action:'edit')}" + "?fID=" + fID + "&fName=" + fN--}%
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>

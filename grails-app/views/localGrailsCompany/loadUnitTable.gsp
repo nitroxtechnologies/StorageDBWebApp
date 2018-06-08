@@ -90,7 +90,7 @@
                 <thead>
                 <tr>
                     %{--<th scope="col">ID</th>--}%
-                    <th scope="col">Dimensions</th>
+                    <th scope="col">Unit Type</th>
                     <th scope="col">Width</th>
                     <th scope="col">Depth</th>
                     <th scope="col">Floor</th>

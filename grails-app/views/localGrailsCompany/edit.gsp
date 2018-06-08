@@ -7,15 +7,17 @@
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
         <link rel="stylesheet" href="/assets/main.css?compile=true" />
         <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.min.css?compile=true">
+        <script type="text/javascript" src="/assets/popper.min.js?compile=true" ></script>
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
-            /*.show {*/
-                /*display: block;*/
-            /*}*/
-            /*.entries {*/
-                /*!*display: none;*!*/
-            /*}*/
+        .focusedInput {
+            border-color: rgba(82,168,236,.8);
+            outline: 0;
+            outline: thin dotted \9;
+            -moz-box-shadow: 0 0 8px rgba(82,168,236,.6);
+            box-shadow: 0 0 8px rgba(82,168,236,.6) !important;
+        }
         </style>
     </head>
     <body>
@@ -65,7 +67,7 @@
                 <thead>
                 <tr>
                     %{--<th scope="col">ID</th>--}%
-                    <th scope="col">Dimensions</th>
+                    <th scope="col">Unit Type</th>
                     <th scope="col">Width</th>
                     <th scope="col">Depth</th>
                     <th scope="col">Floor</th>
@@ -82,18 +84,29 @@
                         <td contenteditable="true" class="text-left">${unit.width}</td>
                         <td contenteditable="true" class="text-left">${unit.depth}</td>
                         <td contenteditable="true" class="text-left">${unit.floor}</td>
-                        <td contenteditable="true" class="text-center">${unit.climate}</td>
+                        <td contenteditable="false" class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    ${unit.climate}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    <button onclick="changeText('Climate', ${i})" class="dropdown-item" type="button">Climate</button>
+                                    <button onclick="changeText('Non-Climate', ${i})" class="dropdown-item" type="button">Non-Climate</button>
+                                    <button onclick="changeText('Parking', ${i})" class="dropdown-item" type="button">Parking</button>
+                                </div>
+                            </div>
+                        </td>
                         <g:each in="${unit.prices}" var="price" status="j">
                                 <span>
                                     <td style ="color:gray" contenteditable="false" class="text-right">$${String.format("%.02f", price.val)}
-                                    <button type="submit" class = "btn btn-link" onclick="copyPrice(${i})">
+                                    <button type="button" class = "btn btn-link" onclick="copyPrice(${i})">
                                         <i style="vertical-align: top" class="fa fa-arrow-right" aria-hidden="true"></i>
                                     </button>
                                 </span>
                             </td>
                         </g:each>
-                        <td contenteditable="true" class="text-right"></td>
-                        <td class="text-center"><button type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td contenteditable="true" class="text-right focusedInput"></td>
+                        <td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -111,7 +124,12 @@
     <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
     <g:javascript>
 
-        $('#unitTable').on('click', 'button[type="button"]', function () {
+        function changeText(s, i) {
+            var dropdown = document.getElementById(i);
+            dropdown.innerText = s;
+        }
+
+        $('#unitTable').on('click', 'button[type="submit"]', function () {
             $(this).closest('tr').remove();
         })
 
@@ -145,6 +163,7 @@
                         params += i;
                         params += j;
                         params += "=";
+
                         if (cells[j].innerText.indexOf("$") > -1)
                             params += cells[j].innerText.substring(1);
                         else
