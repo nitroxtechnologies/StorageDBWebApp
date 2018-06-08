@@ -495,6 +495,8 @@ class LocalGrailsCompanyController
         {
             if(key.equals("controller"))
                 break;
+            System.out.println(params.get(key));
+            /*
             int mod = index % 4;
             switch(mod)
             {
@@ -524,6 +526,7 @@ class LocalGrailsCompanyController
                     break;
             }
             index++;
+            */
         }
         System.out.println("------------");
 

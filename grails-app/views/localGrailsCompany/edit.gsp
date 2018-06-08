@@ -118,7 +118,7 @@
         function copyPrice(val) {
             var row = document.getElementsByClassName(val);
             var cells = row[0].getElementsByTagName("td");
-            cells[4].innerText = cells[3].innerText;
+            cells[6].innerText = cells[5].innerText;
         }
 
         $('.btn-outline-primary').click(function () {
