@@ -91,6 +91,8 @@
                 <tr>
                     %{--<th scope="col">ID</th>--}%
                     <th scope="col">Dimensions</th>
+                    <th scope="col">Width</th>
+                    <th scope="col">Depth</th>
                     <th scope="col">Floor</th>
                     <th scope="col" class="text-center">Climate Controlled?</th>
                     <th scope="col" class="text-right">Price</th>
@@ -100,6 +102,8 @@
                 <g:each in="${units}" var="unit" status="i">
                     <tr class = "entries ${unit.name} ${unit.climate}">
                         <td class="text-left">${unit.name}</td>
+                        <td class="text-left">${unit.width}</td>
+                        <td class="text-left">${unit.depth}</td>
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">

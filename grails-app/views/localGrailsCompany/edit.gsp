@@ -66,6 +66,8 @@
                 <tr>
                     %{--<th scope="col">ID</th>--}%
                     <th scope="col">Dimensions</th>
+                    <th scope="col">Width</th>
+                    <th scope="col">Depth</th>
                     <th scope="col">Floor</th>
                     <th scope="col" class="text-center">Climate Controlled?</th>
                     <th scope="col" class="text-center">Old Price</th>
@@ -76,7 +78,9 @@
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
                     <tr class = "entries ${unit.name} ${unit.climate} ${i}">
-                        <td contenteditable="true" class="text-left">${unit.name}</td>
+                        <td contenteditable="false" class="text-left">${unit.name}</td>
+                        <td contenteditable="true" class="text-left">${unit.width}</td>
+                        <td contenteditable="true" class="text-left">${unit.depth}</td>
                         <td contenteditable="true" class="text-left">${unit.floor}</td>
                         <td contenteditable="true" class="text-center">${unit.climate}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
