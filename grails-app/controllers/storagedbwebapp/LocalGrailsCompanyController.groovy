@@ -102,6 +102,10 @@ class LocalGrailsCompanyController
         {
             dropdownInfo.compareCompaniesIndex = compareCompaniesIndex;
         }
+        if(facilityId > 0)
+        {
+            dropdownInfo.facilityId = facilityId;
+        }
 
         new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: facilityId).save()
     }
@@ -222,7 +226,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, -1l)
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId())
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -799,13 +803,14 @@ class LocalGrailsCompanyController
     def graph() {
         DynamoHandler dh = new DynamoHandler();
         long facilityId = DropdownInfo.list().get(0).facilityId;
+        System.out.println("FACILITY ID: " + facilityId);
         JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
         temp.name = (String) params.uName;
         temp.floor = Integer.parseInt((String) params.uFloor);
         temp.type = (String) params.uType;
-        ArrayList<JavaLocalGrailsUnit> tempList = new JavaLocalGrailsUnit();
+        ArrayList<JavaLocalGrailsUnit> tempList = new ArrayList<JavaLocalGrailsUnit>();
         tempList.add(temp);
-        long unitId = dh.getUnitsWithInfo(tempList);
+        long unitId = dh.getUnitsWithInfo(tempList).get(0).id;
 
         String facilityName = dh.getFacilityFromId(facilityId).getName();
 
