@@ -10,6 +10,7 @@ class CompareUnit {
     String climate
     int floor
     List prices
+    String time
 
     static hasMany = [prices: Price]
 

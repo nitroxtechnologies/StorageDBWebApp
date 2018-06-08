@@ -95,6 +95,7 @@
                     <th scope="col">Depth</th>
                     <th scope="col">Floor</th>
                     <th scope="col" class="text-center">Climate Controlled?</th>
+                    <th scope="col" class="text-center">Price Updated Time</th>
                     <th scope="col" class="text-right">Price</th>
                 </tr>
                 </thead>
@@ -106,6 +107,7 @@
                         <td class="text-left">${unit.depth}</td>
                         <td class="text-left">${unit.floor}</td>
                         <td class="text-center">${unit.climate}</td>
+                        <td class="text-center">${unit.time}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
                             <td class="text-right">$${String.format("%.02f", price.val)}</td>
                         </g:each>
