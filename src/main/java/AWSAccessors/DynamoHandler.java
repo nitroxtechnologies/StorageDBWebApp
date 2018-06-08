@@ -445,6 +445,19 @@ public class DynamoHandler
         return units;
     }
 
+    public Facility getFacilityFromId(long facilityId)
+    {
+        String filterExpression = "id = :val1";
+        Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+        eav.put(":val1", new AttributeValue().withN(""+facilityId));
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression(filterExpression).withExpressionAttributeValues(eav);
+        List result = mapper.scan(Facility.class, scanExpression);
+
+        return (Facility)result.get(0);
+    }
+
     public List<FacilityToUnitRecent> getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude)
     {
         String filterExpression = "facilityId = :val1";

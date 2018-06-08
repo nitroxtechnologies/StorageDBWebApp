@@ -749,6 +749,10 @@ class LocalGrailsCompanyController
         values.add(maxFacilityToUnitId);
 
         dh.batchSaveValues(values);
+
+        Facility f = dh.getFacilityFromId(facilityId);
+
+        chain(action:"loadUnitTable", params:[fID: facilityId, fName: f.getName()]);
     }
 
     def input() {
