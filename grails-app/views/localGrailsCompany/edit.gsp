@@ -117,9 +117,10 @@
                                     <span class="input-group-text">$</span>
                                 </div>
                                 <input style="width: 10px" type="number" step=".01" onkeypress="return validateFloatKeyPress(this,event);" class="form-control text-right" aria-label="Amount">
+
                             </div>
                         </td>
-                        <td class="text-center"><button type="submit" onclick="return confirm('Are you sure you want to delete this unit?');" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -152,8 +153,14 @@
             if( caratPos > dotPos && dotPos > -1 && (number[1].length > 1)){
                 return false;
             }
+
             return true;
         }
+
+
+        // $("input").focusout(function(){
+        //    // alert($(this).get(0).value);
+        // });
 
         //thanks: http://javascript.nwbox.com/cursor_position/
         function getSelectionStart(o) {
@@ -171,7 +178,8 @@
 
 
         $('#unitTable').on('click', 'button[type="submit"]', function () {
-            $(this).closest('tr').remove();
+            if(confirm('Are you sure you want to delete this unit?'))
+                $(this).closest('tr').remove();
         })
 
         $('#unitTable').on('click', 'button[class="dropdown-item"]', function () {
@@ -223,10 +231,16 @@
                         params += j;
                         params += "=";
 
-                        if (cells[j].innerText.indexOf("$") > -1)
+                        if (cells[j].innerText.indexOf("$") > -1 && j == 5) {
                             params += cells[j].innerText.substring(1);
-                        else
+                        } else if (j != 0 && j%6 == 0) {
+                            // alert(cells[6].getElementsByClassName("form-control")[0].value);
+                            params += cells[6].getElementsByClassName("form-control")[0].value;
+                        } else {
+                            // alert("no");
                             params += cells[j].innerText;
+                        }
+
                     }
                 }
             }
