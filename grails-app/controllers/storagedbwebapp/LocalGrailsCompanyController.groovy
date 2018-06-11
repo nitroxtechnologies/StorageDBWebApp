@@ -3,8 +3,8 @@ package storagedbwebapp
 import AWSAccessors.Company
 import AWSAccessors.DynamoHandler
 import AWSAccessors.Facility
+import AWSAccessors.FacilityToUnitHistory
 import AWSAccessors.FacilityToUnit
-import AWSAccessors.FacilityToUnitRecent
 import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.Unit
 import AWSAccessors.Value
@@ -212,13 +212,13 @@ class LocalGrailsCompanyController
         println("Facility ID: " + f.getId());
         println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-        List<FacilityToUnitRecent> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
+        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
         CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
             System.out.println("LOOP");
-            for (FacilityToUnitRecent ftu : facilityToUnitList) {
+            for (FacilityToUnit ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
@@ -594,7 +594,7 @@ class LocalGrailsCompanyController
 
         //Set up the ArrayLists to save
         ArrayList<Unit> newUnits = new ArrayList<Unit>();
-        ArrayList<FacilityToUnitRecent> newFacilityToUnits = new ArrayList<FacilityToUnitRecent>();
+        ArrayList<FacilityToUnit> newFacilityToUnits = new ArrayList<FacilityToUnit>();
         //Get max IDs to use later
         long newIdFTU = dh.getMaxFacilityToUnitId();
         long newIdUnit = dh.getMaxUnitId();
@@ -647,16 +647,16 @@ class LocalGrailsCompanyController
         //Now check all FTUs for facilityId == facility && unitId != magic number dudes id (USE <> FOR NOT EQUAL TO aka !=)
         //If they meet these criteria add them to this list
         //With this list we know which IDs to overwrite, and which IDs that will be unchanged (magic number dudes)
-        ArrayList<FacilityToUnitRecent> facilityToUnits = dh.getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(facilityId, onesToNotChange);
+        ArrayList<FacilityToUnit> facilityToUnits = dh.getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(facilityId, onesToNotChange);
         System.out.println("ONES TO OVERWRITE: " + facilityToUnits.size());
         //NOW SAVE ALL GUYS WITH THESE IDS TO OLD TABLE
-        ArrayList<FacilityToUnit> oldFacilityToUnits = new ArrayList<FacilityToUnit>();
+        ArrayList<FacilityToUnitHistory> oldFacilityToUnits = new ArrayList<FacilityToUnitHistory>();
         ArrayList<Long> facilityToUnitIds = new ArrayList<Long>();
         for(int i = 0; i < facilityToUnits.size(); i++)
         {
             System.out.println(facilityToUnits.get(i));
             facilityToUnitIds.add(facilityToUnits.get(i).id);
-            oldFacilityToUnits.add(new FacilityToUnit().createFromFacilityToUnitRecent(facilityToUnits.get(i)));
+            oldFacilityToUnits.add(new FacilityToUnitHistory().createFromFacilityToUnitRecent(facilityToUnits.get(i)));
         }
         System.out.println("AMOUNT TO WRITE TO OLD TABLE IN FACILITYTOUNIT FORM: " + oldFacilityToUnits.size());
         System.out.println("AMOUNT THAT HAVE TO BE CREATED FOR: " + list.size());
@@ -698,7 +698,7 @@ class LocalGrailsCompanyController
                 foundUnit.floor = javaLocalGrailsUnit.floor;
                 newUnits.add(foundUnit);
             }
-            FacilityToUnitRecent toAdd = new FacilityToUnitRecent();
+            FacilityToUnit toAdd = new FacilityToUnit();
             if(facilityToUnitIds.size() > 0)
             {
                 toAdd.id = facilityToUnitIds.remove(facilityToUnitIds.size()-1);
@@ -720,10 +720,10 @@ class LocalGrailsCompanyController
             newFacilityToUnits.add(toAdd);
         }
         System.out.println("--------");
-        ArrayList<FacilityToUnitRecent> toDelete = new ArrayList<FacilityToUnit>();
+        ArrayList<FacilityToUnit> toDelete = new ArrayList<FacilityToUnitHistory>();
         for(int i = 0; i < facilityToUnitIds.size(); i++)
         {
-            FacilityToUnitRecent newFTU = new FacilityToUnitRecent();
+            FacilityToUnit newFTU = new FacilityToUnit();
             newFTU.id = facilityToUnitIds.get(i);
             toDelete.add(newFTU);
             System.out.println(newFTU);
@@ -778,13 +778,13 @@ class LocalGrailsCompanyController
         println("Facility ID: " + f.getId());
         println("----------------");
         List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-        List<FacilityToUnitRecent> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
+        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
         CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
             System.out.println("LOOP");
-            for (FacilityToUnitRecent ftu : facilityToUnitList) {
+            for (FacilityToUnit ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
@@ -820,8 +820,8 @@ class LocalGrailsCompanyController
 
 
 
-        ArrayList<FacilityToUnit> historicalPrices = dh.getFacilityToUnitsFromFacilityIdAndUnitId(facilityId, unitId);
-        FacilityToUnitRecent mostRecent = dh.getFacilityToUnitRecentByFacilityIdAndUnitId(facilityId, unitId);
+        ArrayList<FacilityToUnitHistory> historicalPrices = dh.getFacilityToUnitsFromFacilityIdAndUnitId(facilityId, unitId);
+        FacilityToUnit mostRecent = dh.getFacilityToUnitRecentByFacilityIdAndUnitId(facilityId, unitId);
 
         while(historicalPrices.size() > 0)
         {

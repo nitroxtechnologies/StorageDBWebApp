@@ -3,6 +3,8 @@ package AWSAccessors;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+
+import java.math.BigDecimal;
 import java.sql.Time;
 
 @DynamoDBTable(tableName = "Facilities")
@@ -20,8 +22,8 @@ public class Facility
     private String country;
 
     private String website;
-    private double setupFee;
-    private double percentFull;
+    private BigDecimal setupFee;
+    private BigDecimal percentFull;
 
     private boolean hasRetailStore;
     private boolean hasInsurance;
@@ -150,20 +152,20 @@ public class Facility
     }
 
     @DynamoDBAttribute(attributeName = "setupFee")
-    public double getSetupFee() {
+    public BigDecimal getSetupFee() {
         return setupFee;
     }
 
-    public void setSetupFee(double setupFee) {
+    public void setSetupFee(BigDecimal setupFee) {
         this.setupFee = setupFee;
     }
 
     @DynamoDBAttribute(attributeName = "percentFull")
-    public double getPercentFull() {
+    public BigDecimal getPercentFull() {
         return percentFull;
     }
 
-    public void setPercentFull(double percentFull) {
+    public void setPercentFull(BigDecimal percentFull) {
         this.percentFull = percentFull;
     }
 

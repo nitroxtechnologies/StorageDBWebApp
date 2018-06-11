@@ -7,7 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.math.BigDecimal;
 
-@DynamoDBTable(tableName = "FacilitiesUnits")
+@DynamoDBTable(tableName = "FacilitiesUnitsRecent")
 public class FacilityToUnit
 {
     private long id;
@@ -87,7 +87,7 @@ public class FacilityToUnit
     }
 
     @DynamoDBIgnore
-    public FacilityToUnit createFromFacilityToUnitRecent(FacilityToUnitRecent other)
+    public FacilityToUnit createFromFacilityToUnit(FacilityToUnitHistory other)
     {
         this.id = other.getId();
         this.facilityId = other.getFacilityId();
