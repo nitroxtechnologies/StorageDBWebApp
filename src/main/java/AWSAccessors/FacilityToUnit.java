@@ -6,7 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @DynamoDBTable(tableName = "FacilitiesUnitsRecent")
 public class FacilityToUnit

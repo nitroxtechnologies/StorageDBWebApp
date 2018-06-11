@@ -15,6 +15,16 @@ public class RDSHandler
 {
     Connection connection;
 
+    public java.util.Date getDateFromSqlDate(java.sql.Date date)
+    {
+
+    }
+
+    public java.sql.Date getSqlDateFromDate(java.util.date date)
+    {
+        
+    }
+
     public RDSHandler() {
 
         String username = "";
@@ -53,17 +63,17 @@ public class RDSHandler
             System.out.println("Failed to make connection!");
         }
 
-        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Version");
-
+        //deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Version");
+        /*
         createCompaniesTable(connection);
         createCompaniesToFacilitiesTable(connection);
         createFacilitiesTable(connection);
         createFacilityToUnitsTable(connection);
         createFacilityToUnitsHistoryTable(connection);
         createUnitsTable(connection);
-//        createValuesTable(connection);
+        createValuesTable(connection);
         createVersionTable(connection);
-
+        */
 
     }
 
@@ -492,7 +502,7 @@ public class RDSHandler
         facilityToUnit.setId(resultSet.getLong("id"));
         facilityToUnit.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnit.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnit.setDateCreated(resultSet.getDate("dateCreated"));
+        facilityToUnit.setDateCreated(java.sql.Date.valueOf(resultSet.getDate("dateCreated").toString()));
         facilityToUnit.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnit.setRateType(resultSet.getString("rateType"));
         return facilityToUnit;
@@ -504,7 +514,7 @@ public class RDSHandler
         facilityToUnitHistory.setId(resultSet.getLong("id"));
         facilityToUnitHistory.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnitHistory.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnitHistory.setDateCreated(resultSet.getDate("dateCreated"));
+        facilityToUnitHistory.setDateCreated(java.sql.Date.valueOf(resultSet.getDate("dateCreated").toString()));
         facilityToUnitHistory.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnitHistory.setRateType(resultSet.getString("rateType"));
         return facilityToUnitHistory;

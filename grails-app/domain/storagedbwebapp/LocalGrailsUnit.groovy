@@ -3,21 +3,21 @@ package storagedbwebapp
 class LocalGrailsUnit {
     long dbId
     String name
-    double width;
-    double depth;
-    double height;
-    String climate
+    BigDecimal width;
+    BigDecimal depth;
+    BigDecimal height;
+    String type
     int floor
     BigDecimal price
 
-    LocalGrailsUnit(dbId, name, width, depth, height, climate, floor, price)
+    LocalGrailsUnit(dbId, name, width, depth, height, type, floor, price)
     {
         this.dbId = dbId
         this.name = name
         this.width = width
         this.depth = depth
         this.height = height
-        this.climate = climate
+        this.type = type
         this.floor = floor
         this.price = price
     }
