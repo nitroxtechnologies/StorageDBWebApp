@@ -55,29 +55,29 @@ public class Unit
     }
 
     @DynamoDBAttribute(attributeName = "width")
-    public double getWidth() {
+    public BigDecimal getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(BigDecimal width) {
         this.width = width;
     }
 
     @DynamoDBAttribute(attributeName = "depth")
-    public double getDepth() {
+    public BigDecimal getDepth() {
         return depth;
     }
 
-    public void setDepth(double depth) {
+    public void setDepth(BigDecimal depth) {
         this.depth = depth;
     }
 
     @DynamoDBAttribute(attributeName = "height")
-    public double getHeight() {
+    public BigDecimal getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(BigDecimal height) {
         this.height = height;
     }
 
@@ -91,20 +91,20 @@ public class Unit
     }
 
     @DynamoDBAttribute(attributeName = "doorHeight")
-    public double getDoorHeight() {
+    public BigDecimal getDoorHeight() {
         return doorHeight;
     }
 
-    public void setDoorHeight(double doorHeight) {
+    public void setDoorHeight(BigDecimal doorHeight) {
         this.doorHeight = doorHeight;
     }
 
     @DynamoDBAttribute(attributeName = "doorWidth")
-    public double getDoorWidth() {
+    public BigDecimal getDoorWidth() {
         return doorWidth;
     }
 
-    public void setDoorWidth(double doorWidth) {
+    public void setDoorWidth(BigDecimal doorWidth) {
         this.doorWidth = doorWidth;
     }
 

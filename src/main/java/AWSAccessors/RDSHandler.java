@@ -606,7 +606,7 @@ public class RDSHandler
         String result = "(" + facilityToUnit.getId() + ", ";
         result += "'" + facilityToUnit.getFacilityId() + "', ";
         result += "'" + facilityToUnit.getUnitId() + "', ";
-        result += "'" + facilityToUnit.getTimeCreated() + "', ";
+        result += "'" + facilityToUnit.getDateCreated() + "', ";
         result += "'" + facilityToUnit.getRateAmount() + "', ";
         result += "'" + facilityToUnit.getRateType() + "')";
 
@@ -624,7 +624,7 @@ public class RDSHandler
         String result = "(" + facilityToUnitHistory.getId() + ", ";
         result += "'" + facilityToUnitHistory.getFacilityId() + "', ";
         result += "'" + facilityToUnitHistory.getUnitId() + "', ";
-        result += "'" + facilityToUnitHistory.getTimeCreated() + "', ";
+        result += "'" + facilityToUnitHistory.getDateCreated() + "', ";
         result += "'" + facilityToUnitHistory.getRateAmount() + "', ";
         result += "'" + facilityToUnitHistory.getRateType() + "')";
 
@@ -951,7 +951,7 @@ public class RDSHandler
             {
                 result.add(new JavaLocalGrailsUnit(unit.getId(), unit.getName(), unit.getWidth(), unit.getDepth(),
                         unit.getHeight(), unit.getType(), unit.getFloor(), facilityToUnit.getRateAmount(),
-                        facilityToUnit.getFacilityId(), facilityToUnit.getRateType(), facilityToUnit.getTimeCreated()));
+                        facilityToUnit.getFacilityId(), facilityToUnit.getRateType(), facilityToUnit.getDateCreated()));
             }
         }
         return result;
