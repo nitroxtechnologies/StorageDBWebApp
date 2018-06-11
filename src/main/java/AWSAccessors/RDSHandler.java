@@ -1,8 +1,12 @@
 package AWSAccessors;
 
 import javax.xml.transform.Result;
+import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by spencersharp on 6/11/18.
@@ -12,6 +16,16 @@ public class RDSHandler
     Connection connection;
 
     public RDSHandler() {
+        String username = "";
+        String password = "";
+        try {
+            Scanner sc = new Scanner(new File("DataFiles/rdslogin.txt"));
+            username = sc.nextLine();
+            password = sc.nextLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("----MySQL JDBC Connection -------");
 
         try {
@@ -22,12 +36,12 @@ public class RDSHandler
             return;
         }
 
-        System.out.println("MySQL JDBC Driver Registered!");
+        System.out.println("MySQL JDBC Driver found!");
         connection = null;
 
         try {
             connection = DriverManager.
-                    getConnection("jdbc:mysql://" + "nitroxtech.c48qi7cc3kyh.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "StorageDBWebAppMainDatabase", "NitroxAdmin", "5tgjkl123");
+                    getConnection("jdbc:mysql://" + "nitroxtech.c48qi7cc3kyh.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "StorageDBWebAppMainDatabase", username, password);
         } catch (SQLException e) {
             System.out.println("Connection Failed!:\n" + e.getMessage());
         }
