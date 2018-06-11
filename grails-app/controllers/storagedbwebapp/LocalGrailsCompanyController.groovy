@@ -543,6 +543,7 @@ class LocalGrailsCompanyController
                     break;
                 case 6:
                     String price = (String) params.get(key);
+                    System.out.println("the price is right: " + price);
                     if(price.equals(""))
                     {
                         temp.price = new BigDecimal(""+MAGIC_NUMBER);
