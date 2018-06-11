@@ -17,15 +17,29 @@ public class RDSHandler
 
     public java.util.Date getDateFromSqlDate(java.sql.Date date)
     {
+<<<<<<< HEAD
         return new java.util.Date();
+=======
+        java.util.Date javaDate = null;
+        if (date != null) {
+            javaDate = new Date(date.getTime());
+        }
+        return javaDate;
+>>>>>>> origin/change-to-rds
     }
 
     public java.sql.Date getSqlDateFromDate(java.util.Date date)
     {
+<<<<<<< HEAD
         return new java.sql.Date(0);
+=======
+        java.sql.Date result = new java.sql.Date(date.getTime());
+        return result;
+>>>>>>> origin/change-to-rds
     }
 
     public RDSHandler() {
+
         String username = "";
         String password = "";
         try {
