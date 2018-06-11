@@ -10,7 +10,6 @@ public class RDSHandler
 {
     Connection connection;
 
-
     public RDSHandler() {
         System.out.println("----MySQL JDBC Connection -------");
 
@@ -60,6 +59,22 @@ public class RDSHandler
             e.printStackTrace();
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private static void createVersionTable(Connection conn) {
         Statement statement = null;
@@ -317,6 +332,16 @@ public class RDSHandler
         }//end try
     }
 
+
+
+
+
+
+
+
+
+
+
     private static void deleteTables(Connection conn, String tbls) {
         Statement statement = null;
         String[] tables = tbls.split(" ");
@@ -344,6 +369,20 @@ public class RDSHandler
             }// nothing we can do
         }//end try
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public ResultSet executeQuery(String query) throws SQLException
     {
