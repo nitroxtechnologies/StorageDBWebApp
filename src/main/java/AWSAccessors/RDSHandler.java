@@ -16,6 +16,7 @@ public class RDSHandler
     Connection connection;
 
     public RDSHandler() {
+
         String username = "";
         String password = "";
         try {
@@ -1287,6 +1288,21 @@ public class RDSHandler
     {
         ResultSet rs = executeQuery("SELECT max(id) FROM Units;");
         return rs.getLong("id");
+    }
+
+    public java.util.Date getDateFromSqlDate(java.sql.Date date)
+    {
+        java.util.Date javaDate = null;
+        if (date != null) {
+            javaDate = new Date(date.getTime());
+        }
+        return javaDate;
+    }
+
+    public java.sql.Date getSqlDateFromDate(java.util.Date date)
+    {
+        java.sql.Date result = new java.sql.Date(date.getTime());
+        return result;
     }
 
 
