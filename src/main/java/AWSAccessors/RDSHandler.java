@@ -17,12 +17,12 @@ public class RDSHandler
 
     public java.util.Date getDateFromSqlDate(java.sql.Date date)
     {
-
+        return new java.util.Date();
     }
 
-    public java.sql.Date getSqlDateFromDate(java.util.date date)
+    public java.sql.Date getSqlDateFromDate(java.util.Date date)
     {
-        
+        return new java.sql.Date(0);
     }
 
     public RDSHandler() {
@@ -411,6 +411,7 @@ public class RDSHandler
 
     public ResultSet executeQuery(String query) throws SQLException
     {
+        System.out.println("QUERY: " + query);
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(query);
         return resultSet;
@@ -501,7 +502,7 @@ public class RDSHandler
         facilityToUnit.setId(resultSet.getLong("id"));
         facilityToUnit.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnit.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnit.setDateCreated(java.sql.Date.valueOf(resultSet.getDate("dateCreated").toString()));
+        facilityToUnit.setDateCreated(getDateFromSqlDate(resultSet.getDate("dateCreated")));
         facilityToUnit.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnit.setRateType(resultSet.getString("rateType"));
         return facilityToUnit;
@@ -513,7 +514,7 @@ public class RDSHandler
         facilityToUnitHistory.setId(resultSet.getLong("id"));
         facilityToUnitHistory.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnitHistory.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnitHistory.setDateCreated(java.sql.Date.valueOf(resultSet.getDate("dateCreated").toString()));
+        facilityToUnitHistory.setDateCreated(getDateFromSqlDate(resultSet.getDate("dateCreated")));
         facilityToUnitHistory.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnitHistory.setRateType(resultSet.getString("rateType"));
         return facilityToUnitHistory;
@@ -630,7 +631,7 @@ public class RDSHandler
         String result = "(" + facilityToUnit.getId() + ", ";
         result += "'" + facilityToUnit.getFacilityId() + "', ";
         result += "'" + facilityToUnit.getUnitId() + "', ";
-        result += "'" + facilityToUnit.getDateCreated() + "', ";
+        result += "'" + getSqlDateFromDate(facilityToUnit.getDateCreated()) + "', ";
         result += "'" + facilityToUnit.getRateAmount() + "', ";
         result += "'" + facilityToUnit.getRateType() + "')";
 
@@ -648,7 +649,7 @@ public class RDSHandler
         String result = "(" + facilityToUnitHistory.getId() + ", ";
         result += "'" + facilityToUnitHistory.getFacilityId() + "', ";
         result += "'" + facilityToUnitHistory.getUnitId() + "', ";
-        result += "'" + facilityToUnitHistory.getDateCreated() + "', ";
+        result += "'" + getSqlDateFromDate(facilityToUnitHistory.getDateCreated()) + "', ";
         result += "'" + facilityToUnitHistory.getRateAmount() + "', ";
         result += "'" + facilityToUnitHistory.getRateType() + "')";
 

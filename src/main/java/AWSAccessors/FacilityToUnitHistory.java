@@ -88,7 +88,7 @@ public class FacilityToUnitHistory
     }
 
     @DynamoDBIgnore
-    public FacilityToUnitHistory createFromFacilityToUnitRecent(FacilityToUnit other)
+    public FacilityToUnitHistory createFromFacilityToUnit(FacilityToUnit other)
     {
         this.id = other.getId();
         this.facilityId = other.getFacilityId();

@@ -1,7 +1,6 @@
 package storagedbwebapp
 
 import AWSAccessors.Company
-import AWSAccessors.DynamoHandler
 import AWSAccessors.Facility
 import AWSAccessors.FacilityToUnitHistory
 import AWSAccessors.FacilityToUnit
@@ -13,7 +12,7 @@ import AWSAccessors.Value
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.sql.Date;
+import java.util.Date
 
 /**
  * Created by spencersharp on 8/19/17.
@@ -644,11 +643,11 @@ class LocalGrailsCompanyController
         {
             System.out.println(facilityToUnits.get(i));
             facilityToUnitIds.add(facilityToUnits.get(i).id);
-            oldFacilityToUnits.add(new FacilityToUnitHistory().createFromFacilityToUnitRecent(facilityToUnits.get(i)));
+            oldFacilityToUnits.add(new FacilityToUnitHistory().createFromFacilityToUnit(facilityToUnits.get(i)));
         }
         System.out.println("AMOUNT TO WRITE TO OLD TABLE IN FACILITYTOUNIT FORM: " + oldFacilityToUnits.size());
         System.out.println("AMOUNT THAT HAVE TO BE CREATED FOR: " + list.size());
-        rds.batchSaveFacilityToUnits(oldFacilityToUnits);
+        rds.batchSaveFacilityToUnitsHistory(oldFacilityToUnits);
 
         for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
         {
@@ -699,21 +698,20 @@ class LocalGrailsCompanyController
             toAdd.facilityId = javaLocalGrailsUnit.facilityId;
             toAdd.unitId = foundUnit.id;
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            Date date = new Date();
-            String dateString = dateFormat.format(date);
-            toAdd.dateCreated = dateString;
+            toAdd.dateCreated = new Date();
             toAdd.rateAmount = javaLocalGrailsUnit.price;
             toAdd.rateType = javaLocalGrailsUnit.rateType;
             newFacilityToUnits.add(toAdd);
         }
         System.out.println("--------");
-        ArrayList<FacilityToUnit> toDelete = new ArrayList<FacilityToUnitHistory>();
+        ArrayList<FacilityToUnit> toDelete = new ArrayList<FacilityToUnit>();
+        ArrayList<FacilityToUnitHistory> toBackup = new ArrayList<FacilityToUnitHistory>();
         for(int i = 0; i < facilityToUnitIds.size(); i++)
         {
             FacilityToUnit newFTU = new FacilityToUnit();
             newFTU.id = facilityToUnitIds.get(i);
             toDelete.add(newFTU);
+            toBackup.add(new FacilityToUnitHistory().createFromFacilityToUnit(newFTU));
             System.out.println(newFTU);
         }
         System.out.println("AMOUNT TO DELETE: " + toDelete.size());
@@ -728,7 +726,7 @@ class LocalGrailsCompanyController
         rds.batchSaveUnits(newUnits);
         //Find all FTUs that will be overwritten (facilityId, unitId, rateType)
         //Write them all to the non recent table
-        rds.batchSaveFacilityToUnitsHistory(newFacilityToUnits);
+        //rds.batchSaveFacilityToUnitsHistory(toBackup);
 
         Value maxUnitId = new Value();
         maxUnitId.name = "maxUnitId";
@@ -806,16 +804,15 @@ class LocalGrailsCompanyController
 
         ArrayList<FacilityToUnitHistory> historicalPrices = rds.getFacilityToUnitsHistoryFromFacilityIdAndUnitId(facilityId, unitId);
         FacilityToUnit mostRecent = rds.getFacilityToUnitByFacilityIdAndUnitId(facilityId, unitId);
-
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         while(historicalPrices.size() > 0)
         {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date minDate = new Date(Long.MAX_VALUE);
             double price = 0.0;
             int index = 0;
             for(int i = 0; i < historicalPrices.size(); i++)
             {
-                Date date = dateFormat.parse(historicalPrices.get(i).dateCreated);
+                Date date = historicalPrices.get(i).dateCreated;
                 if(date.compareTo(minDate) < 0)
                 {
                     minDate = date;
@@ -830,7 +827,7 @@ class LocalGrailsCompanyController
             System.out.println(historicalPrices.remove(index));
         }
         prices.add(mostRecent.rateAmount);
-        dates.add(mostRecent.timeCreated);
+        dates.add(dateFormat.format(mostRecent.dateCreated));
 
         System.out.println(prices);
         System.out.println(dates);
