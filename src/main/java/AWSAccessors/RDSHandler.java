@@ -37,13 +37,13 @@ public class RDSHandler
             System.out.println("Failed to make connection!");
         }
 
-        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsRecent FacilitiesUnits Units Values Version");
+        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Values Version");
 
         createCompaniesTable(connection);
         createCompaniesToFacilitiesTable(connection);
         createFacilitiesTable(connection);
         createFacilityToUnitsTable(connection);
-        createFacilityToUnitsRecentTable(connection);
+        createFacilityToUnitsHistoryTable(connection);
         createUnitsTable(connection);
         createValuesTable(connection);
         createVersionTable(connection);
@@ -176,7 +176,7 @@ public class RDSHandler
         }//end try
     }
 
-    private static void createFacilityToUnitsRecentTable(Connection conn) {
+    private static void createFacilityToUnitsTable(Connection conn) {
         Statement statement = null;
         try {
             statement = conn.createStatement();
@@ -188,7 +188,7 @@ public class RDSHandler
                     "rateAmount" + " DOUBLE," +
                     "rateType" + " TEXT" + ")";
             statement.executeUpdate(sql);
-            System.out.println("Created FacilitiesUnitsRecent table");
+            System.out.println("Created FacilitiesUnits table");
         } catch (SQLException se) {
             //Handle errors for JDBC
             se.printStackTrace();
@@ -205,7 +205,7 @@ public class RDSHandler
         }//end try
     }
 
-    private static void createFacilityToUnitsTable(Connection conn) {
+    private static void createFacilityToUnitsHistoryTable(Connection conn) {
         Statement statement = null;
         try {
             statement = conn.createStatement();
@@ -217,7 +217,7 @@ public class RDSHandler
                     "rateAmount" + " DOUBLE," +
                     "rateType" + " TEXT" + ")";
             statement.executeUpdate(sql);
-            System.out.println("Created FacilitiesUnits table");
+            System.out.println("Created FacilitiesUnitsHistory table");
         } catch (SQLException se) {
             //Handle errors for JDBC
             se.printStackTrace();
@@ -539,7 +539,7 @@ public class RDSHandler
 
     private String buildCompanyToFacilityInsertQuery(CompanyToFacility companyToFacility)
     {
-        String query = "INSERT INTO CompaniesFacilites VALUES" + buildValuesOfCompanyToFacilityInsertQuery(companyToFacility);
+        String query = "INSERT INTO CompaniesFacilities VALUES" + buildValuesOfCompanyToFacilityInsertQuery(companyToFacility);
         return query;
     }
 
@@ -602,32 +602,60 @@ public class RDSHandler
 
     private String buildValuesOfFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit)
     {
+        String result = "(" + facilityToUnit.getId() + ", ";
+        result += "'" + facilityToUnit.getFacilityId() + "', ";
+        result += "'" + facilityToUnit.getUnitId() + "', ";
+        result += "'" + facilityToUnit.getTimeCreated() + "', ";
+        result += "'" + facilityToUnit.getRateAmount() + "', ";
+        result += "'" + facilityToUnit.getRateType() + "')";
 
+        return result;
     }
 
     private String buildFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit)
     {
-
+        String query = "INSERT INTO FacilitiesUnits VALUES" + buildValuesOfFacilityToUnitInsertQuery(facilityToUnit);
+        return query;
     }
 
     private String buildValuesOfFacilityToUnitHistoryInsertQuery(FacilityToUnitHistory facilityToUnitHistory)
     {
+        String result = "(" + facilityToUnitHistory.getId() + ", ";
+        result += "'" + facilityToUnitHistory.getFacilityId() + "', ";
+        result += "'" + facilityToUnitHistory.getUnitId() + "', ";
+        result += "'" + facilityToUnitHistory.getTimeCreated() + "', ";
+        result += "'" + facilityToUnitHistory.getRateAmount() + "', ";
+        result += "'" + facilityToUnitHistory.getRateType() + "')";
 
+        return result;
     }
 
     private String buildFacilityToUnitHistoryInsertQuery(FacilityToUnitHistory facilityToUnitHistory)
     {
-
+        String query = "INSERT INTO FacilitiesUnitsHistory VALUES" + buildValuesOfFacilityToUnitHistoryInsertQuery(facilityToUnitHistory);
+        return query;
     }
 
     private String buildValuesOfUnitInsertQuery(Unit unit)
     {
+        String result = "(" + unit.getId() + ", ";
+        result += "'" + unit.getName() + "', ";
+        result += "'" + unit.getType() + "', ";
+        result += "'" + unit.getWidth() + "', ";
+        result += "'" + unit.getDepth() + "', ";
+        result += "'" + unit.getHeight() + "', ";
+        result += "'" + unit.getFloor() + "', ";
+        result += "'" + unit.getDoorHeight() + "', ";
+        result += "'" + unit.getDoorWidth() + "') ";
+
+        return result;
 
     }
 
     private String buildUnitInsertQuery(Unit unit)
     {
-
+        String query = "INSERT INTO Units VALUES" + buildValuesOfUnitInsertQuery(unit);
+        return query;
     }
 
 
@@ -689,27 +717,33 @@ public class RDSHandler
 
     public void addCompanyToFacility(CompanyToFacility companyToFacility) throws SQLException
     {
+        String query = buildCompanyToFacilityInsertQuery(companyToFacility);
+        executeQuery(query);
+    }
+
+    public void addFacility(Facility f) throws SQLException
+    {
+        String query = buildFacilityInsertQuery(f);
+        executeQuery(query);
 
     }
 
-    public void addFacility(Facility f)
+    public void addFacilityToUnit(FacilityToUnit facilityToUnit) throws SQLException
     {
-
+        String query = buildFacilityToUnitInsertQuery(facilityToUnit);
+        executeQuery(query);
     }
 
-    public void addFacilityToUnit(FacilityToUnit facilityToUnit)
+    public void addFacilityToUnitHistory(FacilityToUnitHistory facilityToUnitHistory) throws SQLException
     {
-
+        String query = buildFacilityToUnitHistoryInsertQuery(facilityToUnitHistory);
+        executeQuery(query);
     }
 
-    public void addFacilityToUnitHistory(FacilityToUnitHistory facilityToUnitHistory)
+    public void addUnit(Unit u) throws SQLException
     {
-
-    }
-
-    public void addUnit(Unit u)
-    {
-
+        String query = buildUnitInsertQuery(u);
+        executeQuery(query);
     }
 
 
