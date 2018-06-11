@@ -387,8 +387,8 @@ public class RDSHandler
     public ResultSet executeQuery(String query) throws SQLException
     {
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery(query);
-        return rs;
+        ResultSet resultSet = statement.executeQuery(query);
+        return resultSet;
     }
 
 
@@ -403,82 +403,110 @@ public class RDSHandler
      *      Methods that create from result sets
      */
 
-    private Company createCompanyFromResultSet(ResultSet rs) throws SQLException
+    private Company createCompanyFromResultSet(ResultSet resultSet) throws SQLException
     {
-        Company newCompany = new Company();
-        newCompany.setId(rs.getLong("id"));
-        newCompany.setName(rs.getString("name"));
-        return newCompany;
+        Company company = new Company();
+        company.setId(resultSet.getLong("id"));
+        company.setName(resultSet.getString("name"));
+        return company;
     }
 
-    private CompanyToFacility createCompanyToFacilityFromResultSet(ResultSet rs) throws SQLException
+    private CompanyToFacility createCompanyToFacilityFromResultSet(ResultSet resultSet) throws SQLException
     {
-
+        CompanyToFacility companyToFacility = new CompanyToFacility();
+        companyToFacility.setId(resultSet.getLong("id"));
+        companyToFacility.setCompanyId(resultSet.getLong("companyId"));
+        companyToFacility.setFacilityId(resultSet.getLong("facilityId"));
+        return companyToFacility;
     }
 
-    private Facility createFacilityFromResultSet(ResultSet rs) throws SQLException
+    private Facility createFacilityFromResultSet(ResultSet resultSet) throws SQLException
     {
         Facility facility = new Facility();
-        facility.setId(rs.getLong("id"));
-        facility.setName(rs.getString("name"));
-        facility.setCompanyId(rs.getLong("companyId"));
-        facility.setStreetAddress1(rs.getString("streetAddress1"));
-        facility.setStreetAddress2(rs.getString("streetAddress2"));
-        facility.setCity(rs.getString("city"));
-        facility.setState(rs.getString("state"));
-        facility.setZip(rs.getString("zip"));
-        facility.setCountry(rs.getString("country"));
-        facility.setWebsite(rs.getString("website"));
-        facility.setSetupFee(rs.getBigDecimal("setupFee"));
-        facility.setPercentFull(rs.getBigDecimal("percentFull"));
-        facility.setHasRetailStore(rs.getBoolean("hasRetailStore"));
-        facility.setHasInsurance(rs.getBoolean("hasInsurance"));
-        facility.setHasOnlineBillPay(rs.getBoolean("hasOnlineBillPay"));
-        facility.setHasWineStorage(rs.getBoolean("hasWineStorage"));
-        facility.setHasKiosk(rs.getBoolean("hasKiosk"));
-        facility.setHasOnsiteManagement(rs.getBoolean("hasOnsiteManagement"));
-        facility.setHasCameras(rs.getBoolean("hasCameras"));
-        facility.setHasVehicleParking(rs.getBoolean("hasVehicleParking"));
-        facility.setHasCutLocks(rs.getBoolean("hasCutLocks"));
-        facility.setHasOnsiteShipping(rs.getBoolean("hasOnsiteShipping"));
-        facility.setHasAutopay(rs.getBoolean("hasAutopay"));
-        facility.setHasOnsiteCarts(rs.getBoolean("hasOnsiteCarts"));
-        facility.setHasParabolicMirrors(rs.getBoolean("hasParabolicMirrors"));
-        facility.setHasMotionLights(rs.getBoolean("hasMotionLights"));
-        facility.setHasElectronicLease(rs.getBoolean("hasElectronicLease"));
-        facility.setHasPaperlessBilling(rs.getBoolean("hasPaperlessBilling"));
-        facility.setMondayOpen(rs.getTime("mondayOpen"));
-        facility.setMondayClose(rs.getTime("mondayClose"));
-        facility.setTuesdayOpen(rs.getTime("tuesdayOpen"));
-        facility.setTuesdayClose(rs.getTime("tuesdayClose"));
-        facility.setWednesdayOpen(rs.getTime("wednesdayOpen"));
-        facility.setWednesdayClose(rs.getTime("wednesdayClose"));
-        facility.setThursdayOpen(rs.getTime("thursdayOpen"));
-        facility.setThursdayClose(rs.getTime("thursdayClose"));
-        facility.setFridayOpen(rs.getTime("fridayOpen"));
-        facility.setFridayClose(rs.getTime("fridayClose"));
-        facility.setSaturdayOpen(rs.getTime("saturdayOpen"));
-        facility.setSaturdayClose(rs.getTime("saturdayClose"));
-        facility.setSundayOpen(rs.getTime("sundayOpen"));
-        facility.setSundayClose(rs.getTime("sundayClose"));
-        facility.setRating(rs.getString("rating"));
-        facility.setPromotions(rs.getString("promotions"));
+        facility.setId(resultSet.getLong("id"));
+        facility.setName(resultSet.getString("name"));
+        facility.setCompanyId(resultSet.getLong("companyId"));
+        facility.setStreetAddress1(resultSet.getString("streetAddress1"));
+        facility.setStreetAddress2(resultSet.getString("streetAddress2"));
+        facility.setCity(resultSet.getString("city"));
+        facility.setState(resultSet.getString("state"));
+        facility.setZip(resultSet.getString("zip"));
+        facility.setCountry(resultSet.getString("country"));
+        facility.setWebsite(resultSet.getString("website"));
+        facility.setSetupFee(resultSet.getBigDecimal("setupFee"));
+        facility.setPercentFull(resultSet.getBigDecimal("percentFull"));
+        facility.setHasRetailStore(resultSet.getBoolean("hasRetailStore"));
+        facility.setHasInsurance(resultSet.getBoolean("hasInsurance"));
+        facility.setHasOnlineBillPay(resultSet.getBoolean("hasOnlineBillPay"));
+        facility.setHasWineStorage(resultSet.getBoolean("hasWineStorage"));
+        facility.setHasKiosk(resultSet.getBoolean("hasKiosk"));
+        facility.setHasOnsiteManagement(resultSet.getBoolean("hasOnsiteManagement"));
+        facility.setHasCameras(resultSet.getBoolean("hasCameras"));
+        facility.setHasVehicleParking(resultSet.getBoolean("hasVehicleParking"));
+        facility.setHasCutLocks(resultSet.getBoolean("hasCutLocks"));
+        facility.setHasOnsiteShipping(resultSet.getBoolean("hasOnsiteShipping"));
+        facility.setHasAutopay(resultSet.getBoolean("hasAutopay"));
+        facility.setHasOnsiteCarts(resultSet.getBoolean("hasOnsiteCarts"));
+        facility.setHasParabolicMirrors(resultSet.getBoolean("hasParabolicMirrors"));
+        facility.setHasMotionLights(resultSet.getBoolean("hasMotionLights"));
+        facility.setHasElectronicLease(resultSet.getBoolean("hasElectronicLease"));
+        facility.setHasPaperlessBilling(resultSet.getBoolean("hasPaperlessBilling"));
+        facility.setMondayOpen(resultSet.getTime("mondayOpen"));
+        facility.setMondayClose(resultSet.getTime("mondayClose"));
+        facility.setTuesdayOpen(resultSet.getTime("tuesdayOpen"));
+        facility.setTuesdayClose(resultSet.getTime("tuesdayClose"));
+        facility.setWednesdayOpen(resultSet.getTime("wednesdayOpen"));
+        facility.setWednesdayClose(resultSet.getTime("wednesdayClose"));
+        facility.setThursdayOpen(resultSet.getTime("thursdayOpen"));
+        facility.setThursdayClose(resultSet.getTime("thursdayClose"));
+        facility.setFridayOpen(resultSet.getTime("fridayOpen"));
+        facility.setFridayClose(resultSet.getTime("fridayClose"));
+        facility.setSaturdayOpen(resultSet.getTime("saturdayOpen"));
+        facility.setSaturdayClose(resultSet.getTime("saturdayClose"));
+        facility.setSundayOpen(resultSet.getTime("sundayOpen"));
+        facility.setSundayClose(resultSet.getTime("sundayClose"));
+        facility.setRating(resultSet.getString("rating"));
+        facility.setPromotions(resultSet.getString("promotions"));
         return facility;
     }
 
-    private FacilityToUnit createFacilityToUnitFromResultSet(ResultSet rs) throws SQLException
+    private FacilityToUnit createFacilityToUnitFromResultSet(ResultSet resultSet) throws SQLException
     {
-
+        FacilityToUnit facilityToUnit = new FacilityToUnit();
+        facilityToUnit.setId(resultSet.getLong("id"));
+        facilityToUnit.setFacilityId(resultSet.getLong("facilityId"));
+        facilityToUnit.setUnitId(resultSet.getLong("unitId"));
+        facilityToUnit.setDateCreated(resultSet.getDate("dateCreated"));
+        facilityToUnit.setRateAmount(resultSet.getBigDecimal("rateAmount"));
+        facilityToUnit.setRateType(resultSet.getString("rateType"));
+        return facilityToUnit;
     }
 
-    private FacilityToUnitHistory createFacilityToUnitHistoryFromResultSet(ResultSet rs) throws SQLException
+    private FacilityToUnitHistory createFacilityToUnitHistoryFromResultSet(ResultSet resultSet) throws SQLException
     {
-
+        FacilityToUnitHistory facilityToUnitHistory = new FacilityToUnitHistory();
+        facilityToUnitHistory.setId(resultSet.getLong("id"));
+        facilityToUnitHistory.setFacilityId(resultSet.getLong("facilityId"));
+        facilityToUnitHistory.setUnitId(resultSet.getLong("unitId"));
+        facilityToUnitHistory.setDateCreated(resultSet.getDate("dateCreated"));
+        facilityToUnitHistory.setRateAmount(resultSet.getBigDecimal("rateAmount"));
+        facilityToUnitHistory.setRateType(resultSet.getString("rateType"));
+        return facilityToUnitHistory;
     }
 
-    private Unit createUnitFromResultSet(ResultSet rs) throws SQLException
+    private Unit createUnitFromResultSet(ResultSet resultSet) throws SQLException
     {
-
+        Unit unit = new Unit();
+        unit.setId(resultSet.getLong("id"));
+        unit.setName(resultSet.getString("name"));
+        unit.setType(resultSet.getString("type"));
+        unit.setWidth(resultSet.getBigDecimal("width"));
+        unit.setDepth(resultSet.getBigDecimal("depth"));
+        unit.setHeight(resultSet.getBigDecimal("height"));
+        unit.setFloor(resultSet.getInt("floor"));
+        unit.setDoorHeight(resultSet.getBigDecimal("doorHeight"));
+        unit.setDoorWidth(resultSet.getBigDecimal("doorWidth"));
+        return unit;
     }
 
 
@@ -619,9 +647,9 @@ public class RDSHandler
 
     public void incrementVersion() throws SQLException {
         String query = "SELECT * FROM Version";
-        ResultSet rs = executeQuery(query);
-        rs.next();
-        long val = rs.getLong("val");
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        long val = resultSet.getLong("val");
 
         query = "INSERT INTO Version VALUES(1, " + ++val + ")";
         executeQuery(query);
@@ -631,9 +659,9 @@ public class RDSHandler
     {
         Statement statement = connection.createStatement();
         String query = "SELECT * FROM Version";
-        ResultSet rs = statement.executeQuery(query);
-        rs.next();
-        long val = rs.getLong("val");
+        ResultSet resultSet = statement.executeQuery(query);
+        resultSet.next();
+        long val = resultSet.getLong("val");
 
         return val;
     }
@@ -692,19 +720,19 @@ public class RDSHandler
     public Company getCompanyFromId(long id) throws SQLException
     {
         String query = "SELECT * FROM Companies WHERE id=" + id;
-        ResultSet rs = executeQuery(query);
-        rs.next();
-        return createCompanyFromResultSet(rs);
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createCompanyFromResultSet(resultSet);
     }
 
     public ArrayList<Facility> getFacilitiesFromCompanyId(long companyId) throws SQLException
     {
         String query = "SELECT * FROM Facilities WHERE companyId=" + companyId;
-        ResultSet rs = executeQuery(query);
+        ResultSet resultSet = executeQuery(query);
         ArrayList<Facility> result = new ArrayList<Facility>();
-        while(rs.next())
+        while(resultSet.next())
         {
-            result.add(createFacilityFromResultSet(rs));
+            result.add(createFacilityFromResultSet(resultSet));
         }
         return result;
     }
@@ -712,76 +740,84 @@ public class RDSHandler
     public Company getCompanyFromName(String name) throws SQLException
     {
         String query = "SELECT * FROM Companies WHERE name=" + name;
-        ResultSet rs = executeQuery(query);
-        rs.next();
-        return createCompanyFromResultSet(rs);
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createCompanyFromResultSet(resultSet);
     }
 
     public Facility getFacilityFromFacilityName(String name) throws SQLException
     {
         String query = "SELECT * FROM Facilities WHERE name=" + name;
-        ResultSet rs = executeQuery(query);
-        rs.next();
-        return createFacilityFromResultSet(rs);
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createFacilityFromResultSet(resultSet);
     }
 
-    public Company getCompanyFromFacilityId(long facilityId)
+    public Company getCompanyFromFacilityId(long facilityId) throws SQLException
+    {
+        String query = "SELECT * FROM Facilities WHERE id=" + facilityId;
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        Facility facility = createFacilityFromResultSet(resultSet);
+        long companyId = facility.getCompanyId();
+        query = "SELECT * FROM Companies WHERE id=" + companyId;
+        resultSet = executeQuery(query);
+        resultSet.next();
+        return createCompanyFromResultSet(resultSet);
+    }
+
+    public ArrayList<Unit> getUnitsFromFacilityName(String name) throws SQLException
     {
 
     }
 
-    public ArrayList<Unit> getUnitsFromFacilityName(String name)
+    public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityId(long facilityId) throws SQLException
     {
 
     }
 
-    public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityId(long facilityId)
+    public ArrayList<FacilityToUnitHistory> getFacilityToUnitHistoryFromFacilityId(long facilityId) throws SQLException
     {
 
     }
 
-    public ArrayList<FacilityToUnitHistory> getFacilityToUnitHistoryFromFacilityId(long facilityId)
+    public ArrayList<Company> getCompaniesFromCompanyIds(ArrayList<Long> companyIds) throws SQLException
     {
 
     }
 
-    public ArrayList<Company> getCompaniesFromCompanyIds(ArrayList<Long> companyIds)
-    {
-
-    }
-
-    public ArrayList<JavaLocalGrailsUnit> getUnitsFromFacilityIds(ArrayList<Long> facilityIds)
+    public ArrayList<JavaLocalGrailsUnit> getUnitsFromFacilityIds(ArrayList<Long> facilityIds) throws SQLException
     {
 
     }
 
     //Gets all the Units that match in name, floor, climate
-    public ArrayList<Unit> getUnitsWithInfo(ArrayList<JavaLocalGrailsUnit> list)
+    public ArrayList<Unit> getUnitsWithInfo(ArrayList<JavaLocalGrailsUnit> list) throws SQLException
     {
 
     }
 
-    public Facility getFacilityFromId(long facilityId)
+    public Facility getFacilityFromId(long facilityId) throws SQLException
     {
 
     }
 
-    public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude)
+    public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude) throws SQLException
     {
 
     }
 
-    public FacilityToUnit getFacilityToUnitByFacilityIdAndUnitId(long facilityId, long unitId)
+    public FacilityToUnit getFacilityToUnitByFacilityIdAndUnitId(long facilityId, long unitId) throws SQLException
     {
 
     }
 
-    public ArrayList<FacilityToUnitHistory> getFacilityToUnitsHistoryFromFacilityIdAndUnitId(long facilityId, long unitId)
+    public ArrayList<FacilityToUnitHistory> getFacilityToUnitsHistoryFromFacilityIdAndUnitId(long facilityId, long unitId) throws SQLException
     {
 
     }
 
-    public ArrayList<Facility> getFacilitiesFromFacilityIds(ArrayList<Long> facilityIds)
+    public ArrayList<Facility> getFacilitiesFromFacilityIds(ArrayList<Long> facilityIds) throws SQLException
     {
 
     }
@@ -955,12 +991,12 @@ public class RDSHandler
      */
 
 
-    public long getMaxFacilityToUnitId()
+    public long getMaxFacilityToUnitId() throws SQLException
     {
 
     }
 
-    public long getMaxUnitId()
+    public long getMaxUnitId() throws SQLException
     {
 
     }

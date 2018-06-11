@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @DynamoDBTable(tableName = "FacilitiesUnitsRecent")
 public class FacilityToUnit
@@ -13,7 +14,7 @@ public class FacilityToUnit
     private long id;
     private long facilityId;
     private long unitId;
-    private String timeCreated;
+    private Date timeCreated;
     private BigDecimal rateAmount;
     private String rateType;
 

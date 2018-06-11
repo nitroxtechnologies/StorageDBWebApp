@@ -13,7 +13,7 @@ public class FacilityToUnitHistory
     private long id;
     private long facilityId;
     private long unitId;
-    private String timeCreated;
+    private Date timeCreated;
     private BigDecimal rateAmount;
     private String rateType;
 

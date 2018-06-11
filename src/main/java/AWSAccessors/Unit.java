@@ -4,6 +4,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
+import java.math.BigDecimal;
+
 @DynamoDBTable(tableName = "Units")
 public class Unit
 {
@@ -11,14 +13,14 @@ public class Unit
     private String name;
     private String type;
 
-    private double width;
-    private double depth;
-    private double height;
+    private BigDecimal width;
+    private BigDecimal depth;
+    private BigDecimal height;
 
     private int floor;
 
-    private double doorHeight;
-    private double doorWidth;
+    private BigDecimal doorHeight;
+    private BigDecimal doorWidth;
 
     public Unit()
     {
