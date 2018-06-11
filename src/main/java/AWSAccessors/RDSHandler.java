@@ -427,12 +427,12 @@ public class RDSHandler
         return facility;
     }
 
-    private FacilityToUnitHistory createFacilityToUnitFromResultSet(ResultSet rs) throws SQLException
+    private FacilityToUnit createFacilityToUnitFromResultSet(ResultSet rs) throws SQLException
     {
 
     }
 
-    private FacilityToUnit createFacilityToUnitRecentFromResultSet(ResultSet rs) throws SQLException
+    private FacilityToUnitHistory createFacilityToUnitHistoryFromResultSet(ResultSet rs) throws SQLException
     {
 
     }
@@ -533,22 +533,22 @@ public class RDSHandler
         return query;
     }
 
-    private String buildValuesOfFacilityToUnitInsertQuery(FacilityToUnitHistory facilityToUnitHistory)
+    private String buildValuesOfFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit)
     {
 
     }
 
-    private String buildFacilityToUnitInsertQuery(FacilityToUnitHistory facilityToUnitHistory)
+    private String buildFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit)
     {
 
     }
 
-    private String buildValuesOfFacilityToUnitRecentInsertQuery(FacilityToUnit facilityToUnit)
+    private String buildValuesOfFacilityToUnitHistoryInsertQuery(FacilityToUnitHistory facilityToUnitHistory)
     {
 
     }
 
-    private String buildFacilityToUnitRecentInsertQuery(FacilityToUnit facilityToUnit)
+    private String buildFacilityToUnitHistoryInsertQuery(FacilityToUnitHistory facilityToUnitHistory)
     {
 
     }
@@ -620,12 +620,22 @@ public class RDSHandler
         executeQuery(query);
     }
 
+    public void addCompanyToFacility(CompanyToFacility companyToFacility) throws SQLException
+    {
+
+    }
+
     public void addFacility(Facility f)
     {
 
     }
 
-    public void addFacilityToUnit(FacilityToUnitHistory ftu)
+    public void addFacilityToUnit(FacilityToUnit facilityToUnit)
+    {
+
+    }
+
+    public void addFacilityToUnitHistory(FacilityToUnitHistory facilityToUnitHistory)
     {
 
     }
@@ -646,12 +656,6 @@ public class RDSHandler
         ResultSet rs = executeQuery(query);
         rs.next();
         return createCompanyFromResultSet(rs);
-    }
-
-    public void addCompanyToFacility(CompanyToFacility ctf) throws SQLException
-    {
-        String query = buildCompanyToFacilityInsertQuery(ctf);
-        executeQuery(query);
     }
 
     public ArrayList<Facility> getFacilitiesFromCompanyId(long companyId) throws SQLException
@@ -692,12 +696,12 @@ public class RDSHandler
 
     }
 
-    public ArrayList<FacilityToUnitHistory> getFacilityToUnitsFromFacilityId(long facilityId)
+    public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityId(long facilityId)
     {
 
     }
 
-    public ArrayList<FacilityToUnit> getFacilityToUnitRecentsFromFacilityId(long facilityId)
+    public ArrayList<FacilityToUnitHistory> getFacilityToUnitHistoryFromFacilityId(long facilityId)
     {
 
     }
@@ -723,17 +727,17 @@ public class RDSHandler
 
     }
 
-    public ArrayList<FacilityToUnit> getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude)
+    public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude)
     {
 
     }
 
-    public FacilityToUnit getFacilityToUnitRecentByFacilityIdAndUnitId(long facilityId, long unitId)
+    public FacilityToUnit getFacilityToUnitByFacilityIdAndUnitId(long facilityId, long unitId)
     {
 
     }
 
-    public ArrayList<FacilityToUnitHistory> getFacilityToUnitsFromFacilityIdAndUnitId(long facilityId, long unitId)
+    public ArrayList<FacilityToUnitHistory> getFacilityToUnitsHistoryFromFacilityIdAndUnitId(long facilityId, long unitId)
     {
 
     }
@@ -812,14 +816,14 @@ public class RDSHandler
         executeQuery(query);
     }
 
-    public void batchSaveFacilityToUnits(ArrayList<FacilityToUnitHistory> facilityToUnitHistories) throws SQLException
+    public void batchSaveFacilityToUnits(ArrayList<FacilityToUnit> facilityToUnits) throws SQLException
     {
-        String query = "INSERT INTO FacilitiesUnits VALUES";
-        for(int i = 0; i < facilityToUnitHistories.size(); i++)
+        String query = "INSERT INTO FacilitiesUnitsRecent VALUES";
+        for(int i = 0; i < facilityToUnits.size(); i++)
         {
-            FacilityToUnitHistory facilityToUnitHistory = facilityToUnitHistories.get(i);
-            query += buildValuesOfFacilityToUnitInsertQuery(facilityToUnitHistory);
-            if(i != facilityToUnitHistories.size() - 1)
+            FacilityToUnit facilityToUnit = facilityToUnits.get(i);
+            query += buildValuesOfFacilityToUnitInsertQuery(facilityToUnit);
+            if(i != facilityToUnits.size() - 1)
             {
                 query += ",";
             }
@@ -831,14 +835,14 @@ public class RDSHandler
         executeQuery(query);
     }
 
-    public void batchSaveFacilityToUnitsRecent(ArrayList<FacilityToUnit> facilityToUnits) throws SQLException
+    public void batchSaveFacilityToUnitsHistory(ArrayList<FacilityToUnitHistory> facilityToUnitHistories) throws SQLException
     {
-        String query = "INSERT INTO FacilitiesUnitsRecent VALUES";
-        for(int i = 0; i < facilityToUnits.size(); i++)
+        String query = "INSERT INTO FacilitiesUnits VALUES";
+        for(int i = 0; i < facilityToUnitHistories.size(); i++)
         {
-            FacilityToUnit facilityToUnit = facilityToUnits.get(i);
-            query += buildValuesOfFacilityToUnitRecentInsertQuery(facilityToUnit);
-            if(i != facilityToUnits.size() - 1)
+            FacilityToUnitHistory facilityToUnitHistory = facilityToUnitHistories.get(i);
+            query += buildValuesOfFacilityToUnitHistoryInsertQuery(facilityToUnitHistory);
+            if(i != facilityToUnitHistories.size() - 1)
             {
                 query += ",";
             }
