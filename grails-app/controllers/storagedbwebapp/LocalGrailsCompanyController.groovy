@@ -6,12 +6,14 @@ import AWSAccessors.Facility
 import AWSAccessors.FacilityToUnitHistory
 import AWSAccessors.FacilityToUnit
 import AWSAccessors.JavaLocalGrailsUnit
+import AWSAccessors.RDSHandler
 import AWSAccessors.Unit
 import AWSAccessors.Value
 
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.sql.Date;
 
 /**
  * Created by spencersharp on 8/19/17.
@@ -20,21 +22,8 @@ class LocalGrailsCompanyController
 {
     static final BigDecimal PRICE_DIFFERENCE_TO_SKIP = new BigDecimal(""+123456.0);
 
-    public static ArrayList<java.lang.Long> makeArrayList(List<Long> list)
-    {
-        ArrayList<java.lang.Long> retList = new ArrayList<>();
-
-        for(Long aLong : list)
-        {
-            retList.add(aLong.val);
-        }
-
-        return retList;
-    }
-
     def updateLocalTables()
     {
-        DynamoHandler dh = new DynamoHandler();
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
 
         def companies = LocalGrailsCompany.list()
@@ -147,8 +136,8 @@ class LocalGrailsCompanyController
         println("CID = " + params.cID)
         println("----------------");
         def facilities = []
-        DynamoHandler dh = new DynamoHandler()
-        List<Facility> facilitiesArraylist = dh.getFacilitiesFromCompanyID(params.cID as Integer)
+        RDSHandler rds = new RDSHandler()
+        List<Facility> facilitiesArraylist = rds.getFacilitiesFromCompanyID(params.cID as Integer)
         LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
@@ -206,13 +195,13 @@ class LocalGrailsCompanyController
         println("fName: " + params.fName);
         println("fID: " + params.fID);
 
-        DynamoHandler dh = new DynamoHandler()
+        RDSHandler rds = new RDSHandler()
 
-        Facility f = dh.getFacilityFromFacilityName(params.fName as String)
+        Facility f = rds.getFacilityFromFacilityName(params.fName as String)
         println("Facility ID: " + f.getId());
         println("----------------");
-        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
+        List<Unit> unitsArraylist = rds.getUnitsFromFacilityName(params.fName as String)
+        List<FacilityToUnit> facilityToUnitList = rds.getFacilityToUnitsFromFacilityId(f.getId())
         CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
@@ -241,7 +230,6 @@ class LocalGrailsCompanyController
     {
         System.out.println("----------\nCompare block start");
 
-
         if(CompareCompany.list().size() == 0 && RemoveFacility.list().size() <= 1)
         {
             long index = 1;
@@ -250,16 +238,16 @@ class LocalGrailsCompanyController
                 new CompareCompany(dbId: comp.dbId, index: index++, name: comp.name).save()
             }
         }
-        DynamoHandler dh = new DynamoHandler();
+        RDSHandler rds = new RDSHandler();
         if(params.cID != null)
         {
             System.out.println("\n\nCOMPARE: CID - " + (params.cID as Integer) + "\n\n");
 
             updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l)
 
-            Company c = dh.getCompanyFromName(params.cName as String);
+            Company c = rds.getCompanyFromName(params.cName as String);
 
-            ArrayList<Facility> facilities = dh.getFacilitiesFromCompanyID(c.getId());
+            ArrayList<Facility> facilities = rds.getFacilitiesFromCompanyID(c.getId());
             AddFacility.executeUpdate('delete from AddFacility')
 
             ArrayList<RemoveFacility> removeFacilities = RemoveFacility.list();
@@ -285,7 +273,7 @@ class LocalGrailsCompanyController
             System.out.println("\n\nCOMPARE: FID\n\n");
             String fName = params.fName as String;
 
-            Facility f = dh.getFacilityFromFacilityName(fName);
+            Facility f = rds.getFacilityFromFacilityName(fName);
 
             long fID = f.getId();
 
@@ -314,7 +302,7 @@ class LocalGrailsCompanyController
 
                 boolean anyLeftForCompany = false;
 
-                ArrayList<Facility> facilities = dh.getFacilitiesFromCompanyID(companyId);
+                ArrayList<Facility> facilities = rds.getFacilitiesFromCompanyId(companyId);
 
                 for(Facility facility : facilities)
                 {
@@ -364,7 +352,7 @@ class LocalGrailsCompanyController
                 }
                 if(!isCompanyAleadyInCompareCompanies)
                 {
-                    Company c = dh.getCompanyFromId(companyId);
+                    Company c = rds.getCompanyFromId(companyId);
                     long newIndex = 1;
                     for(CompareCompany cc : CompareCompany.list())
                     {
@@ -386,7 +374,7 @@ class LocalGrailsCompanyController
                 System.out.println("RFID: " + rf.dbId);
             }
 
-            ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = dh.getUnitsFromFacilityIds(removeFacilityIds);
+            ArrayList<JavaLocalGrailsUnit> javaLocalGrailsUnitList = rds.getUnitsFromFacilityIds(removeFacilityIds);
             HashMap<Long, HashSet<Long>> alreadyAddedTemps = new HashMap<>();
             long idOfBaseFacility = removeFacilityIds.get(0);
             for(Long rfId : removeFacilityIds)
@@ -534,7 +522,7 @@ class LocalGrailsCompanyController
                     break;
                 case 4:
                     temp.type = "" + params.get(key);
-                    while(temp.type.charAt(temp.type.length()-1) == ' ')
+                    while((""+temp.type.charAt(temp.type.length()-1)).equals(" "))
                     {
                         temp.type = temp.type.substring(0,temp.type.length()-1);
                     }
@@ -582,9 +570,9 @@ class LocalGrailsCompanyController
 
 
 
-        DynamoHandler dh = new DynamoHandler();
+        RDSHandler rds = new RDSHandler();
         //Gets all the Units that match in name, floor, climate
-        List<Unit> unitList = dh.getUnitsWithInfo(list);
+        List<Unit> unitList = rds.getUnitsWithInfo(list);
         System.out.println("NUMBER OF FOUND UNITS: " + unitList.size());
         for(Unit u : unitList)
         {
@@ -596,8 +584,8 @@ class LocalGrailsCompanyController
         ArrayList<Unit> newUnits = new ArrayList<Unit>();
         ArrayList<FacilityToUnit> newFacilityToUnits = new ArrayList<FacilityToUnit>();
         //Get max IDs to use later
-        long newIdFTU = dh.getMaxFacilityToUnitId();
-        long newIdUnit = dh.getMaxUnitId();
+        long newIdFTU = rds.getMaxFacilityToUnitId();
+        long newIdUnit = rds.getMaxUnitId();
 
         //Sets ids of all JavaLocalGrailsUnits that have corresponding units to correct id
         for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
@@ -647,7 +635,7 @@ class LocalGrailsCompanyController
         //Now check all FTUs for facilityId == facility && unitId != magic number dudes id (USE <> FOR NOT EQUAL TO aka !=)
         //If they meet these criteria add them to this list
         //With this list we know which IDs to overwrite, and which IDs that will be unchanged (magic number dudes)
-        ArrayList<FacilityToUnit> facilityToUnits = dh.getFacilityToUnitsRecentFromFacilityIdAndIdsToExclude(facilityId, onesToNotChange);
+        ArrayList<FacilityToUnit> facilityToUnits = rds.getFacilityToUnitsFromFacilityIdAndIdsToExclude(facilityId, onesToNotChange);
         System.out.println("ONES TO OVERWRITE: " + facilityToUnits.size());
         //NOW SAVE ALL GUYS WITH THESE IDS TO OLD TABLE
         ArrayList<FacilityToUnitHistory> oldFacilityToUnits = new ArrayList<FacilityToUnitHistory>();
@@ -660,7 +648,7 @@ class LocalGrailsCompanyController
         }
         System.out.println("AMOUNT TO WRITE TO OLD TABLE IN FACILITYTOUNIT FORM: " + oldFacilityToUnits.size());
         System.out.println("AMOUNT THAT HAVE TO BE CREATED FOR: " + list.size());
-        dh.batchSaveFacilityToUnits(oldFacilityToUnits);
+        rds.batchSaveFacilityToUnits(oldFacilityToUnits);
 
         for(JavaLocalGrailsUnit javaLocalGrailsUnit : list)
         {
@@ -714,7 +702,7 @@ class LocalGrailsCompanyController
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
             String dateString = dateFormat.format(date);
-            toAdd.timeCreated = dateString;
+            toAdd.dateCreated = dateString;
             toAdd.rateAmount = javaLocalGrailsUnit.price;
             toAdd.rateType = javaLocalGrailsUnit.rateType;
             newFacilityToUnits.add(toAdd);
@@ -730,17 +718,17 @@ class LocalGrailsCompanyController
         }
         System.out.println("AMOUNT TO DELETE: " + toDelete.size());
         System.out.println("AMOUNT WE ARE ADDING: " + newFacilityToUnits.size());
-        dh.batchDeleteFacilityToUnitsRecent(toDelete);
+        rds.batchDeleteFacilityToUnits(toDelete);
 
         //Update old FTUs instead of making new ones
         //If we go over, increment on max FTU id to make new FTUs for table
         //If we're under, use BatchWriteItem in amounts of exactly 25 to delete all the FTUs not being used
         //Can just call batchSave
 
-        dh.batchSaveUnits(newUnits);
+        rds.batchSaveUnits(newUnits);
         //Find all FTUs that will be overwritten (facilityId, unitId, rateType)
         //Write them all to the non recent table
-        dh.batchSaveFacilityToUnitsRecent(newFacilityToUnits);
+        rds.batchSaveFacilityToUnitsHistory(newFacilityToUnits);
 
         Value maxUnitId = new Value();
         maxUnitId.name = "maxUnitId";
@@ -754,9 +742,7 @@ class LocalGrailsCompanyController
         values.add(maxUnitId);
         values.add(maxFacilityToUnitId);
 
-        dh.batchSaveValues(values);
-
-        Facility f = dh.getFacilityFromId(facilityId);
+        Facility f = rds.getFacilityFromId(facilityId);
 
         chain(action:"loadUnitTable", params:[fID: facilityId, fName: f.getName()]);
     }
@@ -772,13 +758,13 @@ class LocalGrailsCompanyController
         println("fName: " + params.fName);
         println("fID: " + params.fID);
 
-        DynamoHandler dh = new DynamoHandler()
+        RDSHandler rds = new RDSHandler()
 
         Facility f = dh.getFacilityFromFacilityName(params.fName as String)
         println("Facility ID: " + f.getId());
         println("----------------");
-        List<Unit> unitsArraylist = dh.getUnitsFromFacilityName(params.fName as String)
-        List<FacilityToUnit> facilityToUnitList = dh.getFacilityToUnitRecentsFromFacilityId(f.getId())
+        List<Unit> unitsArraylist = rds.getUnitsFromFacilityName(params.fName as String)
+        List<FacilityToUnit> facilityToUnitList = rds.getFacilityToUnitsFromFacilityId(f.getId())
         CompareUnit.executeUpdate('delete from CompareUnit')
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
@@ -802,7 +788,7 @@ class LocalGrailsCompanyController
     }
 
     def graph() {
-        DynamoHandler dh = new DynamoHandler();
+        RDSHandler rds = new RDSHandler();
         long facilityId = DropdownInfo.list().get(0).facilityId;
         System.out.println("FACILITY ID: " + facilityId);
         JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
@@ -811,17 +797,15 @@ class LocalGrailsCompanyController
         temp.type = (String) params.uType;
         ArrayList<JavaLocalGrailsUnit> tempList = new ArrayList<JavaLocalGrailsUnit>();
         tempList.add(temp);
-        long unitId = dh.getUnitsWithInfo(tempList).get(0).id;
+        long unitId = rds.getUnitsWithInfo(tempList).get(0).id;
 
-        String facilityName = dh.getFacilityFromId(facilityId).getName();
+        String facilityName = rds.getFacilityFromId(facilityId).getName();
 
         ArrayList<Double> prices = new ArrayList<Double>();
         ArrayList<String> dates = new ArrayList<String>();
 
-
-
-        ArrayList<FacilityToUnitHistory> historicalPrices = dh.getFacilityToUnitsFromFacilityIdAndUnitId(facilityId, unitId);
-        FacilityToUnit mostRecent = dh.getFacilityToUnitRecentByFacilityIdAndUnitId(facilityId, unitId);
+        ArrayList<FacilityToUnitHistory> historicalPrices = rds.getFacilityToUnitsHistoryFromFacilityIdAndUnitId(facilityId, unitId);
+        FacilityToUnit mostRecent = rds.getFacilityToUnitByFacilityIdAndUnitId(facilityId, unitId);
 
         while(historicalPrices.size() > 0)
         {
@@ -831,7 +815,7 @@ class LocalGrailsCompanyController
             int index = 0;
             for(int i = 0; i < historicalPrices.size(); i++)
             {
-                Date date = dateFormat.parse(historicalPrices.get(i).timeCreated);
+                Date date = dateFormat.parse(historicalPrices.get(i).dateCreated);
                 if(date.compareTo(minDate) < 0)
                 {
                     minDate = date;
