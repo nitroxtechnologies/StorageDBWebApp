@@ -1,9 +1,6 @@
 package AWSAccessors;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
@@ -12,6 +9,341 @@ import java.util.ArrayList;
 public class RDSHandler
 {
     Connection connection;
+
+
+    public RDSHandler() {
+        System.out.println("----MySQL JDBC Connection -------");
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("JDBC driver not found!");
+            e.printStackTrace();
+            return;
+        }
+
+        System.out.println("MySQL JDBC Driver Registered!");
+        connection = null;
+
+        try {
+            connection = DriverManager.
+                    getConnection("jdbc:mysql://" + "nitroxtech.c48qi7cc3kyh.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "StorageDBWebAppMainDatabase", "NitroxAdmin", "5tgjkl123");
+        } catch (SQLException e) {
+            System.out.println("Connection Failed!:\n" + e.getMessage());
+        }
+
+        if (connection != null) {
+            System.out.println("SUCCESS!");
+        } else {
+            System.out.println("Failed to make connection!");
+        }
+
+        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsRecent FacilitiesUnits Units Values Version");
+
+        createCompaniesTable(connection);
+        createCompaniesToFacilitiesTable(connection);
+        createFacilitiesTable(connection);
+        createFacilityToUnitsTable(connection);
+        createFacilityToUnitsRecentTable(connection);
+        createUnitsTable(connection);
+        createValuesTable(connection);
+        createVersionTable(connection);
+
+
+    }
+
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed())
+                connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void createVersionTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "CompaniesFacilities" + "(" +
+                    "version" + " BIGINT" +")";
+            statement.executeUpdate(sql);
+            System.out.println("Created Version table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createCompaniesToFacilitiesTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "CompaniesFacilities" + "(" +
+                    "id" + " BIGINT PRIMARY KEY," +
+                    "companyID" + " BIGINT," +
+                    "facilityid" + " BIGINT," +")";
+            statement.executeUpdate(sql);
+            System.out.println("Created CompaniesFacilities table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+    private static void createValuesTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "Values" + "(" +
+                    "name" + " TEXT," +
+                    "value" + " BIGINT," +")";
+            statement.executeUpdate(sql);
+            System.out.println("Created Values table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createCompaniesTable(Connection conn) {
+        Statement statement = null;
+
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "Companies" + "(" + "id" +
+                    " BIGINT PRIMARY KEY," + "name" + " TEXT," + "website" +
+                    " TEXT" + ")";
+            statement.executeUpdate(sql);
+            System.out.println("Created Companies table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createFacilityToUnitsRecentTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "FacilitiesUnitsRecent" + "(" +
+                    "id" + " BIGINT PRIMARY KEY," +
+                    "unitId" + " BIGINT," +
+                    "facilityId" + " BIGINT," +
+                    "timeCreated" + " DATETIME," +
+                    "rateAmount" + " DOUBLE," +
+                    "rateType" + " TEXT" + ")";
+            statement.executeUpdate(sql);
+            System.out.println("Created FacilitiesUnitsRecent table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createFacilityToUnitsTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "FacilitiesUnits" + "(" +
+                    "id" + " BIGINT PRIMARY KEY," +
+                    "unitId" + " BIGINT," +
+                    "facilityId" + " BIGINT," +
+                    "timeCreated" + " DATETIME," +
+                    "rateAmount" + " DOUBLE," +
+                    "rateType" + " TEXT" + ")";
+            statement.executeUpdate(sql);
+            System.out.println("Created FacilitiesUnits table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createUnitsTable(Connection conn) {
+        Statement statement = null;
+
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "Units" + "(" +
+                    "id" + " BIGINT PRIMARY KEY," +
+                    "name" + " TEXT," +
+                    "type" + " TEXT," +
+                    "width" + " DOUBLE," +
+                    "depth" + " DOUBLE," +
+                    "height" + " DOUBLE," +
+                    "floor" + " INT," +
+                    "doorHeight" + " DOUBLE," +
+                    "doorWidth" + " DOUBLE" + ")";
+            statement.executeUpdate(sql);
+            System.out.println("Created Units table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createFacilitiesTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "Facilities" + "(" +
+                    "id" + " BIGINT PRIMARY KEY," +
+                    "name" + " TEXT," +
+                    "companyId" + " BIGINT," +
+                    "streetAddress1" + " TEXT," +
+                    "streetAddress2" + " TEXT," +
+                    "city" + " TEXT," +
+                    "state" + " TEXT," +
+                    "zip" + " TEXT," +
+                    "country" + " TEXT," +
+                    "website" + " TEXT," +
+                    "setupFee" + " DOUBLE," +
+                    "percentFull" + " DOUBLE," +
+                    "hasRetailStore" + " BOOL," +
+                    "hasInsurance" + " BOOL," +
+                    "hasOnlineBillPay" + " BOOL," +
+                    "hasWineStorage" + " BOOL," +
+                    "hasKiosk" + " BOOL," +
+                    "hasOnsiteManagement" + " BOOL," +
+                    "hasCameras" + " BOOL," +
+                    "hasVehicleParking" + " BOOL," +
+                    "hasCutLocks" + " BOOL," +
+                    "hasOnsiteCarts" + " BOOL," +
+                    "hasParabolicMirrors" + " BOOL," +
+                    "hasMotionLights" + " BOOL," +
+                    "hasElectronicLease" + " BOOL," +
+                    "hasPaperlessBilling" + " BOOL," +
+                    "mondayOpen" + " DATETIME," +
+                    "mondayClose" + " DATETIME," +
+                    "tuesdayOpen" + " DATETIME," +
+                    "tuesdayClose" + " DATETIME," +
+                    "wednesdayOpen" + " DATETIME," +
+                    "wednesdayClose" + " DATETIME," +
+                    "thursdayOpen" + " DATETIME," +
+                    "thursdayClose" + " DATETIME," +
+                    "fridayOpen" + " DATETIME," +
+                    "fridayClose" + " DATETIME," +
+                    "saturdayOpen" + " DATETIME," +
+                    "saturadyClose" + " DATETIME," +
+                    "sundayOpen" + " DATETIME," +
+                    "sundayClose" + " DATETIME," +
+                    "rating" + " TEXT," +
+                    "promotions" + " TEXT" + ")";
+            statement.executeUpdate(sql);
+            System.out.println("Created Facilities table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void deleteTables(Connection conn, String tbls) {
+        Statement statement = null;
+        String[] tables = tbls.split(" ");
+
+        try {
+            statement = conn.createStatement();
+            String sql = "";
+            for (String s: tables) {
+                sql += "DROP " + s + ";";
+            }
+            statement.executeUpdate(sql);
+            System.out.println("Deleted table(s) " + tables.toString());
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
 
     public ResultSet executeQuery(String query) throws SQLException
     {
@@ -31,6 +363,7 @@ public class RDSHandler
     /*
      *      Methods that create from result sets
      */
+
     private Company createCompanyFromResultSet(ResultSet rs) throws SQLException
     {
         Company newCompany = new Company();
