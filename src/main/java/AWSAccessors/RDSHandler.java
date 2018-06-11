@@ -38,7 +38,7 @@ public class RDSHandler
             System.out.println("Failed to make connection!");
         }
 
-        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Values Version");
+        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Version");
 
         createCompaniesTable(connection);
         createCompaniesToFacilitiesTable(connection);
@@ -46,7 +46,7 @@ public class RDSHandler
         createFacilityToUnitsTable(connection);
         createFacilityToUnitsHistoryTable(connection);
         createUnitsTable(connection);
-        createValuesTable(connection);
+//        createValuesTable(connection);
         createVersionTable(connection);
 
 
@@ -130,7 +130,7 @@ public class RDSHandler
         Statement statement = null;
         try {
             statement = conn.createStatement();
-            String sql =  "CREATE TABLE " + "Values" + "(" +
+            String sql =  "CREATE TABLE " + "MValues" + "(" +
                     "name" + " TEXT," +
                     "value" + " BIGINT," +")";
             statement.executeUpdate(sql);
@@ -659,6 +659,13 @@ public class RDSHandler
         return query;
     }
 
+    private String buildValuesOfValue(Value v) {
+        String result = "('" + v.getName() + "', ";
+        result += "'" + v.getValue() + "'";
+        return result;
+    }
+    
+
 
 
 
@@ -1166,7 +1173,7 @@ public class RDSHandler
         executeQuery(query);
     }
 
-    public void batchSaveValues(ArrayList<Value> values) throws SQLException
+/*    public void batchSaveValues(ArrayList<Value> values) throws SQLException
     {
         String query = "INSERT INTO Values VALUES";
         for(int i = 0; i < values.size(); i++)
@@ -1183,7 +1190,7 @@ public class RDSHandler
             }
         }
         executeQuery(query);
-    }
+    }*/
 
 
 
@@ -1191,6 +1198,53 @@ public class RDSHandler
     /*
      *      Batch delete commands
      */
+
+    public void batchDeleteCompanies(ArrayList<Company> companies) throws SQLException {
+        for(int i = 0; i < companies.size(); i++) {
+            String query = "DELETE FROM Companies WHERE id = " + companies.get(i).getId() + ";";
+            executeQuery(query);
+        }
+    }
+
+    public void batchDeleteCompanyToFacilities(ArrayList<CompanyToFacility> companyToFacilities) throws SQLException {
+        for(int i = 0; i < companyToFacilities.size(); i++) {
+            String query = "DELETE FROM CompaniesFacilities WHERE id = " + companyToFacilities.get(i).getId() + ";";
+            executeQuery(query);
+        }
+    }
+
+    public void batchDeleteFacilities(ArrayList<Facility> facilities) throws SQLException {
+        for(int i = 0; i < facilities.size(); i++) {
+            String query = "DELETE FROM Facilities WHERE id = " + facilities.get(i).getId() + ";";
+            executeQuery(query);
+        }
+
+    }
+
+    public void batchDeleteFacilityToUnits(ArrayList<FacilityToUnit> facilityToUnits) throws SQLException {
+        for(int i = 0; i < facilityToUnits.size(); i++) {
+            String query = "DELETE FROM FacilitiesUnits WHERE id = " + facilityToUnits.get(0).getId() + ";";
+            executeQuery(query);
+        }
+    }
+
+    public void batchDeleteFacilityToUnitsHistory(ArrayList<FacilityToUnitHistory> facilityToUnitHistories) throws SQLException {
+        for(int i = 0; i < facilityToUnitHistories.size(); i++) {
+            String query = "DELETE FROM FacilityUnitsHistory WHERE id = " + facilityToUnitHistories.get(0).getId() + ";";
+            executeQuery(query);
+        }
+    }
+
+    public void batchDeleteUnits(ArrayList<Unit> units) throws SQLException {
+        for(int i = 0; i < units.size(); i++) {
+            String query = "DELETE FROM Units WHERE id = " + units.get(0).getId() + ";";
+            executeQuery(query);
+        }
+    }
+
+
+
+
 
 
 
@@ -1211,12 +1265,14 @@ public class RDSHandler
 
     public long getMaxFacilityToUnitId() throws SQLException
     {
-
+        ResultSet rs = executeQuery("SELECT max(id) FROM FacilitiesUnits;");
+        return rs.getLong("id");
     }
 
     public long getMaxUnitId() throws SQLException
     {
-
+        ResultSet rs = executeQuery("SELECT max(id) FROM Units;");
+        return rs.getLong("id");
     }
 
 
