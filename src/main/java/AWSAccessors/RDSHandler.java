@@ -1,5 +1,6 @@
 package AWSAccessors;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -773,7 +774,7 @@ public class RDSHandler
 
     public Company getCompanyFromName(String name) throws SQLException
     {
-        String query = "SELECT * FROM Companies WHERE name=" + name;
+        String query = "SELECT * FROM Companies WHERE name='" + name + "'";
         ResultSet resultSet = executeQuery(query);
         resultSet.next();
         return createCompanyFromResultSet(resultSet);
@@ -781,7 +782,7 @@ public class RDSHandler
 
     public Facility getFacilityFromFacilityName(String name) throws SQLException
     {
-        String query = "SELECT * FROM Facilities WHERE name=" + name;
+        String query = "SELECT * FROM Facilities WHERE name='" + name + "'";
         ResultSet resultSet = executeQuery(query);
         resultSet.next();
         return createFacilityFromResultSet(resultSet);
@@ -802,58 +803,241 @@ public class RDSHandler
 
     public ArrayList<Unit> getUnitsFromFacilityName(String name) throws SQLException
     {
+        String query = "SELECT * FROM Facilities WHERE name='" + name + "'";
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        Facility facility = createFacilityFromResultSet(resultSet);
+        long facilityId = facility.getId();
 
+        query = "SELECT * FROM FacilitiesUnits WHERE facilityId=" + facilityId;
+        resultSet = executeQuery(query);
+        ArrayList<FacilityToUnit> results = new ArrayList<FacilityToUnit>();
+        while(resultSet.next())
+        {
+            results.add(createFacilityToUnitFromResultSet(resultSet));
+        }
+
+        query = "SELECT * FROM Units WHERE id IN (";
+        for(int i = 0; i < results.size(); i++)
+        {
+            query += results.get(i).getUnitId();
+            if(i != results.size() - 1)
+            {
+                query += ", ";
+            }
+            else
+            {
+                query += ")";
+            }
+        }
+        resultSet = executeQuery(query);
+        ArrayList<Unit> units = new ArrayList<Unit>();
+        while(resultSet.next())
+        {
+            units.add(createUnitFromResultSet(resultSet));
+        }
+
+        return units;
     }
 
     public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityId(long facilityId) throws SQLException
     {
+        String query = "SELECT * FROM FacilitiesUnits WHERE facilityId=" + facilityId;
+        ResultSet resultSet = executeQuery(query);
 
+        ArrayList<FacilityToUnit> facilityToUnits = new ArrayList<FacilityToUnit>();
+        while(resultSet.next())
+        {
+            facilityToUnits.add(createFacilityToUnitFromResultSet(resultSet));
+        }
+        return facilityToUnits;
     }
 
     public ArrayList<FacilityToUnitHistory> getFacilityToUnitHistoryFromFacilityId(long facilityId) throws SQLException
     {
+        String query = "SELECT * FROM FacilitiesUnitsHistory WHERE facilityId=" + facilityId;
+        ResultSet resultSet = executeQuery(query);
 
+        ArrayList<FacilityToUnitHistory> facilityToUnitsHistory = new ArrayList<FacilityToUnitHistory>();
+        while(resultSet.next())
+        {
+            facilityToUnitsHistory.add(createFacilityToUnitHistoryFromResultSet(resultSet));
+        }
+        return facilityToUnitsHistory;
     }
 
     public ArrayList<Company> getCompaniesFromCompanyIds(ArrayList<Long> companyIds) throws SQLException
     {
+        String query = "SELECT * FROM Companies WHERE id IN (";
+        for(int i = 0; i < companyIds.size(); i++)
+        {
+            query += companyIds.get(i);
+            if(i != companyIds.size() - 1)
+            {
+                query += ", ";
+            }
+            else
+            {
+                query += ")";
+            }
+        }
+        ResultSet resultSet = executeQuery(query);
 
+        ArrayList<Company> companies = new ArrayList<Company>();
+        while(resultSet.next())
+        {
+            companies.add(createCompanyFromResultSet(resultSet));
+        }
+
+        return companies;
     }
 
     public ArrayList<JavaLocalGrailsUnit> getUnitsFromFacilityIds(ArrayList<Long> facilityIds) throws SQLException
     {
+        //Search FacilitiesUnits for facilityIds
+        String query = "SELECT * FROM FacilitiesUnits WHERE facilityId IN (";
+        for(int i = 0; i < facilityIds.size(); i++)
+        {
+            query += facilityIds.get(i);
+            if(i != facilityIds.size() - 1)
+            {
+                query += ", ";
+            }
+            else
+            {
+                query += ")";
+            }
+        }
+        ResultSet resultSet = executeQuery(query);
+        ArrayList<FacilityToUnit> facilityToUnits = new ArrayList<FacilityToUnit>();
+        while(resultSet.next())
+        {
+            facilityToUnits.add(createFacilityToUnitFromResultSet(resultSet));
+        }
 
+        //Search units for unitIds of the FacilityToUnit objects
+        query = "SELECT * FROM Units WHERE unitId IN (";
+        for(int i = 0; i < facilityToUnits.size(); i++)
+        {
+            query += facilityToUnits.get(i).getUnitId();
+            if(i != facilityToUnits.size() - 1)
+            {
+                query += ", ";
+            }
+            else
+            {
+                query += ")";
+            }
+        }
+        resultSet = executeQuery(query);
+        ArrayList<Unit> units = new ArrayList<Unit>();
+        while(resultSet.next())
+        {
+            units.add(createUnitFromResultSet(resultSet));
+        }
+
+        //If unitIds match, you put them into a JavaLocalGrailsUnit
+        ArrayList<JavaLocalGrailsUnit> result = new ArrayList<JavaLocalGrailsUnit>();
+        for(FacilityToUnit facilityToUnit : facilityToUnits)
+        {
+            for(Unit unit: units)
+            {
+                result.add(new JavaLocalGrailsUnit(unit.getId(), unit.getName(), unit.getWidth(), unit.getDepth(),
+                        unit.getHeight(), unit.getType(), unit.getFloor(), facilityToUnit.getRateAmount(),
+                        facilityToUnit.getFacilityId(), facilityToUnit.getRateType(), facilityToUnit.getTimeCreated()));
+            }
+        }
+        return result;
     }
 
-    //Gets all the Units that match in name, floor, climate
+    //Gets all the Units that match in name, floor, type
     public ArrayList<Unit> getUnitsWithInfo(ArrayList<JavaLocalGrailsUnit> list) throws SQLException
     {
-
+        String query = "SELECT * FROM FacilitiesUnits WHERE ";
+        for(int i = 0; i < list.size(); i++)
+        {
+            JavaLocalGrailsUnit javaLocalGrailsUnit = list.get(i);
+            query += "name='" + javaLocalGrailsUnit.name + "' AND floor=" + javaLocalGrailsUnit.floor + " AND type='" + javaLocalGrailsUnit.type + "'";
+            if(i != list.size() - 1)
+            {
+                query += " OR ";
+            }
+        }
+        ArrayList<Unit> units = new ArrayList<Unit>();
+        ResultSet resultSet = executeQuery(query);
+        while(resultSet.next())
+        {
+            units.add(createUnitFromResultSet(resultSet));
+        }
+        return units;
     }
 
     public Facility getFacilityFromId(long facilityId) throws SQLException
     {
-
+        String query = "SELECT * FROM Facilities WHERE id=" + facilityId;
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createFacilityFromResultSet(resultSet);
     }
 
     public ArrayList<FacilityToUnit> getFacilityToUnitsFromFacilityIdAndIdsToExclude(long facilityId, ArrayList<Long> idsToExclude) throws SQLException
     {
-
+        String query = "SELECT * FROM FacilitiesUnits WHERE facilityId=" + facilityId;
+        for(Long idToExclude: idsToExclude)
+        {
+            query += " AND unitId !=" + idToExclude;
+        }
+        ArrayList<FacilityToUnit> facilityToUnits = new ArrayList<FacilityToUnit>();
+        ResultSet resultSet = executeQuery(query);
+        while(resultSet.next())
+        {
+            facilityToUnits.add(createFacilityToUnitFromResultSet(resultSet));
+        }
+        return facilityToUnits;
     }
 
     public FacilityToUnit getFacilityToUnitByFacilityIdAndUnitId(long facilityId, long unitId) throws SQLException
     {
-
+        String query = "SELECT * FROM FacilitiesUnits WHERE facilityId=" + facilityId + " AND unitId=" + unitId;
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createFacilityToUnitFromResultSet(resultSet);
     }
 
     public ArrayList<FacilityToUnitHistory> getFacilityToUnitsHistoryFromFacilityIdAndUnitId(long facilityId, long unitId) throws SQLException
     {
-
+        String query = "SELECT * FROM FacilitiesUnitsHistory WHERE facilityId=" + facilityId + " AND unitId=" + unitId;
+        ResultSet resultSet = executeQuery(query);
+        ArrayList<FacilityToUnitHistory> facilityToUnitHistorys = new ArrayList<FacilityToUnitHistory>();
+        while(resultSet.next())
+        {
+            facilityToUnitHistorys.add(createFacilityToUnitHistoryFromResultSet(resultSet));
+        }
+        return facilityToUnitHistorys;
     }
 
     public ArrayList<Facility> getFacilitiesFromFacilityIds(ArrayList<Long> facilityIds) throws SQLException
     {
-
+        String query = "SELECT * FROM Facilities WHERE id IN (";
+        for(int i = 0; i < facilityIds.size(); i++)
+        {
+            query += facilityIds.get(i);
+            if(i != facilityIds.size() - 1)
+            {
+                query += ", ";
+            }
+            else
+            {
+                query += ")";
+            }
+        }
+        ResultSet resultSet = executeQuery(query);
+        ArrayList<Facility> facilities = new ArrayList<Facility>();
+        while(resultSet.next())
+        {
+            facilities.add(createFacilityFromResultSet(resultSet));
+        }
+        return facilities;
     }
 
 
