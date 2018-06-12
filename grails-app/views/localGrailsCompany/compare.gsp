@@ -11,9 +11,20 @@
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
         <style>
-        td:nth-of-type(odd) {
-            background-color:#ccc;
+        td:nth-of-type(5n+5) {
+            background-color: rgba(204, 204, 204, 0.31);
         }
+        td:nth-of-type(3n+6) {
+            background-color: rgba(204, 204, 204, 0.31);
+        }
+
+        th:nth-of-type(5n+5) {
+            background-color: rgba(204, 204, 204, 0.31);
+        }
+        th:nth-of-type(3n+6) {
+            background-color: rgba(204, 204, 204, 0.31);
+        }
+
     </style>
     </head>
     <body>
@@ -54,21 +65,23 @@
 
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <div class = "row">
-                <div class = "col-md-6 text-center">
-                    <div class="page-header" style = "margin-bottom: 20px">
-                        <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
-                    </div>
-                    <label>Company:</label>
-                    <g:select id = "company" optionKey="index" optionValue="name" value ="${compareCompany}"
-                              name="companydropdown" from="${compareCompanies}"
-                              onChange= 'addCompany(document.getElementById("company"))'>
-                    </g:select>
-                    <label>Facility:</label>
+                    <div class = "col-md-6 text-center">
+                        <label>Company:</label>
+                        <g:select id = "company" optionKey="index" optionValue="name" value ="${compareCompany}"
+                                  name="companydropdown" from="${compareCompanies}"
+                                  onChange= 'addCompany(document.getElementById("company"))'>
+                        </g:select>
+                        <br><br>
+                        <label>Facility:</label>
 
-                    <g:select id = 'addFacility' optionKey="dbId" optionValue="name"
-                              name="addF" from="${addFacilities}">
-                    </g:select>
-                </div>
+                        <g:select id = 'addFacility' optionKey="dbId" optionValue="name"
+                                  name="addF" from="${addFacilities}">
+                        </g:select>
+
+                        <div class="page-header" style = "margin-bottom: 20px; margin-top: 20px;">
+                            <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
+                        </div>
+                    </div>
                 <div class = "col-md-6 text-center">
                     %{--<div class="page-header" style = "margin-bottom: 20px">--}%
                         %{--<button type="button" class="btn btn-outline-danger" onclick="addUnit(document.getElementById('removeFacility'))">Remove</button>--}%
@@ -105,18 +118,26 @@
             <table id = "unitTable" class="table table-bordered" style="margin-top: 50px">
                 <thead>
                     <tr>
-                        %{--<th scope="col">ID</th>--}%
-                        <th scope="col">Dimensions</th>
-                        <th scope="col">Floor</th>
-                        <th scope="col" class="text-center">Climate Controlled?</th>
-                        <th scope="col" class="text-center">${compareFacility.name}</th>
+                        <th colspan="4" class = "text-center">${compareFacility.name}</th>
                         <g:each in="${removeFacilities}" var="f" status="i">
-                            <th scope="col" class="text-center">${f.name}</th>
-                            <th scope="col" class="text-center"></th>
+                            <th scope="col" class="text-center" colspan="2">vs <i>${f.name}</i></th>
+                        %{--<th scope="col" class="text-center"></th>--}%
                         </g:each>
+                        %{--<th scope="col">ID</th>--}%
                     </tr>
                 </thead>
                 <tbody>
+                <th scope="col" class="text-center">Dimensions</th>
+                <th scope="col" class="text-center">Floor</th>
+                <th scope="col" class="text-center">Climate Controlled?</th>
+                <th scope="col" class="text-center">Price</th>
+                <g:each in="${removeFacilities}" var="f" status="i">
+                    <th class="text-center">Price</th><th class="text-center">&#916;</th>
+                </g:each>
+                %{--<th colspan="4"></th>--}%
+                %{--<g:each in="${removeFacilities}" var="f" status="i">--}%
+                    %{--<th class="text-center">Price</th><th class="text-center">&#916;</th>--}%
+                %{--</g:each>--}%
                 <g:each in="${units}" var="unit" status="i">
                     <tr class = "entries ${unit.name} ${unit.type}">
                         <td class="text-center">${unit.name}</td>
@@ -125,13 +146,13 @@
                         <g:each in="${unit.prices}" var="price" status="j">
                             <g:if test = "${price.val != 123456.0}">
                                 <g:if test = "${price.color == 1}">
-                                    <td class="text-center" style = "color:red">$${price.val}</td>
+                                    <td class="text-center" style = "color:black; background-color:rgba(255,0,0,0.51)"><span>$${String.format("%.02f", price.val)}</span></td>
                                 </g:if>
                                 <g:elseif test = "${price.color == 2}">
-                                    <td class="text-center" style = "color:green">$${price.val}</td>
+                                    <td class="text-center" style = "color:black; background-color:rgba(0,128,0,0.5)">($${String.format("%.02f", price.val)})</td>
                                 </g:elseif>
                                 <g:else>
-                                    <td class="text-center">$${price.val}</td>
+                                    <td class="text-center">$${String.format("%.02f", price.val)}</td>
                                 </g:else>
                             </g:if>
                             <g:else>
