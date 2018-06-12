@@ -85,7 +85,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
-                    <tr class = "entries ${unit.name} ${unit.climate} ${i}">
+                    <tr class = "entries ${unit.name} ${unit.type} ${i}">
                         <td contenteditable="false" class="text-left">${unit.name}</td>
                         <td contenteditable="true" class="text-left">${unit.width}</td>
                         <td contenteditable="true" class="text-left">${unit.depth}</td>
@@ -93,7 +93,7 @@
                         <td contenteditable="false" class="text-center" style="width: 10px">
                             <div class="dropdown">
                                 <button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    ${unit.climate}
+                                    ${unit.type}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                                     <button onclick="changeText('Climate', ${i})" class="dropdown-item" type="button">Climate</button>

@@ -99,17 +99,17 @@
                 </thead>
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
-                    <tr class = "entries ${unit.name} ${unit.climate}">
+                    <tr class = "entries ${unit.name} ${unit.type}">
                         <td class="text-left">${unit.name}</td>
                         <td class="text-left">${unit.width}</td>
                         <td class="text-left">${unit.depth}</td>
                         <td class="text-left">${unit.floor}</td>
-                        <td class="text-center" style="width: 10px" >${unit.climate}</td>
+                        <td class="text-center" style="width: 10px" >${unit.type}</td>
                         <td class="text-center">${unit.time}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
                             <td class="text-right">$${String.format("%.02f", price.val)}</td>
                         </g:each>
-                        <td class="text-center"><button onclick='graph("${unit.name}", "${unit.climate}", "${unit.floor}")' type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button onclick='graph("${unit.name}", "${unit.type}", "${unit.floor}", "${unit.rateType}")' type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
 
                     </tr>
                 </g:each>
@@ -174,10 +174,10 @@
 
     }
 
-    function graph(n, c, f) {
+    function graph(n, c, f, r) {
         // var fID = e.selectedIndex;
         // var fName = fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}" + "?uName=" + n + "&uType=" + c + "&uFloor=" + f;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}" + "?uName=" + n + "&uType=" + c + "&uFloor=" + f + "&rateType=" + r;
 
     }
 

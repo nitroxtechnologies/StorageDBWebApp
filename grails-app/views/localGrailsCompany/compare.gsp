@@ -118,20 +118,20 @@
                 </thead>
                 <tbody>
                 <g:each in="${units}" var="unit" status="i">
-                    <tr class = "entries ${unit.name} ${unit.climate}">
+                    <tr class = "entries ${unit.name} ${unit.type}">
                         <td class="text-center">${unit.name}</td>
                         <td class="text-center">${unit.floor}</td>
-                        <td class="text-center">${unit.climate}</td>
+                        <td class="text-center">${unit.type}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
                             <g:if test = "${price.val != 123456.0}">
                                 <g:if test = "${price.color == 1}">
-                                    <td class="text-center" style = "color:red">$${price.val}0</td>
+                                    <td class="text-center" style = "color:red">$${price.val}</td>
                                 </g:if>
                                 <g:elseif test = "${price.color == 2}">
-                                    <td class="text-center" style = "color:green">$${price.val}0</td>
+                                    <td class="text-center" style = "color:green">$${price.val}</td>
                                 </g:elseif>
                                 <g:else>
-                                    <td class="text-center">$${price.val}0</td>
+                                    <td class="text-center">$${price.val}</td>
                                 </g:else>
                             </g:if>
                             <g:else>
