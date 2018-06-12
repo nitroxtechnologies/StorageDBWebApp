@@ -45,7 +45,7 @@ public class RDSHandler
         System.out.println("----MySQL JDBC Connection -------");
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.out.println("JDBC driver not found!");
             e.printStackTrace();
