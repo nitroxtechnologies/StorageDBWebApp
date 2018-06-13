@@ -120,6 +120,7 @@
 
                             </div>
                         </td>
+                        <td contenteditable="false" class="d-none">${unit.rateType}</td>
                         <td class="text-center"><button type="submit" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
@@ -218,7 +219,7 @@
             for (var i = 1; i < rows.length; i++) {
                 var cells = rows[i].getElementsByTagName("td");
                 for (var j = 0; j < cells.length; j++) {
-                    if (j == 0 || j%7 != 0) {
+                    if (j == 0 || j%8 != 0) {
                         // alert(cells[j].innerText);
                         if (first) {
                             params += "?";
@@ -244,6 +245,7 @@
                     }
                 }
             }
+            //params += "?ended=yup";
 
             window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'save')}" + params;
 
