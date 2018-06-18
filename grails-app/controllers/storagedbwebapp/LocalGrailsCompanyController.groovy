@@ -70,7 +70,7 @@ class LocalGrailsCompanyController
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
 
-        if(companyIndex > 0)
+        if(companyIndex >= 0)
         {
             dropdownInfo.companyIndex = companyIndex - 1;
         }
@@ -486,7 +486,7 @@ class LocalGrailsCompanyController
                 break;
             System.out.println(params.get(key));
 
-            int mod = index % 7;
+            int mod = index % 8;
             switch(mod)
             {
                 case 0:
@@ -541,6 +541,10 @@ class LocalGrailsCompanyController
                         temp.price = new BigDecimal((String) params.get(key));
                     }
                     temp.facilityId = facilityId;
+                    break;
+                case 7:
+                    String rateType = (String) params.get(key);
+                    temp.rateType = rateType;
                     list.add(temp);
                     System.out.println(temp);
                     break;
@@ -707,14 +711,6 @@ class LocalGrailsCompanyController
             newFacilityToUnits.add(toAdd);
         }
         System.out.println("--------");
-        ArrayList<FacilityToUnitHistory> toBackup = new ArrayList<FacilityToUnitHistory>();
-        for(int i = 0; i < facilityToUnitIds.size(); i++)
-        {
-            FacilityToUnit newFTU = new FacilityToUnit();
-            newFTU.id = facilityToUnitIds.get(i);
-            toBackup.add(new FacilityToUnitHistory().createFromFacilityToUnit(newFTU));
-            System.out.println(newFTU);
-        }
 
         //Delete old ones
         rds.batchDeleteFacilityToUnits(facilityToUnits);
@@ -784,15 +780,22 @@ class LocalGrailsCompanyController
         RDSHandler rds = new RDSHandler();
         long facilityId = DropdownInfo.list().get(0).facilityId;
         System.out.println("FACILITY ID: " + facilityId);
+
         JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
         temp.name = (String) params.uName;
+        System.out.println("UNIT NAME: " + temp.name);
         temp.floor = Integer.parseInt((String) params.uFloor);
         temp.type = (String) params.uType;
+        System.out.println("UNIT TYPE: " + temp.type);
         temp.rateType = (String) params.rateType;
         temp.facilityId = facilityId;
         ArrayList<JavaLocalGrailsUnit> tempList = new ArrayList<JavaLocalGrailsUnit>();
         tempList.add(temp);
-        long unitId = rds.getUnitsWithInfo(tempList).get(0).id;
+        ArrayList<Unit> matchingUnits = rds.getUnitsWithInfo(tempList);
+        System.out.println("NUM UNITS FOUND: " + matchingUnits.size());
+        System.out.println(matchingUnits);
+        long unitId = matchingUnits.get(0).getId();
+        temp.id = unitId;
 
         String facilityName = rds.getFacilityFromId(facilityId).getName();
 
