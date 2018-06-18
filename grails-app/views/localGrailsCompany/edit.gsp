@@ -92,13 +92,13 @@
                         <td contenteditable="true" class="text-left">${unit.floor}</td>
                         <td contenteditable="false" class="text-center" style="width: 10px">
                             <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     ${unit.type}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                    <button onclick="changeText('Climate', ${i})" class="dropdown-item" type="button">Climate</button>
-                                    <button onclick="changeText('Non-Climate', ${i})" class="dropdown-item" type="button">Non-Climate</button>
-                                    <button onclick="changeText('Parking', ${i})" class="dropdown-item" type="button">Parking</button>
+                                    <button class="dropdown-item" type="button">Climate</button>
+                                    <button class="dropdown-item" type="button">Non-Climate</button>
+                                    <button class="dropdown-item" type="button">Parking</button>
                                 </div>
                             </div>
                         </td>
@@ -183,7 +183,17 @@
         })
 
         $('#unitTable').on('click', 'button[class="dropdown-item"]', function () {
-            // alert($(this).closest('.dropdown-toggle').toString());
+            // alert($(this).get(0).innerHTML);
+            var cli = $(this).get(0).innerText;
+            // alert($(this).parent().parent().children().get(0).innerText);
+            $(this).parent().parent().children().get(0).innerText = cli;
+            // alert($(this).closest('div').remove());
+            // $(this).parent().parent().get(0).innerHTML = '<button class="btn btn-light dropdown-toggle" type="button" id="0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' + cli + '</button> ' +
+            //                     '<div class="dropdown-menu show" aria-labelledby="dropdownMenu2" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);"> ' +
+            //                     '    <button class="dropdown-item" type="button">Climate</button> ' +
+            //                     '    <button class="dropdown-item" type="button">Non-Climate</button> ' +
+            //                      '   <button class="dropdown-item" type="button">Parking</button>' +
+            //                     '</div>';
         })
 
         function copyPrice(val) {
@@ -196,9 +206,9 @@
         $('.btn-outline-primary').click(function () {
             $('#unitTable').append('<tr class = "entries"><td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-center"></td><td contenteditable="true" class="text-center"></td>' +
              '<td contenteditable="false" class="text-center" style="width: 10px"><div class="dropdown"><button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Climate</button>' + '<div class="dropdown-menu" aria-labelledby="dropdownMenu2">' +
-            '<button onclick="changeText()" class="dropdown-item" type="button">Climate</button>' +
-            '<button onclick="changeText()" class="dropdown-item" type="button">Non-Climate</button>' +
-            '<button onclick="changeText()" class="dropdown-item" type="button">Parking</button>' +
+            "<button class='dropdown-item' type='button'>Climate</button>" +
+            "<button class='dropdown-item' type='button'>Non-Climate</button>" +
+            "<button class='dropdown-item' type='button'>Parking</button>" +
         '<td contenteditable="false" class="text-center">N/A</td><td contenteditable="true" class="text-right focusedInput">' +
             '<div class="input-group">' +
                 '<div contenteditable="false" class="input-group-prepend">' +
