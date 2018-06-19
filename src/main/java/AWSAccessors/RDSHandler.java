@@ -1,8 +1,6 @@
 package AWSAccessors;
 
-import javax.xml.transform.Result;
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import static java.lang.System.out;
 import java.sql.*;
@@ -88,6 +86,8 @@ public class RDSHandler
             System.out.println("Failed to make connection!");
         }
 
+
+
         //deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Version");
         /*
         createCompaniesTable(connection);
@@ -96,10 +96,12 @@ public class RDSHandler
         createFacilityToUnitsTable(connection);
         createFacilityToUnitsHistoryTable(connection);
         createUnitsTable(connection);
+        createUsersTable(connection);
+
+
         createValuesTable(connection);
         createVersionTable(connection);
         */
-
     }
 
     public void resetTables()
@@ -112,6 +114,7 @@ public class RDSHandler
         createFacilityToUnitsTable(connection);
         createFacilityToUnitsHistoryTable(connection);
         createUnitsTable(connection);
+        createUsersTable(connection);
         //createValuesTable(connection);
         createVersionTable(connection);
     }
@@ -244,6 +247,73 @@ public class RDSHandler
         }//end try
     }
 
+    private static void createFacilitiesTable(Connection conn) {
+        Statement statement = null;
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "Facilities" + "(" +
+                    "id" + " BIGINT PRIMARY KEY," +
+                    "name" + " TEXT," +
+                    "companyId" + " BIGINT," +
+                    "streetAddress1" + " TEXT," +
+                    "streetAddress2" + " TEXT," +
+                    "city" + " TEXT," +
+                    "state" + " TEXT," +
+                    "zip" + " TEXT," +
+                    "country" + " TEXT," +
+                    "website" + " TEXT," +
+                    "setupFee" + " DECIMAL," +
+                    "percentFull" + " DECIMAL," +
+                    "hasRetailStore" + " BIT," +
+                    "hasInsurance" + " BIT," +
+                    "hasOnlineBillPay" + " BIT," +
+                    "hasWineStorage" + " BIT," +
+                    "hasKiosk" + " BIT," +
+                    "hasOnsiteManagement" + " BIT," +
+                    "hasCameras" + " BIT," +
+                    "hasVehicleParking" + " BIT," +
+                    "hasCutLocks" + " BIT," +
+                    "hasOnsiteShipping" + " BIT," +
+                    "hasAutopay" + " BIT," +
+                    "hasOnsiteCarts" + " BIT," +
+                    "hasParabolicMirrors" + " BIT," +
+                    "hasMotionLights" + " BIT," +
+                    "hasElectronicLease" + " BIT," +
+                    "hasPaperlessBilling" + " BIT," +
+                    "mondayOpen" + " DATE," +
+                    "mondayClose" + " DATE," +
+                    "tuesdayOpen" + " DATE," +
+                    "tuesdayClose" + " DATE," +
+                    "wednesdayOpen" + " DATE," +
+                    "wednesdayClose" + " DATE," +
+                    "thursdayOpen" + " DATE," +
+                    "thursdayClose" + " DATE," +
+                    "fridayOpen" + " DATE," +
+                    "fridayClose" + " DATE," +
+                    "saturdayOpen" + " DATE," +
+                    "saturdayClose" + " DATE," +
+                    "sundayOpen" + " DATE," +
+                    "sundayClose" + " DATE," +
+                    "rating" + " TEXT," +
+                    "promotions" + " TEXT" + ")";
+            statement.executeUpdate(sql);
+            System.out.println("Created Facilities table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
     private static void createFacilityToUnitsTable(Connection conn) {
         Statement statement = null;
         try {
@@ -335,57 +405,19 @@ public class RDSHandler
         }//end try
     }
 
-    private static void createFacilitiesTable(Connection conn) {
+    private static void createUsersTable(Connection conn)
+    {
         Statement statement = null;
+
         try {
             statement = conn.createStatement();
-            String sql =  "CREATE TABLE " + "Facilities" + "(" +
+            String sql =  "CREATE TABLE " + "Users(" +
                     "id" + " BIGINT PRIMARY KEY," +
+                    "type" + " TEXT," +
                     "name" + " TEXT," +
-                    "companyId" + " BIGINT," +
-                    "streetAddress1" + " TEXT," +
-                    "streetAddress2" + " TEXT," +
-                    "city" + " TEXT," +
-                    "state" + " TEXT," +
-                    "zip" + " TEXT," +
-                    "country" + " TEXT," +
-                    "website" + " TEXT," +
-                    "setupFee" + " DECIMAL," +
-                    "percentFull" + " DECIMAL," +
-                    "hasRetailStore" + " BIT," +
-                    "hasInsurance" + " BIT," +
-                    "hasOnlineBillPay" + " BIT," +
-                    "hasWineStorage" + " BIT," +
-                    "hasKiosk" + " BIT," +
-                    "hasOnsiteManagement" + " BIT," +
-                    "hasCameras" + " BIT," +
-                    "hasVehicleParking" + " BIT," +
-                    "hasCutLocks" + " BIT," +
-                    "hasOnsiteShipping" + " BIT," +
-                    "hasAutopay" + " BIT," +
-                    "hasOnsiteCarts" + " BIT," +
-                    "hasParabolicMirrors" + " BIT," +
-                    "hasMotionLights" + " BIT," +
-                    "hasElectronicLease" + " BIT," +
-                    "hasPaperlessBilling" + " BIT," +
-                    "mondayOpen" + " DATE," +
-                    "mondayClose" + " DATE," +
-                    "tuesdayOpen" + " DATE," +
-                    "tuesdayClose" + " DATE," +
-                    "wednesdayOpen" + " DATE," +
-                    "wednesdayClose" + " DATE," +
-                    "thursdayOpen" + " DATE," +
-                    "thursdayClose" + " DATE," +
-                    "fridayOpen" + " DATE," +
-                    "fridayClose" + " DATE," +
-                    "saturdayOpen" + " DATE," +
-                    "saturdayClose" + " DATE," +
-                    "sundayOpen" + " DATE," +
-                    "sundayClose" + " DATE," +
-                    "rating" + " TEXT," +
-                    "promotions" + " TEXT" + ")";
+                    "password" + " TEXT)";
             statement.executeUpdate(sql);
-            System.out.println("Created Facilities table");
+            System.out.println("Created Units table");
         } catch (SQLException se) {
             //Handle errors for JDBC
             se.printStackTrace();
@@ -401,6 +433,8 @@ public class RDSHandler
             }// nothing we can do
         }//end try
     }
+
+
 
 
 
@@ -590,6 +624,16 @@ public class RDSHandler
         return unit;
     }
 
+    private User createUserFromResultSet(ResultSet resultSet) throws SQLException
+    {
+        User user = new User();
+        user.setId(resultSet.getLong("id"));
+        user.setType(resultSet.getString("type"));
+        user.setName(resultSet.getString("name"));
+        user.setPassword(resultSet.getString("password"));
+        return user;
+    }
+
 
 
 
@@ -756,6 +800,22 @@ public class RDSHandler
         return query;
     }
 
+    private String buildValuesOfUserInsertQuery(User user)
+    {
+        String result = "(";
+        result += user.getId() + ",";
+        result += "'" + user.getType() + "',";
+        result += "'" + user.getName() + "',";
+        result += "'" + user.getPassword() + "')";
+        return result;
+    }
+
+    private String buildUserInsertQuery(User user)
+    {
+        String query = "INSERT INTO Users VALUES" + buildValuesOfUserInsertQuery(user);
+        return query;
+    }
+
 
 
 
@@ -847,6 +907,12 @@ public class RDSHandler
         executeQuery(query);
     }
 
+    public void addUser(User user) throws SQLException
+    {
+        String query = buildUserInsertQuery(user);
+        executeQuery(query);
+    }
+
 
 
 
@@ -918,23 +984,27 @@ public class RDSHandler
         }
 
         query = "SELECT * FROM Units WHERE id IN (";
-        for(int i = 0; i < results.size(); i++)
-        {
-            query += results.get(i).getUnitId();
-            if(i != results.size() - 1)
-            {
-                query += ", ";
-            }
-            else
-            {
-                query += ")";
-            }
-        }
-        resultSet = executeQuery(query);
         ArrayList<Unit> units = new ArrayList<Unit>();
-        while(resultSet.next())
+        if(results.size() > 0)
         {
-            units.add(createUnitFromResultSet(resultSet));
+            for(int i = 0; i < results.size(); i++)
+            {
+                query += results.get(i).getUnitId();
+                if(i != results.size() - 1)
+                {
+                    query += ", ";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
+            resultSet = executeQuery(query);
+
+            while(resultSet.next())
+            {
+                units.add(createUnitFromResultSet(resultSet));
+            }
         }
 
         return units;
@@ -1166,6 +1236,17 @@ public class RDSHandler
         return facilities;
     }
 
+    public String getUserTypeFromLogin(String username, String password) throws SQLException
+    {
+        String query = "SELECT * FROM Users WHERE name='" + username + "' AND password='" + password + "'";
+        ResultSet resultSet = executeQuery(query);
+        if(resultSet.next())
+        {
+            return createUserFromResultSet(resultSet).getType();
+        }
+        return "failed";
+    }
+
 
 
 
@@ -1337,44 +1418,123 @@ public class RDSHandler
      */
 
     public void batchDeleteCompanies(ArrayList<Company> companies) throws SQLException {
-        for(int i = 0; i < companies.size(); i++) {
-            String query = "DELETE FROM Companies WHERE id = " + companies.get(i).getId() + ";";
+        if(companies.size() > 0)
+        {
+            String query = "DELETE FROM Companies VALUES(";
+            for(int i = 0; i < companies.size(); i++)
+            {
+                Company unit = companies.get(i);
+                query += companies.get(i).getId();
+                if(i != companies.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
             executeQuery(query);
         }
     }
 
     public void batchDeleteCompanyToFacilities(ArrayList<CompanyToFacility> companyToFacilities) throws SQLException {
-        for(int i = 0; i < companyToFacilities.size(); i++) {
-            String query = "DELETE FROM CompaniesFacilities WHERE id = " + companyToFacilities.get(i).getId() + ";";
+        if(companyToFacilities.size() > 0)
+        {
+            String query = "DELETE FROM CompaniesFacilities WHERE id IN VALUES(";
+            for(int i = 0; i < companyToFacilities.size(); i++)
+            {
+                CompanyToFacility unit = companyToFacilities.get(i);
+                query += companyToFacilities.get(i).getId();
+                if(i != companyToFacilities.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
             executeQuery(query);
         }
     }
 
     public void batchDeleteFacilities(ArrayList<Facility> facilities) throws SQLException {
-        for(int i = 0; i < facilities.size(); i++) {
-            String query = "DELETE FROM Facilities WHERE id = " + facilities.get(i).getId() + ";";
+        if(facilities.size() > 0)
+        {
+            String query = "DELETE FROM Facilities VALUES(";
+            for(int i = 0; i < facilities.size(); i++)
+            {
+                query += facilities.get(i).getId();
+                if(i != facilities.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
             executeQuery(query);
         }
-
     }
 
     public void batchDeleteFacilityToUnits(ArrayList<FacilityToUnit> facilityToUnits) throws SQLException {
-        for(int i = 0; i < facilityToUnits.size(); i++) {
-            String query = "DELETE FROM FacilitiesUnits WHERE id = " + facilityToUnits.get(0).getId() + ";";
+        if(facilityToUnits.size() > 0)
+        {
+            String query = "DELETE FROM FacilitiesUnits WHERE id IN (";
+            for(int i = 0; i < facilityToUnits.size(); i++)
+            {
+                query += facilityToUnits.get(i).getId();
+                if(i != facilityToUnits.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
             executeQuery(query);
         }
     }
 
     public void batchDeleteFacilityToUnitsHistory(ArrayList<FacilityToUnitHistory> facilityToUnitHistories) throws SQLException {
-        for(int i = 0; i < facilityToUnitHistories.size(); i++) {
-            String query = "DELETE FROM FacilityUnitsHistory WHERE id = " + facilityToUnitHistories.get(0).getId() + ";";
+        if(facilityToUnitHistories.size() > 0)
+        {
+            String query = "DELETE FROM FacilitiesUnitsHistory VALUES(";
+            for(int i = 0; i < facilityToUnitHistories.size(); i++)
+            {
+                query += facilityToUnitHistories.get(i).getId();
+                if(i != facilityToUnitHistories.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
             executeQuery(query);
         }
     }
 
     public void batchDeleteUnits(ArrayList<Unit> units) throws SQLException {
-        for(int i = 0; i < units.size(); i++) {
-            String query = "DELETE FROM Units WHERE id = " + units.get(0).getId() + ";";
+        if(units.size() > 0)
+        {
+            String query = "DELETE FROM Units VALUES(";
+            for(int i = 0; i < units.size(); i++)
+            {
+                query += units.get(i).getId();
+                if(i != units.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
             executeQuery(query);
         }
     }
@@ -1406,6 +1566,13 @@ public class RDSHandler
         return rs.getLong(1);
     }
 
+    public long getMaxFacilityToUnitHistoryId() throws SQLException
+    {
+        ResultSet rs = executeQuery("SELECT max(id) FROM FacilitiesUnitsHistory");
+        rs.next();
+        return rs.getLong(1);
+    }
+
     public long getMaxUnitId() throws SQLException
     {
         ResultSet rs = executeQuery("SELECT max(id) FROM Units");
@@ -1413,9 +1580,9 @@ public class RDSHandler
         return rs.getLong(1);
     }
 
-    public long getMaxFacilityToUnitHistoryId() throws SQLException
+    public long getMaxUserId() throws SQLException
     {
-        ResultSet rs = executeQuery("SELECT max(id) FROM FacilitiesUnitsHistory");
+        ResultSet rs = executeQuery("SELECT max(id) FROM Users");
         rs.next();
         return rs.getLong(1);
     }

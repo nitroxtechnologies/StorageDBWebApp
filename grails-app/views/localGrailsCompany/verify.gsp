@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="main"/>
+        <meta name="layout" content="verify"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
@@ -45,17 +45,12 @@
                 </form>
             </div>
         </nav>
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="dbId" optionValue="name"
-                          name="companydropdown" from="${companies}" value = ""
-                          onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
-                </g:select>
-            </div>
 
-            <div class="col-sm text-center" style="margin-top: 50px">
-                <button onclick = 'login(document.getElementById("cDropdown"))' type="button" class="btn btn-outline-success">Log In</button></td>
-            </div>
+        <div class="col-lg-12 text-center" style="margin-top: 50px">
+                        ${type}
+                    </div>
+
+
     </div>
 
     <footer class="footer">

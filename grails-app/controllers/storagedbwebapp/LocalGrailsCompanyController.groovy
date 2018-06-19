@@ -7,6 +7,7 @@ import AWSAccessors.FacilityToUnit
 import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.RDSHandler
 import AWSAccessors.Unit
+import AWSAccessors.User
 import AWSAccessors.Value
 
 import java.math.RoundingMode
@@ -65,7 +66,7 @@ class LocalGrailsCompanyController
          compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
     }
 
-    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId)
+    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId, String userType)
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
@@ -90,12 +91,17 @@ class LocalGrailsCompanyController
         {
             dropdownInfo.compareCompaniesIndex = compareCompaniesIndex;
         }
-        if(facilityId > 0)
+        if(facilityId >= 0)
         {
             dropdownInfo.facilityId = facilityId;
         }
 
-        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: facilityId).save()
+        if(userType.length() > 0)
+        {
+            dropdownInfo.userType = userType;
+        }
+
+        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType).save()
     }
     def index()
     {
@@ -141,7 +147,7 @@ class LocalGrailsCompanyController
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l)
+        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l, "")
         updateLocalTables()
     }
     //Deprecated
@@ -215,7 +221,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId())
+        updateDropdownList(-1, (params.fID as Integer), 0, 0, 0, f.getId(), "")
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -243,7 +249,7 @@ class LocalGrailsCompanyController
         {
             System.out.println("\n\nCOMPARE: CID - " + (params.cID as Integer) + "\n\n");
 
-            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l)
+            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l, "")
 
             Company c = rds.getCompanyFromName(params.cName as String);
 
@@ -544,6 +550,8 @@ class LocalGrailsCompanyController
                     break;
                 case 7:
                     String rateType = (String) params.get(key);
+                    if(rateType == null || rateType.length() == 0)
+                        rateType = "standard";
                     temp.rateType = rateType;
                     list.add(temp);
                     System.out.println(temp);
@@ -707,6 +715,10 @@ class LocalGrailsCompanyController
 
             toAdd.dateCreated = new Date();
             toAdd.rateAmount = javaLocalGrailsUnit.price;
+            if(javaLocalGrailsUnit.rateType == null)
+            {
+                javaLocalGrailsUnit.rateType = "standard";
+            }
             toAdd.rateType = javaLocalGrailsUnit.rateType;
             newFacilityToUnits.add(toAdd);
         }
@@ -767,7 +779,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId())
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId(), "")
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -835,6 +847,61 @@ class LocalGrailsCompanyController
 
     }
 
+    def login()
+    {
+
+    }
+
+    def verify()
+    {
+        RDSHandler rds = new RDSHandler();
+        String type = rds.getUserTypeFromLogin(params.username as String, params.password as String);
+
+        if(type.equals("Admin"))
+        {
+            chain(action:"admin", params:[username: params.username, type: type]);
+        }
+        else if(type.equals("Standard"))
+        {
+            chain(action:"standard", params:[username: params.username, type: type]);
+        }
+        else
+        {
+            type = "Guest";
+            chain(action:"guest", params:[username: params.username, type: type]);
+        }
+
+
+    }
+
+    def admin()
+    {
+
+    }
+
+    def standard()
+    {
+        [username: params.username]
+    }
+
+    def guest()
+    {
+
+    }
+
+    def addUser()
+    {
+        RDSHandler rds = new RDSHandler();
+        User user = new User();
+        long maxId = rds.getMaxUserId();
+        user.setId(maxId+1);
+        user.setType(params.type as String);
+        user.setName(params.username as String);
+        user.setPassword(params.password as String);
+        rds.addUser(user);
+
+        chain(action:"admin", params:[username: params.username, type: params.type]);
+    }
 
     def render()
     {

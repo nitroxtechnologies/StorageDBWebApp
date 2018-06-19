@@ -7,4 +7,5 @@ class DropdownInfo {
     int unitIndex
     int compareCompaniesIndex
     int facilityId
+    String userType
 }

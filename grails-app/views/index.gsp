@@ -14,9 +14,5 @@
           </div>
         </div>
 
-        <g:each in="${companies}" var="company" status="i">
-            <h3>${i+1}. ${company.dbId}, ${company.name}</h3>
-            <br/>
-        </g:each>
 	</body>
 </html>
