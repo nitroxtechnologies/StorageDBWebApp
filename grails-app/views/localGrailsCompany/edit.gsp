@@ -206,7 +206,7 @@
 
         $('.btn-outline-primary').click(function () {
             $('#unitTable').append('<tr class = "entries"><td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-left"> </td> <td contenteditable="true" class="text-center"></td><td contenteditable="true" class="text-center"></td>' +
-             '<td contenteditable="false" class="text-center" style="width: 10px"><div class="dropdown"><button class="btn btn-light dropdown-toggle" type="button" id="${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Climate</button>' + '<div class="dropdown-menu" aria-labelledby="dropdownMenu2">' +
+             '<td contenteditable="false" class="text-center" style="width: 10px"><div class="dropdown"><button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Climate</button>' + '<div class="dropdown-menu" aria-labelledby="dropdownMenu2">' +
             "<button class='dropdown-item' type='button'>Climate</button>" +
             "<button class='dropdown-item' type='button'>Non-Climate</button>" +
             "<button class='dropdown-item' type='button'>Parking</button>" +
