@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="main"/>
+        <meta name="layout" content="admin"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
@@ -45,17 +45,15 @@
                 </form>
             </div>
         </nav>
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="dbId" optionValue="name"
-                          name="companydropdown" from="${companies}" value = ""
-                          onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
-                </g:select>
-            </div>
+              You are logged in as an Admin. Add users below.<br>
 
-            <div class="col-sm text-center" style="margin-top: 50px">
-                <button onclick = 'login(document.getElementById("cDropdown"))' type="button" class="btn btn-outline-success">Log In</button></td>
-            </div>
+              Username: <input type="text" id="usernameField"><br>
+              Password: <input type="text" id="passwordField"><br>
+              Type: <input type="text" id="typeField"><br>
+
+              <div class="col-sm text-center" style="margin-top: 50px">
+                  <button onclick = 'addUser()' type="button" class="btn btn-outline-success">Create User</button></td>
+              </div>
     </div>
 
     <footer class="footer">
@@ -64,16 +62,15 @@
         </div>
     </footer>
     <g:javascript>
-       function loadFacilities(e){
-            var cID = e.selectedIndex - 1;
-            var cName = e.options[e.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
+
+    function addUser()
+    {
+        var username = document.getElementById("usernameField").value;
+        var password = document.getElementById("passwordField").value;
+        var type = document.getElementById("typeField").value;
+        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'addUser')}" + "?username=" + username + "&password=" + password + "&type=" + type;
     }
 
-    function login(e)
-    {
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'login')}";
-    }
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>

@@ -11,7 +11,7 @@ class UrlMappings {
             }
         }
 
-        "/"(view:"/index")
+        "/"(view:"/LocalGrailsCompany/login")
         "500"(view:'/error')
 
     }
