@@ -9,48 +9,16 @@
         <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.css?compile=true">
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
-
-
     </head>
+
 <body>
     <div class="container">
-        <!-- As a heading -->
-        <nav style ="margin-top: 50px" class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" style='color:black;'>    <img src="/assets/icon.png?compile=true" width="30" height="30" class="d-inline-block align-top" alt="">
-                PriceDB</a>
+          Username: <input type="text" id="usernameField"><br>
+          Password: <input type="text" id="passwordField"><br>
 
-            <div class="collapse navbar-collapse" dbId="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/LocalGrailsCompany">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="${createLink(controller:'LocalGrailsCompany' ,action:'input')}">Add Unit(s)</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" dbId="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Menu
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}">See price history</a>
-                            <a class="dropdown-item" href="#">Anything</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </li>
-                </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
-            </div>
-        </nav>
-              Username: <input type="text" id="usernameField"><br>
-              Password: <input type="text" id="passwordField"><br>
-
-              <div class="col-sm text-center" style="margin-top: 50px">
-                  <button onclick = 'verify()' type="button" class="btn btn-outline-success">Log In</button></td>
-              </div>
+          <div class="col-sm text-center" style="margin-top: 50px">
+              <button onclick = 'verify()' type="button" class="btn btn-outline-success">Log In</button></td>
+          </div>
     </div>
 
     <footer class="footer">
@@ -59,11 +27,6 @@
         </div>
     </footer>
     <g:javascript>
-
-    function verifying()
-    {
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}";
-    }
 
     function verify()
     {

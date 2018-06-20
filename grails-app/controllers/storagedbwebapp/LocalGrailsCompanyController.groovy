@@ -9,6 +9,7 @@ import AWSAccessors.RDSHandler
 import AWSAccessors.Unit
 import AWSAccessors.User
 import AWSAccessors.Value
+import org.apache.tomcat.jni.Local
 
 import java.math.RoundingMode
 import java.text.DateFormat
@@ -844,12 +845,6 @@ class LocalGrailsCompanyController
         System.out.println(prices);
         System.out.println(dates);
         [prices: prices, dates: dates, facilityName: facilityName]
-
-    }
-
-    def login()
-    {
-
     }
 
     def verify()
@@ -859,34 +854,27 @@ class LocalGrailsCompanyController
 
         if(type.equals("Admin"))
         {
-            chain(action:"admin", params:[username: params.username, type: type]);
         }
         else if(type.equals("Standard"))
         {
-            chain(action:"standard", params:[username: params.username, type: type]);
         }
         else
         {
             type = "Guest";
-            chain(action:"guest", params:[username: params.username, type: type]);
+            chain(action:"failedLogin", params:[username: params.username, type: type]);
         }
-
-
+        chain(action:"landing", params:[username: params.username, type: type]);
     }
 
-    def admin()
+    def failedLogin()
     {
 
     }
 
-    def standard()
+    def landing()
     {
-        [username: params.username]
-    }
-
-    def guest()
-    {
-
+        System.out.println("TYPE IS: "  + params.type);
+        [username: params.username, type: params.type]
     }
 
     def addUser()
@@ -896,11 +884,47 @@ class LocalGrailsCompanyController
         long maxId = rds.getMaxUserId();
         user.setId(maxId+1);
         user.setType(params.type as String);
-        user.setName(params.username as String);
+        user.setUsername(params.username as String);
         user.setPassword(params.password as String);
         rds.addUser(user);
+    }
 
-        chain(action:"admin", params:[username: params.username, type: params.type]);
+    def showUsers()
+    {
+        System.out.println("SHOW EM");
+        boolean shouldSet = false;
+        if(params.id != null)
+        {
+            shouldSet = true;
+        }
+        RDSHandler rds = new RDSHandler();
+        ArrayList<User> userList = rds.getAllUsers();
+        ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
+        for(User user : userList)
+        {
+            if(shouldSet)
+            {
+                if(params.id as Long == user.getId())
+                {
+                    User temp = new User();
+                    temp.setId(params.id as Long);
+                    temp.setType(params.type as String);
+                    temp.setFirstName(params.firstName as String);
+                    temp.setLastName(params.lastName as String);
+                    temp.setUsername(params.username as String);
+                    temp.setPassword(params.password as String);
+                    rds.updateUser(temp);
+                    localUsers.add(LocalUser.createFromUser(temp));
+                    shouldSet = false;
+                    continue;
+                }
+            }
+            localUsers.add(LocalUser.createFromUser(user));
+        }
+        def users = localUsers;
+        def username = "Sam";
+        System.out.println("USERS: " + users);
+        [users: users, username: username]
     }
 
     def render()

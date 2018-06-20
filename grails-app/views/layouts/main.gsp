@@ -27,12 +27,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="${createLink(controller:'LocalGrailsCompany' ,action:'input')}">Add Unit(s)</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" dbId="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Menu
+                    <li class="navbar-nav mr-auto" id="loginDropdownHead">
+                        <a class="nav-link dropdown-toggle" href="#" dbId="loginDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Welcome ${username}
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}">See price history</a>
+                        <div class="dropdown-menu" aria-labelledby="loginDropdown">
+                            <a class="dropdown-item" id="addUsersOption" href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}">See price history</a>
                             <a class="dropdown-item" href="#">Anything</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Something else here</a>
@@ -64,15 +64,24 @@
         </div>
     </footer>
     <g:javascript>
-       function loadFacilities(e){
-            var cID = e.selectedIndex - 1;
-            var cName = e.options[e.selectedIndex].text;
-           window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
-    }
+    onload();
+
+   function loadFacilities(e)
+   {
+        var cID = e.selectedIndex - 1;
+        var cName = e.options[e.selectedIndex].text;
+       window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
+   }
 
     function login(e)
     {
         window.location.href="${createLink(controller:'LocalGrailsCompany', action:'login')}";
+    }
+
+    function onload()
+    {
+        var toHide = document.getElementById("loginDropdownHead");
+        toHide.style.display = "block";
     }
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
