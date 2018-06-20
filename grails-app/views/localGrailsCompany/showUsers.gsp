@@ -72,7 +72,7 @@
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
                     <tr>
-                        <td contenteditable="false" class="text-left">${user.name}</td>
+                        <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.type}</td>
                         <td class="text-center"><button type="submit" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                         <td class="text-center"><button name="editButton" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
@@ -80,6 +80,7 @@
                 </g:each>
                 </tbody>
             </table>
+
     </div>
 
     <footer class="footer">
@@ -110,14 +111,54 @@
         something = "${users}";
     });
 
-    $('#userTable').on('click', 'button[name="editButton"]', function () {
-        var index = 0;
+    var status = false;
+
+    $('#userTable').on('click', 'button[name="editButton"]', function (e) {
+        //String input = "<form id='infos' action=''>" +
+        //               "First name:<input type='text' id = 'first_name_field' name='first_name'>" +
+        //               "Last name:<input type='text' id = 'last_name_field' name='first_name'>" +
+        //               "Username:<input type='text' id = 'username_field' name='first_name'>" +
+        //               "Type:<input type='text' id = 'type_field' name='first_name'>" +
+        //               "</form>";
+        //input.replace(/\n/g, "<br />");
+        bootbox.confirm("<form id='infos' action=''>" +
+           "First name:<input type='text' id = 'first_name_field' name='first_name'><br/>" +
+           "Last name:<input type='text' id = 'last_name_field' name='last_name'><br/>" +
+           "Username:<input type='text' id = 'username_field' name='username'><br/>" +
+           "Password:<input type='text' id = 'password_field' name='password'><br/>" +
+           "Type:<input type='text' id = 'type_field' name='type'>" +
+           "</form>", function(result) {
+                if(result)
+                {
+                    //Save stuff
+                    var id = 0;
+                    var firstName = document.getElementById("first_name_field").value;
+                    var lastName = document.getElementById("last_name_field").value;
+                    var username = document.getElementById("username_field").value;
+                    var password = document.getElementById("password_field").value;
+                    var type = document.getElementById("type_field").value;
+                    window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'showUsers')}" + "?id=" +
+                    id + "&firstName=" + firstName + "&lastName=" + lastName + "&username=" + username +
+                    "&password=" + password + "&type=" + type;
+                }
+                console.log(result);
+        });
+        /*
+        theBox.on('shown.bs.modal', function() {
+            theBox.find('.modal-body').on('click', 'button[label="OK"]', function(e) {
+                console.log("WHEN OK CLICK I SAVE");
+            });
+        });*/
         var array = something.split(" ");
-        while(index < array.length)
-        {
-            index +=
-        }
-        bootbox.alert(array[0]);
+        var firstName = array[0].substring(1);
+        var lastName = array[1];
+        var username = array[2];
+        var type = array[3];
+        type = type.substring(0,type.length-1);
+        document.getElementById("first_name_field").value = firstName;
+        document.getElementById("last_name_field").value = lastName;
+        document.getElementById("username_field").value = username;
+        document.getElementById("type_field").value = type;
     })
 
 

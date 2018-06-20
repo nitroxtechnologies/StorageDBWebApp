@@ -106,7 +106,7 @@ public class RDSHandler
 
     public void resetTables()
     {
-        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Version");
+        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Users Version");
 
         createCompaniesTable(connection);
         createCompaniesToFacilitiesTable(connection);
@@ -414,7 +414,9 @@ public class RDSHandler
             String sql =  "CREATE TABLE " + "Users(" +
                     "id" + " BIGINT PRIMARY KEY," +
                     "type" + " TEXT," +
-                    "name" + " TEXT," +
+                    "firstName" + " TEXT," +
+                    "lastName" + " TEXT," +
+                    "username" + " TEXT," +
                     "password" + " TEXT)";
             statement.executeUpdate(sql);
             System.out.println("Created Units table");
@@ -629,7 +631,9 @@ public class RDSHandler
         User user = new User();
         user.setId(resultSet.getLong("id"));
         user.setType(resultSet.getString("type"));
-        user.setName(resultSet.getString("name"));
+        user.setFirstName(resultSet.getString("firstName"));
+        user.setLastName(resultSet.getString("lastName"));
+        user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
         return user;
     }
@@ -805,7 +809,9 @@ public class RDSHandler
         String result = "(";
         result += user.getId() + ",";
         result += "'" + user.getType() + "',";
-        result += "'" + user.getName() + "',";
+        result += "'" + user.getFirstName() + "',";
+        result += "'" + user.getLastName() + "',";
+        result += "'" + user.getUsername() + "',";
         result += "'" + user.getPassword() + "')";
         return result;
     }
@@ -911,6 +917,13 @@ public class RDSHandler
     {
         String query = buildUserInsertQuery(user);
         executeQuery(query);
+    }
+
+    public void updateUser(User user) throws SQLException
+    {
+        String query = "DELETE FROM Users WHERE id=" + user.getId();
+        executeQuery(query);
+        addUser(user);
     }
 
 
@@ -1238,7 +1251,7 @@ public class RDSHandler
 
     public String getUserTypeFromLogin(String username, String password) throws SQLException
     {
-        String query = "SELECT * FROM Users WHERE name='" + username + "' AND password='" + password + "'";
+        String query = "SELECT * FROM Users WHERE username='" + username + "' AND password='" + password + "'";
         ResultSet resultSet = executeQuery(query);
         if(resultSet.next())
         {

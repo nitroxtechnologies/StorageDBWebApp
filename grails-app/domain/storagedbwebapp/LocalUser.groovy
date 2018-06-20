@@ -9,7 +9,9 @@ public class LocalUser
 {
     long id;
     String type;
-    String name;
+    String firstName;
+    String lastName;
+    String username;
     String password;
 
     public LocalUser()
@@ -37,14 +39,34 @@ public class LocalUser
         this.type = type;
     }
 
-    public String getName()
+    public String getFirstName()
     {
-        return name;
+        return firstName;
     }
 
-    public void setName(String name)
+    public void setFirstName(String firstName)
     {
-        this.name = name;
+        this.firstName = firstName;
+    }
+
+    public String getLastName()
+    {
+        return lastName;
+    }
+
+    public void setLastName(String lastName)
+    {
+        this.lastName = lastName;
+    }
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
     }
 
     public String getPassword()
@@ -62,7 +84,9 @@ public class LocalUser
         LocalUser localUser = new LocalUser();
         localUser.setId(user.getId());
         localUser.setType(user.getType());
-        localUser.setName(user.getName());
+        localUser.setFirstName(user.getFirstName());
+        localUser.setLastName(user.getLastName());
+        localUser.setUsername(user.getUsername());
         localUser.setPassword(user.getPassword());
 
         return localUser;
@@ -70,6 +94,6 @@ public class LocalUser
 
     public String toString()
     {
-        return name + " " + type;
+        return firstName + " " + lastName + " " + username + " " + type;
     }
 }

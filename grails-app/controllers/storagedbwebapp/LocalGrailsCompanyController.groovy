@@ -9,6 +9,7 @@ import AWSAccessors.RDSHandler
 import AWSAccessors.Unit
 import AWSAccessors.User
 import AWSAccessors.Value
+import org.apache.tomcat.jni.Local
 
 import java.math.RoundingMode
 import java.text.DateFormat
@@ -883,18 +884,41 @@ class LocalGrailsCompanyController
         long maxId = rds.getMaxUserId();
         user.setId(maxId+1);
         user.setType(params.type as String);
-        user.setName(params.username as String);
+        user.setUsername(params.username as String);
         user.setPassword(params.password as String);
         rds.addUser(user);
     }
 
     def showUsers()
     {
+        System.out.println("SHOW EM");
+        boolean shouldSet = false;
+        if(params.id != null)
+        {
+            shouldSet = true;
+        }
         RDSHandler rds = new RDSHandler();
         ArrayList<User> userList = rds.getAllUsers();
         ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
         for(User user : userList)
         {
+            if(shouldSet)
+            {
+                if(params.id as Long == user.getId())
+                {
+                    User temp = new User();
+                    temp.setId(params.id as Long);
+                    temp.setType(params.type as String);
+                    temp.setFirstName(params.firstName as String);
+                    temp.setLastName(params.lastName as String);
+                    temp.setUsername(params.username as String);
+                    temp.setPassword(params.password as String);
+                    rds.updateUser(temp);
+                    localUsers.add(LocalUser.createFromUser(temp));
+                    shouldSet = false;
+                    continue;
+                }
+            }
             localUsers.add(LocalUser.createFromUser(user));
         }
         def users = localUsers;
