@@ -69,6 +69,8 @@
     {
         window.location.href="${createLink(controller:'LocalGrailsCompany', action:'login')}";
     }
+
+
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>

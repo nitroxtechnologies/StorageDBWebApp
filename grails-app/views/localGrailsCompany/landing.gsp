@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="guest"/>
+        <meta name="layout" content="landing"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
@@ -19,24 +19,27 @@
             <a class="navbar-brand" style='color:black;'>    <img src="/assets/icon.png?compile=true" width="30" height="30" class="d-inline-block align-top" alt="">
                 PriceDB</a>
 
-            <div class="collapse navbar-collapse" dbId="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto" id="parentBar">
                     <li class="nav-item active">
                         <a class="nav-link" href="/LocalGrailsCompany">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="${createLink(controller:'LocalGrailsCompany' ,action:'input')}">Add Unit(s)</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" dbId="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Menu
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}">See price history</a>
-                            <a class="dropdown-item" href="#">Anything</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
+                        <li class="navbar-nav mr-auto" id = "adminDropdownHead">
+                            <a class="nav-link dropdown-toggle" id="adminDropdownLabel" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome ${username}
+                            </a>
+                            <div class="dropdown-menu" id="adminDropdown" aria-labelledby="adminDropdownLabel">
+                                <g:if test="${type == 'Admin'}">
+                                <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'showUsers')}">Manage Users</a>
+                                </g:if>
+                                <a class="dropdown-item" href="#">Anything</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
@@ -45,14 +48,17 @@
                 </form>
             </div>
         </nav>
-              Your login failed, so you are still a guest. Feel free to attempt to login again below.
+            <div class="col-lg-12 text-center" style="margin-top: 50px">
+                <label>Company:</label>
+                <g:select id = "cDropdown" optionKey="dbId" optionValue="name"
+                          name="companydropdown" from="${companies}" value = ""
+                          onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
+                </g:select>
+            </div>
 
-              Username: <input type="text" id="usernameField"><br>
-              Password: <input type="text" id="passwordField"><br>
-
-              <div class="col-sm text-center" style="margin-top: 50px">
-                  <button onclick = 'verify()' type="button" class="btn btn-outline-success">Log In</button></td>
-              </div>
+            <div class="col-sm text-center" style="margin-top: 50px">
+                <button onclick = 'login(document.getElementById("cDropdown"))' type="button" class="btn btn-outline-success">Log In</button></td>
+            </div>
     </div>
 
     <footer class="footer">
@@ -62,18 +68,17 @@
     </footer>
     <g:javascript>
 
-    function verifying()
-    {
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}";
-    }
+   function loadFacilities(e)
+   {
+        var cID = e.selectedIndex - 1;
+        var cName = e.options[e.selectedIndex].text;
+       window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
+   }
 
-    function verify()
+    function login(e)
     {
-        var username = document.getElementById("usernameField").value;
-        var password = document.getElementById("passwordField").value;
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}" + "?username=" + username + "&password=" + password;
+        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'login')}";
     }
-
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>

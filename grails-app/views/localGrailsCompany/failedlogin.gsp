@@ -9,18 +9,18 @@
         <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.css?compile=true">
         %{--<link rel="stylesheet" href="/assets/mobile.css?compile=true" />--}%
         %{--<link rel="stylesheet" href="/assets/application.css?compile=true" />--}%
-
-
     </head>
+
 <body>
     <div class="container">
+        YOUR LOGIN FAILED.<br>
 
-              Username: <input type="text" id="usernameField"><br>
-              Password: <input type="text" id="passwordField"><br>
+        Username: <input type="text" id="usernameField"><br>
+        Password: <input type="text" id="passwordField"><br>
 
-              <div class="col-sm text-center" style="margin-top: 50px">
-                  <button onclick = 'verify()' type="button" class="btn btn-outline-success">Log In</button></td>
-              </div>
+        <div class="col-sm text-center" style="margin-top: 50px">
+          <button onclick = 'verify()' type="button" class="btn btn-outline-success">Log In</button></td>
+        </div>
     </div>
 
     <footer class="footer">
@@ -29,11 +29,6 @@
         </div>
     </footer>
     <g:javascript>
-
-    function verifying()
-    {
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}";
-    }
 
     function verify()
     {

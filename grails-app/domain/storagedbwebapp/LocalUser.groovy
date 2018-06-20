@@ -1,18 +1,18 @@
-package AWSAccessors;
+package storagedbwebapp
+
+import AWSAccessors.User;
 
 /**
  * Created by spencersharp on 6/18/18.
  */
-public class User
+public class LocalUser
 {
     long id;
     String type;
-    String firstName;
-    String lastName;
-    String username;
+    String name;
     String password;
 
-    public User()
+    public LocalUser()
     {
 
     }
@@ -37,14 +37,14 @@ public class User
         this.type = type;
     }
 
-    public String getUsername()
+    public String getName()
     {
-        return username;
+        return name;
     }
 
-    public void setUsername(String name)
+    public void setName(String name)
     {
-        this.username = username;
+        this.name = name;
     }
 
     public String getPassword()
@@ -57,8 +57,19 @@ public class User
         this.password = password;
     }
 
+    public static LocalUser createFromUser(User user)
+    {
+        LocalUser localUser = new LocalUser();
+        localUser.setId(user.getId());
+        localUser.setType(user.getType());
+        localUser.setName(user.getName());
+        localUser.setPassword(user.getPassword());
+
+        return localUser;
+    }
+
     public String toString()
     {
-        return username + " " + type;
+        return name + " " + type;
     }
 }

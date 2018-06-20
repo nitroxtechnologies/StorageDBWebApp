@@ -1247,6 +1247,18 @@ public class RDSHandler
         return "failed";
     }
 
+    public ArrayList<User> getAllUsers() throws SQLException
+    {
+        ArrayList<User> users = new ArrayList<User>();
+        String query = "SELECT * FROM Users";
+        ResultSet resultSet = executeQuery(query);
+        while(resultSet.next())
+        {
+            users.add(createUserFromResultSet(resultSet));
+        }
+        return users;
+    }
+
 
 
 

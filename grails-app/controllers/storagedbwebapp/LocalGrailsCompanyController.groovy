@@ -844,12 +844,6 @@ class LocalGrailsCompanyController
         System.out.println(prices);
         System.out.println(dates);
         [prices: prices, dates: dates, facilityName: facilityName]
-
-    }
-
-    def login()
-    {
-
     }
 
     def verify()
@@ -859,34 +853,27 @@ class LocalGrailsCompanyController
 
         if(type.equals("Admin"))
         {
-            chain(action:"admin", params:[username: params.username, type: type]);
         }
         else if(type.equals("Standard"))
         {
-            chain(action:"standard", params:[username: params.username, type: type]);
         }
         else
         {
             type = "Guest";
-            chain(action:"guest", params:[username: params.username, type: type]);
+            chain(action:"failedLogin", params:[username: params.username, type: type]);
         }
-
-
+        chain(action:"landing", params:[username: params.username, type: type]);
     }
 
-    def admin()
+    def failedLogin()
     {
 
     }
 
-    def standard()
+    def landing()
     {
-        [username: params.username]
-    }
-
-    def guest()
-    {
-
+        System.out.println("TYPE IS: "  + params.type);
+        [username: params.username, type: params.type]
     }
 
     def addUser()
@@ -899,8 +886,21 @@ class LocalGrailsCompanyController
         user.setName(params.username as String);
         user.setPassword(params.password as String);
         rds.addUser(user);
+    }
 
-        chain(action:"admin", params:[username: params.username, type: params.type]);
+    def showUsers()
+    {
+        RDSHandler rds = new RDSHandler();
+        ArrayList<User> userList = rds.getAllUsers();
+        ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
+        for(User user : userList)
+        {
+            localUsers.add(LocalUser.createFromUser(user));
+        }
+        def users = localUsers;
+        def username = "Sam";
+        System.out.println("USERS: " + users);
+        [users: users, username: username]
     }
 
     def render()

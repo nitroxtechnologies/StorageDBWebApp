@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="standard"/>
+        <meta name="layout" content="landing"/>
         %{--<asset:stylesheet src="application.css"/>--}%
         <link rel="stylesheet" href="/assets/bootstrap.css?compile=true" />
         %{--<link rel="stylesheet" href="/assets/grails.css?compile=true" />--}%
@@ -27,12 +27,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="${createLink(controller:'LocalGrailsCompany' ,action:'input')}">Add Unit(s)</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" dbId="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Menu
+                    <li class="navbar-nav mr-auto" id="loginDropdownHead">
+                        <a class="nav-link dropdown-toggle" href="#" dbId="loginDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Welcome ${username}
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}">See price history</a>
+                        <div class="dropdown-menu" aria-labelledby="loginDropdown">
+                            <a class="dropdown-item" id="addUsersOption" href="${createLink(controller:'LocalGrailsCompany' ,action:'graph')}">See price history</a>
                             <a class="dropdown-item" href="#">Anything</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Something else here</a>
@@ -45,7 +45,6 @@
                 </form>
             </div>
         </nav>
-              You are logged in as ${username}.
     </div>
 
     <footer class="footer">
@@ -54,19 +53,25 @@
         </div>
     </footer>
     <g:javascript>
+    onload();
 
-    function verifying()
+   function loadFacilities(e)
+   {
+        var cID = e.selectedIndex - 1;
+        var cName = e.options[e.selectedIndex].text;
+       window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'loadFacilities')}" + "?cID=" + cID + "&cName=" + cName;
+   }
+
+    function login(e)
     {
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}";
+        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'login')}";
     }
 
-    function verify()
+    function onload()
     {
-        var username = document.getElementById("usernameField").value;
-        var password = document.getElementById("passwordField").value;
-        window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}" + "?username=" + username + "&password=" + password;
+        var toHide = document.getElementById("loginDropdownHead");
+        toHide.style.display = "block";
     }
-
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%
     <script type="text/javascript" src="/assets/jquery-3.3.1.min.js?compile=true" ></script>
