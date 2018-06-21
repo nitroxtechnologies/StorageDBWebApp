@@ -55,7 +55,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fa fa-lock" aria-hidden="true"></i></span>
                     </div>
-                    <input type="text" class="form-control" id="passwordField" aria-label="password">
+                    <input type="password" class="form-control" id="passwordField" aria-label="password">
                 </div>
             </div>
             <div class="form-group">
