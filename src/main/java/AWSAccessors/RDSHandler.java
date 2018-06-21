@@ -418,7 +418,9 @@ public class RDSHandler
                     "lastName" + " TEXT," +
                     "username" + " TEXT," +
                     "password" + " TEXT" +
-                    "isActive" + "BIT)";
+                    "isActive" + "BIT" +
+                    "dateCreated" + "DATE" +
+                    "dateUpdated" + "DATE)";
             statement.executeUpdate(sql);
             System.out.println("Created Units table");
         } catch (SQLException se) {
@@ -637,6 +639,8 @@ public class RDSHandler
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
         user.setIsActive(resultSet.getBoolean("isActive"));
+        user.setDateCreated(getDateFromSqlDate(resultSet.getDate("dateCreated")));
+        user.setDateUpdated(getDateFromSqlDate(resultSet.getDate("dateUpdated")));
         return user;
     }
 
@@ -814,7 +818,26 @@ public class RDSHandler
         result += "'" + user.getFirstName() + "',";
         result += "'" + user.getLastName() + "',";
         result += "'" + user.getUsername() + "',";
-        result += "'" + user.getPassword() + "')";
+        result += "'" + user.getPassword() + "'";
+        result += "" + user.isActive() + ",";
+        java.sql.Date date = getSqlDateFromDate(user.getDateCreated());
+        if(date == null)
+        {
+            result += "null, ";
+        }
+        else
+        {
+            result += "'" + date + "',";
+        }
+        date = getSqlDateFromDate(user.getDateUpdated());
+        if(date == null)
+        {
+            result += "null)";
+        }
+        else
+        {
+            result += "'" + date + "')";
+        }
         return result;
     }
 
