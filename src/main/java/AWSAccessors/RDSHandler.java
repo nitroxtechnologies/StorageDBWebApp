@@ -1274,6 +1274,18 @@ public class RDSHandler
         return users;
     }
 
+    public ArrayList<User> getActiveUsers() throws SQLException
+    {
+        ArrayList<User> users = new ArrayList<User>();
+        String query = "SELECT * FROM Users WHERE isActive = 1";
+        ResultSet resultSet = executeQuery(query);
+        while(resultSet.next())
+        {
+            users.add(createUserFromResultSet(resultSet));
+        }
+        return users;
+    }
+
     public void makeUserWithIdInactive(long id) throws SQLException
     {
         String query = "UPDATE Users SET isActive = FALSE WHERE id = " + id;

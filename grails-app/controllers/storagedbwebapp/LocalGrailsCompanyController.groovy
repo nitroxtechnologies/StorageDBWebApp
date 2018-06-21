@@ -918,7 +918,7 @@ class LocalGrailsCompanyController
             shouldSet = true;
         }
         RDSHandler rds = new RDSHandler();
-        ArrayList<User> userList = rds.getAllUsers();
+        ArrayList<User> userList = rds.getActiveUsers();
         ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
         System.out.println("BEFORE: " + userList + "ACTIVENESS" + userList.get(0).isActive());
         for(User user : userList)
@@ -929,7 +929,8 @@ class LocalGrailsCompanyController
         def users = localUsers;
         def username = DropdownInfo.list().get(0).username;
         System.out.println("USERS: " + users);
-        [users: users, username: username]
+        def maxId = rds.getMaxUserId();
+        [users: userList, username: username, maxId: maxId]
     }
 
     def deleteUser()

@@ -78,6 +78,9 @@
                         <td class="text-center"><button name="editButton" id="${user.id}" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
+
+
+
                 </tbody>
             </table>
 
@@ -111,9 +114,19 @@
 
     })
     var something;
+    var addingId;
     var indexClicked;
     $(document).ready(function() {
         something = "${users}";
+        addingId = ${maxId};
+        $('#userTable').append('\
+        <tr>\
+            <td style="display:none;">FUN TIMES</td>\
+            <td contenteditable="false" class="text-left">' + addingId + '</td>\
+            <td contenteditable="false" class="text-left">MORE NEW DATA</td>\
+            <td class="text-center"><button type="submit" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+            <td class="text-center"><button name="editButton" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+        </tr>');
     });
 
     var status = false;
