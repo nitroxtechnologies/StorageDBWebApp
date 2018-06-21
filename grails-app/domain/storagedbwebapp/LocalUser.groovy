@@ -14,6 +14,8 @@ public class LocalUser
     String username;
     String password;
     boolean isActive;
+    Date dateCreated;
+    Date dateUpdated;
 
     public LocalUser()
     {
@@ -80,6 +82,36 @@ public class LocalUser
         this.password = password;
     }
 
+    public boolean isActive()
+    {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive)
+    {
+        this.isActive = isActive;
+    }
+
+    public Date getDateCreated()
+    {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated)
+    {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateUpdated()
+    {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated)
+    {
+        this.dateUpdated = dateUpdated;
+    }
+
     public static LocalUser createFromUser(User user)
     {
         LocalUser localUser = new LocalUser();
@@ -88,9 +120,10 @@ public class LocalUser
         localUser.setFirstName(user.getFirstName());
         localUser.setLastName(user.getLastName());
         localUser.setUsername(user.getUsername());
-        if(!user.getPassword().equals(""))
-            localUser.setPassword(user.getPassword());
-        localUser.isActive = user.isActive();
+        localUser.setPassword(user.getPassword());
+        localUser.setIsActive(user.isActive());
+        localUser.setDateCreated(user.getDateCreated());
+        localUser.setDateUpdated(user.getDateUpdated());
 
         return localUser;
     }
