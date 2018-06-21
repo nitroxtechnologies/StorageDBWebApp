@@ -27,25 +27,34 @@
                     <li class="nav-item">
                         <a class="nav-link" href="${createLink(controller:'LocalGrailsCompany' ,action:'input')}">Add Unit(s)</a>
                     </li>
-                        <li class="navbar-nav mr-auto" id = "adminDropdownHead">
-                            <a class="nav-link dropdown-toggle" id="adminDropdownLabel" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Welcome ${username}
-                            </a>
-                            <div class="dropdown-menu" id="adminDropdown" aria-labelledby="adminDropdownLabel">
-                                <g:if test="${type == 'Admin'}">
-                                <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'showUsers')}">Manage Users</a>
-                                </g:if>
-                                <a class="dropdown-item" href="#">Anything</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li>
+                        %{--<li class="navbar-nav mr-auto" id = "adminDropdownHead">--}%
+                            %{--<a class="nav-link dropdown-toggle" id="adminDropdownLabel" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">--}%
+                                %{--Welcome <strong>${username}</strong>--}%
+                            %{--</a>--}%
+                            %{--<div class="dropdown-menu" id="adminDropdown" aria-labelledby="adminDropdownLabel">--}%
+                                %{--<g:if test="${type == 'Admin'}">--}%
+                                %{--<a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'showUsers')}">Manage Users</a>--}%
+                                %{--</g:if>--}%
+                                %{--<a class="dropdown-item" href="#">Anything</a>--}%
+                                %{--<div class="dropdown-divider"></div>--}%
+                                %{--<a class="dropdown-item" href="#">Something else here</a>--}%
+                            %{--</div>--}%
+                        %{--</li>--}%
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
+                <div class="dropdown">
+                    <a style = "color:black" class="nav-link dropdown-toggle" id="adminDropdownLabel" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Welcome <strong>${username}</strong>
+                    </a>
+                    <div class="dropdown-menu" id="adminDropdown" aria-labelledby="adminDropdownLabel">
+                        <g:if test="${type == 'Admin'}">
+                            <a class="dropdown-item" href="${createLink(controller:'LocalGrailsCompany' ,action:'showUsers')}">Manage Users</a>
+                        </g:if>
+                        <a class="dropdown-item" href="#">Anything</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
             </div>
         </nav>
             <div class="col-lg-12 text-center" style="margin-top: 50px">
