@@ -13,6 +13,7 @@ public class LocalUser
     String lastName;
     String username;
     String password;
+    boolean isActive;
 
     public LocalUser()
     {
@@ -87,7 +88,9 @@ public class LocalUser
         localUser.setFirstName(user.getFirstName());
         localUser.setLastName(user.getLastName());
         localUser.setUsername(user.getUsername());
-        localUser.setPassword(user.getPassword());
+        if(!user.getPassword().equals(""))
+            localUser.setPassword(user.getPassword());
+        localUser.isActive = user.isActive();
 
         return localUser;
     }

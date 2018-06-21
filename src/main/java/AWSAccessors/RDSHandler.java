@@ -417,7 +417,8 @@ public class RDSHandler
                     "firstName" + " TEXT," +
                     "lastName" + " TEXT," +
                     "username" + " TEXT," +
-                    "password" + " TEXT)";
+                    "password" + " TEXT" +
+                    "isActive" + "BIT)";
             statement.executeUpdate(sql);
             System.out.println("Created Units table");
         } catch (SQLException se) {
@@ -499,7 +500,7 @@ public class RDSHandler
     {
         System.out.println("QUERY: " + query);
         Statement statement = connection.createStatement();
-        if(query.contains("INSERT") || query.contains("DELETE"))
+        if(query.contains("INSERT") || query.contains("DELETE") || query.contains("UPDATE"))
         {
             statement.executeUpdate(query);
             return null;
@@ -635,6 +636,7 @@ public class RDSHandler
         user.setLastName(resultSet.getString("lastName"));
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
+        user.setIsActive(resultSet.getBoolean("isActive"));
         return user;
     }
 
@@ -1270,6 +1272,12 @@ public class RDSHandler
             users.add(createUserFromResultSet(resultSet));
         }
         return users;
+    }
+
+    public void makeUserWithIdInactive(long id) throws SQLException
+    {
+        String query = "UPDATE Users SET isActive = FALSE WHERE id = " + id;
+        executeQuery(query);
     }
 
 

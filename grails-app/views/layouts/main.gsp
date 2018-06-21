@@ -80,8 +80,6 @@
 
     function onload()
     {
-        var toHide = document.getElementById("loginDropdownHead");
-        toHide.style.display = "block";
     }
 </g:javascript>
     %{--<asset:javascript src="application.js"/>--}%

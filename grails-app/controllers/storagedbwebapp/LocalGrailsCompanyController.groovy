@@ -67,7 +67,7 @@ class LocalGrailsCompanyController
          compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
     }
 
-    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId, String userType)
+    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId, String userType, String username)
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
         DropdownInfo.executeUpdate('delete from DropdownInfo')
@@ -102,7 +102,12 @@ class LocalGrailsCompanyController
             dropdownInfo.userType = userType;
         }
 
-        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType).save()
+        if(username.length() > 0)
+        {
+            dropdownInfo.username = username;
+        }
+
+        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType, username: dropdownInfo.username).save()
     }
     def index()
     {
@@ -148,7 +153,7 @@ class LocalGrailsCompanyController
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l, "")
+        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l, "", "")
         updateLocalTables()
     }
     //Deprecated
@@ -222,7 +227,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(-1, (params.fID as Integer), 0, 0, 0, f.getId(), "")
+        updateDropdownList(-1, (params.fID as Integer), 0, 0, 0, f.getId(), "", "")
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -250,7 +255,7 @@ class LocalGrailsCompanyController
         {
             System.out.println("\n\nCOMPARE: CID - " + (params.cID as Integer) + "\n\n");
 
-            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l, "")
+            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l, "", "")
 
             Company c = rds.getCompanyFromName(params.cName as String);
 
@@ -780,7 +785,7 @@ class LocalGrailsCompanyController
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId(), "")
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId(), "", "")
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -854,6 +859,7 @@ class LocalGrailsCompanyController
 
         if(type.equals("Admin"))
         {
+            System.out.println("HE AN ADMIN");
         }
         else if(type.equals("Standard"))
         {
@@ -874,11 +880,13 @@ class LocalGrailsCompanyController
     def landing()
     {
         System.out.println("TYPE IS: "  + params.type);
+        updateDropdownList(-1, 0, 0, 0, 0, -1l, params.type as String, params.username as String)
         [username: params.username, type: params.type]
     }
 
     def addUser()
     {
+        /*
         RDSHandler rds = new RDSHandler();
         User user = new User();
         long maxId = rds.getMaxUserId();
@@ -887,8 +895,20 @@ class LocalGrailsCompanyController
         user.setUsername(params.username as String);
         user.setPassword(params.password as String);
         rds.addUser(user);
+        */
+        RDSHandler rds = new RDSHandler();
+        User temp = new User();
+        temp.setId(params.id as Long);
+        temp.setType(params.type as String);
+        temp.setFirstName(params.firstName as String);
+        temp.setLastName(params.lastName as String);
+        temp.setUsername(params.username as String);
+        temp.setPassword(params.password as String);
+        temp.setIsActive(true);
+        rds.updateUser(temp);
     }
 
+    //Params needed: none
     def showUsers()
     {
         System.out.println("SHOW EM");
@@ -900,31 +920,23 @@ class LocalGrailsCompanyController
         RDSHandler rds = new RDSHandler();
         ArrayList<User> userList = rds.getAllUsers();
         ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
+        System.out.println("BEFORE: " + userList + "ACTIVENESS" + userList.get(0).isActive());
         for(User user : userList)
         {
-            if(shouldSet)
-            {
-                if(params.id as Long == user.getId())
-                {
-                    User temp = new User();
-                    temp.setId(params.id as Long);
-                    temp.setType(params.type as String);
-                    temp.setFirstName(params.firstName as String);
-                    temp.setLastName(params.lastName as String);
-                    temp.setUsername(params.username as String);
-                    temp.setPassword(params.password as String);
-                    rds.updateUser(temp);
-                    localUsers.add(LocalUser.createFromUser(temp));
-                    shouldSet = false;
-                    continue;
-                }
-            }
-            localUsers.add(LocalUser.createFromUser(user));
+            if(user.isActive())
+                localUsers.add(LocalUser.createFromUser(user));
         }
         def users = localUsers;
-        def username = "Sam";
+        def username = DropdownInfo.list().get(0).username;
         System.out.println("USERS: " + users);
         [users: users, username: username]
+    }
+
+    def deleteUser()
+    {
+        RDSHandler rds = new RDSHandler();
+        rds.makeUserWithIdInactive(params.id as Long);
+        chain(action:"showUsers");
     }
 
     def render()

@@ -74,8 +74,8 @@
                     <tr>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.type}</td>
-                        <td class="text-center"><button type="submit" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        <td class="text-center"><button name="editButton" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button type="submit" id="${user.id + 100000}" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button name="editButton" id="${user.id}" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -104,16 +104,21 @@
 
     $('#userTable').on('click', 'button[name="deleter"]', function () {
         if(confirm('Are you sure you want to delete this user?'))
-            $(this).closest('tr').remove();
+        {
+            var indexClicked = this.id;
+            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'deleteUser')}" + "?id=" + (indexClicked - 100000);
+        }
+
     })
     var something;
+    var indexClicked;
     $(document).ready(function() {
         something = "${users}";
     });
 
     var status = false;
 
-    $('#userTable').on('click', 'button[name="editButton"]', function (e) {
+    $('#userTable').on('click', 'button[name="editButton"]', function () {
         //String input = "<form id='infos' action=''>" +
         //               "First name:<input type='text' id = 'first_name_field' name='first_name'>" +
         //               "Last name:<input type='text' id = 'last_name_field' name='first_name'>" +
@@ -121,6 +126,8 @@
         //               "Type:<input type='text' id = 'type_field' name='first_name'>" +
         //               "</form>";
         //input.replace(/\n/g, "<br />");
+        indexClicked = this.id;
+        console.log(indexClicked + "TIMMY");
         bootbox.confirm("<form id='infos' action=''>" +
            "First name:<input type='text' id = 'first_name_field' name='first_name'><br/>" +
            "Last name:<input type='text' id = 'last_name_field' name='last_name'><br/>" +
@@ -131,13 +138,13 @@
                 if(result)
                 {
                     //Save stuff
-                    var id = 0;
+                    var id = indexClicked;
                     var firstName = document.getElementById("first_name_field").value;
                     var lastName = document.getElementById("last_name_field").value;
                     var username = document.getElementById("username_field").value;
                     var password = document.getElementById("password_field").value;
                     var type = document.getElementById("type_field").value;
-                    window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'showUsers')}" + "?id=" +
+                    window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'addUser')}" + "?id=" +
                     id + "&firstName=" + firstName + "&lastName=" + lastName + "&username=" + username +
                     "&password=" + password + "&type=" + type;
                 }
@@ -150,11 +157,15 @@
             });
         });*/
         var array = something.split(" ");
-        var firstName = array[0].substring(1);
-        var lastName = array[1];
-        var username = array[2];
-        var type = array[3];
-        type = type.substring(0,type.length-1);
+        var firstName = array[4*indexClicked+0];
+        if(indexClicked == 0)
+        {
+            firstName = firstName.substring(1);
+        }
+        var lastName = array[4*indexClicked+1];
+        var username = array[4*indexClicked+2];
+        var type = array[4*indexClicked+3];
+            type = type.substring(0,type.length-1);
         document.getElementById("first_name_field").value = firstName;
         document.getElementById("last_name_field").value = lastName;
         document.getElementById("username_field").value = username;

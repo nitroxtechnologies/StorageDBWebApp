@@ -19,7 +19,7 @@ class BootStrap {
                 new LocalGrailsCompany(dbId: companies.get(i).getId(), name: companies.get(i).getName()).save(failOnError: true)
                 System.out.println(companies.get(i));
             }
-        new DropdownInfo(companyIndex: 0, facilityIndex: 0, climateIndex: 0, unitIndex: 0, compareCompaniesIndex: 0, facilityId: 0, userType: "guest").save(failOnError: true)
+        new DropdownInfo(companyIndex: 0, facilityIndex: 0, climateIndex: 0, unitIndex: 0, compareCompaniesIndex: 0, facilityId: 0, userType: "Guest", username: "Guest").save(failOnError: true)
     }
     def destroy = {
     }

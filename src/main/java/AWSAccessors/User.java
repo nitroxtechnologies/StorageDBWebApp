@@ -11,6 +11,7 @@ public class User
     String lastName;
     String username;
     String password;
+    boolean isActive;
 
     public User()
     {
@@ -75,6 +76,16 @@ public class User
     public void setPassword(String password)
     {
         this.password = password;
+    }
+
+    public boolean isActive()
+    {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive)
+    {
+        this.isActive = isActive;
     }
 
     public String toString()

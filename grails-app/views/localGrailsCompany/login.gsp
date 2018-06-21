@@ -32,6 +32,8 @@
     {
         var username = document.getElementById("usernameField").value;
         var password = document.getElementById("passwordField").value;
+        console.log(username);
+        console.log(password);
         window.location.href="${createLink(controller:'LocalGrailsCompany', action:'verify')}" + "?username=" + username + "&password=" + password;
     }
 

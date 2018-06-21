@@ -8,4 +8,5 @@ class DropdownInfo {
     int compareCompaniesIndex
     int facilityId
     String userType
+    String username
 }
