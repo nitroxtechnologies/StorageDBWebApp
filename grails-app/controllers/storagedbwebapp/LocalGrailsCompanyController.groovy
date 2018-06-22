@@ -12,6 +12,7 @@ import AWSAccessors.Value
 import org.apache.tomcat.jni.Local
 
 import java.math.RoundingMode
+import java.sql.ResultSet
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -223,7 +224,12 @@ class LocalGrailsCompanyController
                     System.out.println("MATCHED");
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: ftu.getRateType(), floor: u.getFloor(), prices: prices, time: ftu.getDateCreated()).save(failOnError:true)
+                    String rateType = ftu.getRateType();
+                    System.out.println("RATE TYPE IS: " + rateType);
+                    if(rateType == null || rateType.length()==0)
+                        rateType = "standard";
+                    System.out.println("RATE TYPE NOW: " + rateType);
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreated()).save(failOnError:true)
                 }
             }
         }
@@ -755,6 +761,14 @@ class LocalGrailsCompanyController
     }
 
     def input() {
+        RDSHandler rds = new RDSHandler();
+        ResultSet resultSet = rds.executeQuery("SELECT * FROM URLs");
+        ArrayList<String> urlResults = new ArrayList<String>();
+        while(resultSet.next())
+        {
+            urlResults.add(resultSet.getString("URL"));
+        }
+        [urlist: urlResults]
 
     }
 
@@ -881,7 +895,9 @@ class LocalGrailsCompanyController
     {
         System.out.println("TYPE IS: "  + params.type);
         updateDropdownList(-1, 0, 0, 0, 0, -1l, params.type as String, params.username as String)
-        [username: params.username, type: params.type]
+        RDSHandler rds = new RDSHandler();
+        def companies = LocalGrailsCompany.list()
+        [companies: companies, username: params.username, type: params.type]
     }
 
     def addUser()
