@@ -762,6 +762,18 @@ class LocalGrailsCompanyController
 
     def input() {
         RDSHandler rds = new RDSHandler();
+
+        Collection keys = params.keySet();
+        if (keys.size() > 2) {
+            rds.executeQuery("TRUNCATE TABLE URLs")
+            for (Object key : keys) {
+                if (!(params.get(key).equals("localGrailsCompany") || params.get(key).equals("input")
+                        || params.get(key).equals("") || params.get(key).equals("reset"))) {
+                    println(params.get(key))
+                    rds.executeQuery("INSERT INTO URLs VALUES ('" + params.get(key) + "')")
+                }
+            }
+        }
         ResultSet resultSet = rds.executeQuery("SELECT * FROM URLs");
         ArrayList<String> urlResults = new ArrayList<String>();
         while(resultSet.next())
