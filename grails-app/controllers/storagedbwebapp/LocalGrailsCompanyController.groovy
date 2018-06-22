@@ -795,7 +795,12 @@ class LocalGrailsCompanyController
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: ftu.getRateType(), floor: u.getFloor(), prices: prices, time: ftu.getDateCreated()).save()
+                    String rateType = ftu.getRateType();
+                    if(rateType.length() == 0 || rateType == null)
+                    {
+                        rateType = "standard";
+                    }
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreated()).save()
                 }
             }
         }

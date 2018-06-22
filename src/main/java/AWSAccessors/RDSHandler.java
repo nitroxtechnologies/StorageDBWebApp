@@ -1303,6 +1303,18 @@ public class RDSHandler
         return users;
     }
 
+    public ArrayList<Company> getAllCompanies() throws SQLException
+    {
+        ArrayList<Company> companies = new ArrayList<Company>();
+        String query = "SELECT * FROM Companies";
+        ResultSet resultSet = executeQuery(query);
+        while(resultSet.next())
+        {
+            companies.add(createCompanyFromResultSet(resultSet));
+        }
+        return companies;
+    }
+
     public ArrayList<User> getActiveUsers() throws SQLException
     {
         ArrayList<User> users = new ArrayList<User>();
@@ -1632,6 +1644,12 @@ public class RDSHandler
     /*
      *      Get max commands
      */
+    public long getMaxCompanyId() throws SQLException
+    {
+        ResultSet resultSet = executeQuery("SELECT max(id) FROM Companies");
+        resultSet.next();
+        return resultSet.getLong(1);
+    }
 
     public long getMaxFacilityToUnitId() throws SQLException
     {
