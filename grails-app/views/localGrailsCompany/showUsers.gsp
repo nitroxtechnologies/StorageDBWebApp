@@ -70,10 +70,10 @@
                         <td id="userInfoId${i}" >${user.id} ${user.type} ${user.firstName} ${user.lastName} ${user.username} ${user.password} null null</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.type}</td>
-                        <td contenteditable="false" class="text-left">${user.dateCreated}</td>
-                        <td contenteditable="false" class="text-left">${user.dateUpdated}</td>
-                        <td class="text-center"><button name="editButton" id="${user.id}" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
-                        <td class="text-center"><button type="submit" id="${user.id + 100000}" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td contenteditable="false" class="text-left">${user.dateCreatedString}</td>
+                        <td contenteditable="false" class="text-left">${user.dateUpdatedString}</td>
+                        <td class="text-center"><button name="editButton" id="editButton${user.id}" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button type="submit" id="deleteButton${user.id}" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -107,6 +107,7 @@
         if(confirm('Are you sure you want to delete this user?'))
         {
             var indexClicked = this.id;
+            var result =
             window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'deleteUser')}" + "?id=" + (indexClicked - 100000);
         }
 
@@ -116,6 +117,11 @@
     $(document).ready(function() {
         addingId = ${maxId};
     });
+
+    Number.prototype.padLeft = function(base,chr){
+        var  len = (String(base || 10).length - String(this).length)+1;
+        return len > 0? new Array(len).join(chr || '0')+this : this;
+    }
 
     var status = false;
 
@@ -139,7 +145,7 @@
                         if(password.length < 1)
                             password = "test";
                         var type = document.getElementById("type_field").value;
-                        var dateCreated = new Date();
+
                         var dateUpdated = new Date();
                         var text = id + " " + type + " " + firstName + " " + lastName + " " + username + " " + password + " " + dateCreated + " " + dateUpdated;
                         $('#userTable').append('\
@@ -166,6 +172,8 @@
         //               "</form>";
         //input.replace(/\n/g, "<br />");
         indexClicked = this.id;
+        indexClicked = indexClicked.replace("editButton","");
+        indexClicked = parseInt(indexClicked);
         console.log(indexClicked + "TIMMY");
         bootbox.confirm("<form id='infos' action=''>" +
            "First name:<input type='text' id = 'first_name_field' name='first_name'><br/>" +
@@ -184,8 +192,15 @@
                     if(password.length < 1)
                         password = "test";
                     var type = document.getElementById("type_field").value;
-                    var dateCreated = new Date();
-                    var dateUpdated = new Date();
+
+                    var d = new Date();
+                    var dateCreated =
+                    d.getFullYear()  + "-" +
+                    ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+                    ("0" + d.getDate()).slice(-2) + " " +
+                    ("0" + d.getHours()).slice(-2) + ":" +
+                    ("0" + d.getMinutes()).slice(-2);
+                    var dateUpdated = dateCreated;
                     var text = id + " " + type + " " + firstName + " " + lastName + " " + username + " " + password + " null null";
                     /*$('#userTable').append('\
                         <tr>\
@@ -198,13 +213,13 @@
                     //Save stuff
                     var newtr = '\
                         <tr>\
-                            <td " id="userInfoId"' + id + '> ' + text + '</td>\
+                            <td  id="userInfoId"' + id + '> ' + text + '</td>\
                             <td contenteditable="false" class="text-left">' + username + '</td>\
                             <td contenteditable="false" class="text-left">' + type + '</td>\
                             <td contenteditable="false" class="text-left">' + dateCreated + '</td>\
                             <td contenteditable="false" class="text-left">' + dateUpdated + '</td>\
-                            <td class="text-center"><button name="editButton" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                            <td class="text-center"><button type="submit" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                            <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                            <td class="text-center"><button type="submit" name="deleter" id=deleteButton' + id + 'class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
                         </tr>';
                     $("tr#row0").replaceWith(newtr);
                 }

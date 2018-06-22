@@ -3,7 +3,9 @@ package AWSAccessors;
 import java.io.File;
 import java.io.IOException;
 import static java.lang.System.out;
+
 import java.sql.*;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -31,20 +33,20 @@ public class RDSHandler
 
 
 
-    public java.util.Date getDateFromSqlDate(java.sql.Date date)
+    public java.util.Date getDateFromSqlDate(Timestamp date)
     {
-        java.util.Date javaDate = null;
+        Date javaDate = null;
         if (date != null) {
             javaDate = new Date(date.getTime());
         }
         return javaDate;
     }
 
-    public java.sql.Date getSqlDateFromDate(java.util.Date date)
+    public Timestamp getSqlDateFromDate(Date date)
     {
         if(date == null)
             return null;
-        java.sql.Date result = new java.sql.Date(date.getTime());
+        Timestamp result = new Timestamp(date.getTime());
         return result;
     }
 
@@ -417,10 +419,10 @@ public class RDSHandler
                     "firstName" + " TEXT," +
                     "lastName" + " TEXT," +
                     "username" + " TEXT," +
-                    "password" + " TEXT" +
-                    "isActive" + "BIT" +
-                    "dateCreated" + "DATE" +
-                    "dateUpdated" + "DATE)";
+                    "password" + " TEXT," +
+                    "isActive" + " BIT," +
+                    "dateCreated" + " DATE," +
+                    "dateUpdated" + " DATE)";
             statement.executeUpdate(sql);
             System.out.println("Created Units table");
         } catch (SQLException se) {
@@ -596,7 +598,7 @@ public class RDSHandler
         facilityToUnit.setId(resultSet.getLong("id"));
         facilityToUnit.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnit.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnit.setDateCreated(getDateFromSqlDate(resultSet.getDate("dateCreated")));
+        facilityToUnit.setDateCreated(getDateFromSqlDate(resultSet.getTimestamp("dateCreated")));
         facilityToUnit.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnit.setRateType(resultSet.getString("rateType"));
         return facilityToUnit;
@@ -608,7 +610,7 @@ public class RDSHandler
         facilityToUnitHistory.setId(resultSet.getLong("id"));
         facilityToUnitHistory.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnitHistory.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnitHistory.setDateCreated(getDateFromSqlDate(resultSet.getDate("dateCreated")));
+        facilityToUnitHistory.setDateCreated(getDateFromSqlDate(resultSet.getTimestamp("dateCreated")));
         facilityToUnitHistory.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnitHistory.setRateType(resultSet.getString("rateType"));
         return facilityToUnitHistory;
@@ -639,8 +641,8 @@ public class RDSHandler
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
         user.setIsActive(resultSet.getBoolean("isActive"));
-        user.setDateCreated(getDateFromSqlDate(resultSet.getDate("dateCreated")));
-        user.setDateUpdated(getDateFromSqlDate(resultSet.getDate("dateUpdated")));
+        user.setDateCreated(getDateFromSqlDate(resultSet.getTimestamp("dateCreated")));
+        user.setDateUpdated(getDateFromSqlDate(resultSet.getTimestamp("dateUpdated")));
         return user;
     }
 
@@ -734,12 +736,16 @@ public class RDSHandler
         return query;
     }
 
-    private String buildValuesOfFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit)
+    private String buildValuesOfFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit) throws SQLException
     {
         String result = "(" + facilityToUnit.getId() + ", ";
         result += "" + facilityToUnit.getFacilityId() + ", ";
         result += "" + facilityToUnit.getUnitId() + ", ";
-        java.sql.Date date = getSqlDateFromDate(facilityToUnit.getDateCreated());
+        Timestamp date = getSqlDateFromDate(facilityToUnit.getDateCreated());
+        //PreparedStatement preparedStatement = connection.prepareStatement("?");
+        //preparedStatement.setTimestamp(1,date);
+        //out.println("AHA: " +preparedStatement.toString());
+        //result += preparedStatement.toString();
         if(date == null)
         {
             result += "null, ";
@@ -754,7 +760,7 @@ public class RDSHandler
         return result;
     }
 
-    private String buildFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit)
+    private String buildFacilityToUnitInsertQuery(FacilityToUnit facilityToUnit) throws SQLException
     {
         String query = "INSERT INTO FacilitiesUnits VALUES" + buildValuesOfFacilityToUnitInsertQuery(facilityToUnit);
         return query;
@@ -765,7 +771,7 @@ public class RDSHandler
         String result = "(" + facilityToUnitHistory.getId() + ", ";
         result += "" + facilityToUnitHistory.getFacilityId() + ", ";
         result += "" + facilityToUnitHistory.getUnitId() + ", ";
-        java.sql.Date date = getSqlDateFromDate(facilityToUnitHistory.getDateCreated());
+        Timestamp date = getSqlDateFromDate(facilityToUnitHistory.getDateCreated());
         if(date == null)
         {
             result += "null, ";
@@ -818,9 +824,9 @@ public class RDSHandler
         result += "'" + user.getFirstName() + "',";
         result += "'" + user.getLastName() + "',";
         result += "'" + user.getUsername() + "',";
-        result += "'" + user.getPassword() + "'";
+        result += "'" + user.getPassword() + "',";
         result += "" + user.isActive() + ",";
-        java.sql.Date date = getSqlDateFromDate(user.getDateCreated());
+        Timestamp date = getSqlDateFromDate(user.getDateCreated());
         if(date == null)
         {
             result += "null, ";

@@ -14,7 +14,7 @@ public class FacilityToUnit
     private long id;
     private long facilityId;
     private long unitId;
-    private Date dateCreated;
+    private java.util.Date dateCreated;
     private BigDecimal rateAmount;
     private String rateType;
 
@@ -35,7 +35,7 @@ public class FacilityToUnit
     }
 
     @DynamoDBAttribute(attributeName = "timeCreated")
-    public Date getDateCreated()
+    public java.util.Date getDateCreated()
     {
         return dateCreated;
     }

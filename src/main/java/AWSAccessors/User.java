@@ -1,5 +1,6 @@
 package AWSAccessors;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -14,7 +15,9 @@ public class User {
     String password;
     boolean isActive;
     Date dateCreated;
+    String dateCreatedString;
     Date dateUpdated;
+    String dateUpdatedString;
 
     public User() {
 
@@ -82,6 +85,13 @@ public class User {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
+        dateCreatedString = ft.format(dateCreated);
+    }
+
+    public String getDateCreatedString()
+    {
+        return dateCreatedString;
     }
 
     public Date getDateUpdated() {
@@ -90,6 +100,8 @@ public class User {
 
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
+        dateUpdatedString = ft.format(dateUpdated);
     }
 
     public String toString() {
