@@ -69,8 +69,8 @@
                 </thead>
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
-                    <tr id = "row${i}">
-                        <td id="userInfoId${i}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
+                    <tr id = "row${user.id}">
+                        <td id="userInfoId${user.id}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.firstName}</td>
                         <td contenteditable="false" class="text-left">${user.lastName}</td>
@@ -305,7 +305,7 @@
                             <td contenteditable="false" class="text-left">' + type + '</td>\
                             <td contenteditable="false" class="text-left">' + dateCreated + '</td>\
                             <td contenteditable="false" class="text-left">' + dateUpdated + '</td>\
-                            <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                            <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-edit" aria-hidden="true"></i></button></td>\
                             <td class="text-center"><button type="submit" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
                         </tr>';
                     $("tr#row" + id).replaceWith(newtr);

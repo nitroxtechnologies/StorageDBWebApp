@@ -998,25 +998,13 @@ class LocalGrailsCompanyController
             users.add(user);
         }
 
-        ArrayList<Long> removedUserIds = new ArrayList<Long>();
-        for(int i = 0; i < maxUserId; i++)
-        {
-            boolean found = false;
-            for(User user : users)
-            {
-                if(user.getId() == i)
-                {
-                    found = true;
-                }
-            }
-            if(!found)
-            {
-                removedUserIds.add(i);
-            }
-        }
-        rds.emptyUsersTable();
-        rds.batchSaveUsers( users);
+        //Delete all users that are in my list
+        //Update all users in table to isActive = 0
+        //Add all users in my list
 
+        rds.batchDeleteUsers(users);
+        rds.makeAllUsersInactive();
+        rds.batchSaveUsers(users);
 
         chain(action:"showUsers");
     }

@@ -1333,6 +1333,12 @@ public class RDSHandler
         executeQuery(query);
     }
 
+    public void makeAllUsersInactive() throws SQLException
+    {
+        String query = "UPDATE Users SET isActive = FALSE";
+        executeQuery(query);
+    }
+
 
 
 
@@ -1629,7 +1635,7 @@ public class RDSHandler
     public void batchDeleteUnits(ArrayList<Unit> units) throws SQLException {
         if(units.size() > 0)
         {
-            String query = "DELETE FROM Units VALUES(";
+            String query = "DELETE FROM Units WHERE id IN (";
             for(int i = 0; i < units.size(); i++)
             {
                 query += units.get(i).getId();
@@ -1649,7 +1655,7 @@ public class RDSHandler
     public void batchDeleteUsersWithIds(ArrayList<Long> ids) throws SQLException {
         if(ids.size() > 0)
         {
-            String query = "DELETE FROM Users VALUES(";
+            String query = "DELETE FROM Users WHERE id IN (";
             for(int i = 0; i < ids.size(); i++)
             {
                 query += ids.get(i);
@@ -1664,6 +1670,117 @@ public class RDSHandler
             }
             executeQuery(query);
         }
+    }
+
+    public void batchDeleteUsers(ArrayList<User> users) throws SQLException {
+        if(users.size() > 0)
+        {
+            String query = "DELETE FROM Users WHERE id IN (";
+            for(int i = 0; i < users.size(); i++)
+            {
+                query += users.get(i).getId();
+                if(i != users.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
+            executeQuery(query);
+        }
+    }
+
+    /**
+     * Set the users to be updated to the info in users. The rest of the users (mentioned in removedIds) will have isActive
+     * set to 0.
+     * @param users
+     * @param removedIds
+     * @throws SQLException
+     */
+    public void updateUsers(ArrayList<User> users, ArrayList<Long> removedIds) throws SQLException
+    {
+        /*
+        String query = "UPDATE Users\n";
+        //Type update
+        query += "SET type = CASE id\n";
+        String end = "WHERE id IN (";
+        for(User user : users)
+        {
+            query += "WHEN " + user.getId() + " THEN '" + user.getType() + "'\n";
+            end += user.getId() + ", ";
+        }
+        query += "END,\n";
+        end = end.substring(0,end.length()-2);
+        query += end + ")";
+        //Firstname update
+        query += "SET type = CASE id\n";
+        String end = "WHERE id IN (";
+        for(User user : users)
+        {
+            query += "WHEN " + user.getId() + " THEN '" + user.getType() + "'\n";
+            end += user.getId() + ", ";
+        }
+        query += "END,\n";
+        end = end.substring(0,end.length()-2);
+        query += end + ")";
+        //Lastname update
+        query += "SET type = CASE id\n";
+        String end = "WHERE id IN (";
+        for(User user : users)
+        {
+            query += "WHEN " + user.getId() + " THEN '" + user.getType() + "'\n";
+            end += user.getId() + ", ";
+        }
+        query += "END,\n";
+        end = end.substring(0,end.length()-2);
+        query += end + ")";
+        //Username update
+        query += "SET type = CASE id\n";
+        String end = "WHERE id IN (";
+        for(User user : users)
+        {
+            query += "WHEN " + user.getId() + " THEN '" + user.getType() + "'\n";
+            end += user.getId() + ", ";
+        }
+        query += "END,\n";
+        end = end.substring(0,end.length()-2);
+        query += end + ")";
+        //Password update
+        query += "SET type = CASE id\n";
+        String end = "WHERE id IN (";
+        for(User user : users)
+        {
+            query += "WHEN " + user.getId() + " THEN '" + user.getType() + "'\n";
+            end += user.getId() + ", ";
+        }
+        query += "END,\n";
+        end = end.substring(0,end.length()-2);
+        query += end + ")";
+        //IsActive update
+        query += "SET type = CASE id\n";
+        String end = "WHERE id IN (";
+        for(User user : users)
+        {
+            query += "WHEN " + user.getId() + " THEN '" + user.getType() + "'\n";
+            end += user.getId() + ", ";
+        }
+        query += "END,\n";
+        end = end.substring(0,end.length()-2);
+        query += end + ")";
+
+        //for(User user : users)
+
+        query += " SET username = (case";
+        for(User user : users)
+        {
+            query += " when id=" + user.getId() + " then '" + user.getUsername() + "'";
+        }
+        query += " end),";
+
+
+        executeQuery(query);*/
     }
 
 
