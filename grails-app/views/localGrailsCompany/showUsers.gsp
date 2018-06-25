@@ -209,11 +209,14 @@
     $('#fullContainer').on('click', 'button[name="addUserButton"]', function () {
             console.log(indexClicked + "TIMMY");
             bootbox.confirm("<form id='infos' action=''>" +
-               "First name:<input type='text' id = 'first_name_field' name='first_name'><br/>" +
-               "Last name:<input type='text' id = 'last_name_field' name='last_name'><br/>" +
+               "<label for = 'first_name_field'>First name:</label><input type='text' id = 'first_name_field' name='first_name'><br/>" +
+               "<label for = 'last_name_field'>Last name:</label><input type='text' id = 'last_name_field' name='last_name'><br/>" +
                "Username:<input type='text' id = 'username_field' name='username'><br/>" +
                "Password:<input type='text' id = 'password_field' name='password'><br/>" +
-               "Type:<input type='text' id = 'type_field' name='type'>" +
+                'Type: <select id = "type_field">\
+                    <option value="Admin">Admin</option>\
+                    <option value="User">User</option>\
+                </select>' +
                "</form>", function(result) {
                     if(result)
                     {
@@ -268,7 +271,10 @@
            "Last name:<input type='text' id = 'last_name_field' name='last_name'><br/>" +
            "Username:<input type='text' id = 'username_field' name='username'><br/>" +
            "Password:<input type='text' id = 'password_field' name='password'><br/>" +
-           "Type:<input type='text' id = 'type_field' name='type'>" +
+           'Type: <select id = "type_field">\
+                    <option value="Admin">Admin</option>\
+                    <option value="User">User</option>\
+                </select>' +
            "</form>", function(result) {
                 if(result)
                 {
