@@ -84,7 +84,7 @@
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
                     <tr id = "row${user.id}" class = "${user.isActive}">
-                        <td id="userInfoId${user.id}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
+                        <td id="userInfoId${user.id}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}*${user.isActive}</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.firstName}</td>
                         <td contenteditable="false" class="text-left">${user.lastName}</td>
@@ -321,6 +321,12 @@
                     <option value="Admin">Admin</option>\
                     <option value="User">User</option>\
                 </select>' +
+           '<div class="form-check">\
+                <input class="form-check-input" type="checkbox" value="" id="active_box">\
+                <label class="form-check-label" for="active_box">\
+                    Active\
+                </label>\
+            </div>' +
            "</form>", function(result) {
                 if(result)
                 {
@@ -333,6 +339,8 @@
                         password = "test";
                     var type = document.getElementById("type_field").value;
 
+                    var active = document.getElementById("active_box").checked;
+
                     var d = new Date();
                     var dateUpdated = d.getFullYear()  + "-" +
                     ("0"+(d.getMonth()+1)).slice(-2) + "-" +
@@ -340,7 +348,7 @@
                     ("0" + d.getHours()).slice(-2) + ":" +
                     ("0" + d.getMinutes()).slice(-2);
                     var dateCreated = document.getElementById("userInfoId" + id).innerText.split("*")[6];
-                    var text = id + "*" + type + "*" + firstName + "*" + lastName + "*" + username + "*" + password + "*" + dateCreated + "*" + dateUpdated;
+                    var text = id + "*" + type + "*" + firstName + "*" + lastName + "*" + username + "*" + password + "*" + dateCreated + "*" + dateUpdated + "*" + active;
                     //Save stuff
                     var newtr = '\
                         <tr id=row' + id + '>\
@@ -351,7 +359,8 @@
                             <td contenteditable="false" class="text-left">' + type + '</td>\
                             <td contenteditable="false" class="text-left">' + dateCreated + '</td>\
                             <td contenteditable="false" class="text-left">' + dateUpdated + '</td>\
-                            <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-edit" aria-hidden="true"></i></button></td>\
+                            <td contenteditable="false" class="text-left">' + active + '</td>\
+                            <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-outline-info"><i class="fa fa-edit" aria-hidden="true"></i></button></td>\
                             <td class="text-center"><button type="submit" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
                         </tr>';
                     $("tr#row" + id).replaceWith(newtr);
@@ -368,6 +377,7 @@
         var toLookFor = "userInfoId" + indexClicked;
         console.log(toLookFor);
         var something = document.getElementById("userInfoId" + indexClicked).innerText;
+        // alert(something);
         console.log(document.getElementById("userInfoId" + indexClicked).innerText);
         var array = something.split("*");
         var firstName = array[2];
@@ -378,10 +388,12 @@
         var lastName = array[3];
         var username = array[4];
         var type = array[1];
+        var checked = array[8];
         document.getElementById("first_name_field").value = firstName;
         document.getElementById("last_name_field").value = lastName;
         document.getElementById("username_field").value = username;
         document.getElementById("type_field").value = type;
+        document.getElementById("active_box").checked = checked;
     })
 
     function saveUsers()
