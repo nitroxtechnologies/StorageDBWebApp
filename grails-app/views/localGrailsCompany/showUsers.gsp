@@ -70,7 +70,7 @@
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
                     <tr id = "row${i}">
-                        <td id="userInfoId${i}" style="display:none;"  >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
+                        <td id="userInfoId${i}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.firstName}</td>
                         <td contenteditable="false" class="text-left">${user.lastName}</td>
@@ -202,7 +202,7 @@
                         var text = id + "*" + type + "*" + firstName + "*" + lastName + "*" + username + "*" + password + "*" + date + "*" + date;
                         $('#userTable').append('\
                            <tr id=row' + id + '>\
-                               <td style="display:none;" id="userInfoId' + id + '" style="display:none;"> ' + text + '</td>\
+                               <td style="display:none;" id="userInfoId' + id + '" style="display:none;">' + text + '</td>\
                                <td contenteditable="false" class="text-left">' + username + '</td>\
                                <td contenteditable="false" class="text-left">' + firstName + '</td>\
                                <td contenteditable="false" class="text-left">' + lastName + '</td>\
