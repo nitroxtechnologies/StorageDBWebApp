@@ -952,7 +952,8 @@ class LocalGrailsCompanyController
             shouldSet = true;
         }
         RDSHandler rds = new RDSHandler();
-        ArrayList<User> userList = rds.getActiveUsers();
+//        ArrayList<User> userList = rds.getActiveUsers();
+        ArrayList<User> userList = rds.getAllUsers();
         ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
         System.out.println("BEFORE: " + userList);
         for(User user : userList)

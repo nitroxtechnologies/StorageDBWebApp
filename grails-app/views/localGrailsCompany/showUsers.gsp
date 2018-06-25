@@ -23,6 +23,11 @@
 
 
     </head>
+<style>
+    .false {
+        display:none;
+    }
+</style>
 <body>
     <div class="container" id="fullContainer">
         <!-- As a heading -->
@@ -54,6 +59,14 @@
                 </div>
             </div>
         </nav>
+        <div class="container" style = "margin-top:30px">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox">
+                <label class="form-check-label" for="checkbox">
+                    Show inactive users
+                </label>
+            </div>
+        </div>
             <table id = "userTable" class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
@@ -63,13 +76,14 @@
                     <th onclick="sortTable(4)" scope="col">Type</th>
                     <th onclick="sortTable(5)" scope="col">Date Created</th>
                     <th onclick="sortTable(6)" scope="col">Date Updated</th>
+                    <th scope="col">Active?</th>
                     <th scope="col" class="text-center">Edit</th>
                     <th scope="col" class="text-center">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
-                    <tr id = "row${user.id}">
+                    <tr id = "row${user.id}" class = "${user.isActive}">
                         <td id="userInfoId${user.id}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.firstName}</td>
@@ -77,6 +91,7 @@
                         <td contenteditable="false" class="text-left">${user.type}</td>
                         <td contenteditable="false" class="text-left">${user.dateCreatedString}</td>
                         <td contenteditable="false" class="text-left">${user.dateUpdatedString}</td>
+                        <td contenteditable="false" class="text-left">${user.isActive}</td>
                         <td class="text-center"><button name="editButton" id="editButton${user.id}" type="submit" class="btn btn-outline-info"><i class="fa fa-edit" aria-hidden="true"></i></button></td>
                         <td class="text-center"><button type="submit" id="deleteButton${user.id}" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
@@ -94,6 +109,32 @@
         </div>
     </footer>
     <g:javascript>
+        $('#checkbox').click(function(){
+            if (this.checked) {
+                $('.false').show();
+            }
+            else {
+                $('.false').hide();
+            }
+        });
+
+
+        var formSubmitting = false;
+        var setFormSubmitting = function() { formSubmitting = true; };
+
+        window.onload = function() {
+            window.addEventListener("beforeunload", function (e) {
+                if (formSubmitting) {
+                    return undefined;
+                }
+
+                var confirmationMessage = 'It looks like you have been editing something. '
+                                        + 'If you leave before saving, your changes will be lost.';
+
+                (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+                return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+            });
+        };
         function sortTable(n) {
           var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
           table = document.getElementById("userTable");
@@ -355,6 +396,7 @@
             params += i + "=";
             params += cells[0].innerText;
         }
+        setFormSubmitting();
         window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'saveUsers')}" + params;
     }
 
