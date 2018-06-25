@@ -63,10 +63,10 @@
             <h1>URLs to scrape data from</h1>
         </div>
         <div class="col-sm text-center" style="margin-top: 50px">
-            <button type="button" class="btn btn-outline-primary">Add row</button></td>
+            <button type="button" class="btn btn-outline-primary">Add URL</button></td>
         </div>
         <div class="col-sm text-center" style="margin-top: 50px">
-            <button onclick = "saveTable()" type="button" class="btn btn-outline-success">Save</button></td>
+            <button onclick = "saveTable()" type="button" class="btn btn-outline-success">Update</button></td>
         </div>
     </div>
     <table id = "unitTable" class="table" style="margin-top: 50px">
