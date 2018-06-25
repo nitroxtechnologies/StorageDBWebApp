@@ -57,14 +57,14 @@
             <table id = "userTable" class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
-                    <th onclick="sortTable(0)" scope="col">Username</th>
-                    <th onclick="sortTable(1)" scope="col">First Name</th>
-                    <th onclick="sortTable(2)" scope="col">Last Name</th>
-                    <th onclick="sortTable(3)" scope="col">Type</th>
-                    <th onclick="sortTable(4)" scope="col">Date Created</th>
-                    <th onclick="sortTable(5)" scope="col">Date Updated</th>
-                    <th onclick="sortTable(6)" scope="col" class="text-center">Edit</th>
-                    <th onclick="sortTable(7)" scope="col" class="text-center">Delete</th>
+                    <th onclick="sortTable(1)" scope="col">Username</th>
+                    <th onclick="sortTable(2)" scope="col">First Name</th>
+                    <th onclick="sortTable(3)" scope="col">Last Name</th>
+                    <th onclick="sortTable(4)" scope="col">Type</th>
+                    <th onclick="sortTable(5)" scope="col">Date Created</th>
+                    <th onclick="sortTable(6)" scope="col">Date Updated</th>
+                    <th scope="col" class="text-center">Edit</th>
+                    <th scope="col" class="text-center">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -108,14 +108,48 @@
               x = rows[i].getElementsByTagName("td")[n];
               y = rows[i + 1].getElementsByTagName("td")[n];
               if (dir == "asc") {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                  shouldSwitch = true;
-                  break;
+                  if (n == 5 || n == 6) {
+                      var xList = x.innerHTML.split(" ");
+                      var xYMD = xList[0].split("-");
+                      var xTS = xList[1].split(":");
+                      var xDate = new Date(xYMD[0],xYMD[1],xYMD[2],xTS[0],xTS[1]);
+
+                      var yList = y.innerHTML.split(" ");
+                      var yYMD = yList[0].split("-");
+                      var yTS = yList[1].split(":");
+                      var yDate = new Date(yYMD[0],yYMD[1],yYMD[2],yTS[0],yTS[1]);
+                      if (xDate > yDate) {
+                          shouldSwitch = true;
+                          break;
+                        }
+                  }
+                  else {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                      shouldSwitch = true;
+                      break;
+                    }
                 }
               } else if (dir == "desc") {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                  shouldSwitch = true;
-                  break;
+                  if (n == 5 || n == 6) {
+                      var xList = x.innerHTML.split(" ");
+                      var xYMD = xList[0].split("-");
+                      var xTS = xList[1].split(":");
+                      var xDate = new Date(xYMD[0],xYMD[1],xYMD[2],xTS[0],xTS[1]);
+
+                      var yList = y.innerHTML.split(" ");
+                      var yYMD = yList[0].split("-");
+                      var yTS = yList[1].split(":");
+                      var yDate = new Date(yYMD[0],yYMD[1],yYMD[2],yTS[0],yTS[1]);
+                      if (xDate < yDate) {
+                          shouldSwitch = true;
+                          break;
+                        }
+                  }
+                  else {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                      shouldSwitch = true;
+                      break;
+                    }
                 }
               }
             }
