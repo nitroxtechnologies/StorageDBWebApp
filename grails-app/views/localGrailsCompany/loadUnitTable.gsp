@@ -107,7 +107,7 @@
                         <td class="text-center" style="width: 10px" >${unit.type}</td>
                         <td class="text-center">${unit.time}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
-                            <td class="text-right">$${String.format("%.02f", price.val)}</td>
+                            <td class="text-right">$${String.format("%.02f", price.displayPrice)}</td>
                         </g:each>
                         <td class="text-center"><button onclick='graph("${unit.name}", "${unit.type}", "${unit.floor}", "${unit.rateType}")' type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
 

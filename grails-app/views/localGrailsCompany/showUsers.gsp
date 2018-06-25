@@ -254,16 +254,16 @@
 
     $('#fullContainer').on('click', 'button[name="addUserButton"]', function () {
             console.log(indexClicked + "TIMMY");
-            bootbox.confirm("<form id='infos' action=''>" +
-               "<label for = 'first_name_field'>First name:</label><input type='text' id = 'first_name_field' name='first_name'><br/>" +
-               "<label for = 'last_name_field'>Last name:</label><input type='text' id = 'last_name_field' name='last_name'><br/>" +
-               "Username:<input type='text' id = 'username_field' name='username'><br/>" +
-               "Password:<input type='text' id = 'password_field' name='password'><br/>" +
-                'Type: <select id = "type_field">\
+            bootbox.confirm("<div class='container'><form id='infos' action=''>" +
+           "<div class='form-group'><label for = 'first_name_field'>First name: </label><input type='text' id = 'first_name_field' name='first_name'></div>" +
+           "<div class='form-group'><label for = 'last_name_field'>Last name: </label><input type='text' id = 'last_name_field' name='last_name'></div>" +
+           "<div class='form-group'><label for = 'username_field'>Username: </label><input type='text' id = 'username_field' name='username'><br/></div>" +
+           "<div class='form-group'><label for = 'password_field'>Password: </label><input type='text' id = 'password_field' name='password'></div>" +
+           '<div class="form-group">Type: <select id = "type_field">\
                     <option value="Admin">Admin</option>\
                     <option value="User">User</option>\
-                </select>' +
-               "</form>", function(result) {
+                </select></div>' +
+               "</form></div>", function(result) {
                     if(result)
                     {
                         var id = addingId + 1;
@@ -312,22 +312,22 @@
         indexClicked = indexClicked.replace("editButton","");
         indexClicked = parseInt(indexClicked);
         console.log(indexClicked + "TIMMY");
-        bootbox.confirm("<form id='infos' action=''>" +
-           "First name:<input type='text' id = 'first_name_field' name='first_name'><br/>" +
-           "Last name:<input type='text' id = 'last_name_field' name='last_name'><br/>" +
-           "Username:<input type='text' id = 'username_field' name='username'><br/>" +
-           "Password:<input type='text' id = 'password_field' name='password'><br/>" +
-           'Type: <select id = "type_field">\
+        bootbox.confirm("<div class='container'><form id='infos' action=''>" +
+           "<div class='form-group'><label for = 'first_name_field'>First name: </label><input type='text' id = 'first_name_field' name='first_name'></div>" +
+           "<div class='form-group'><label for = 'last_name_field'>Last name: </label><input type='text' id = 'last_name_field' name='last_name'></div>" +
+           "<div class='form-group'><label for = 'username_field'>Username: </label><input type='text' id = 'username_field' name='username'><br/></div>" +
+           "<div class='form-group'><label for = 'password_field'>Password: </label><input type='text' id = 'password_field' name='password'></div>" +
+           '<div class="form-group">Type: <select id = "type_field">\
                     <option value="Admin">Admin</option>\
                     <option value="User">User</option>\
-                </select>' +
-           '<div class="form-check">\
+                </select></div>' +
+           '<div class="form-group"><div class="form-check">\
                 <input class="form-check-input" type="checkbox" value="" id="active_box">\
                 <label class="form-check-label" for="active_box">\
                     Active\
                 </label>\
-            </div>' +
-           "</form>", function(result) {
+            </div></div>' +
+           "</form></div>", function(result) {
                 if(result)
                 {
                     var id = indexClicked;
