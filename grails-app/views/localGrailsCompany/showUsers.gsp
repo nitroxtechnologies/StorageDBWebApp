@@ -70,12 +70,12 @@
             <table id = "userTable" class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
-                    <th onclick="sortTable(1)" scope="col">Username</th>
-                    <th onclick="sortTable(2)" scope="col">First Name</th>
-                    <th onclick="sortTable(3)" scope="col">Last Name</th>
-                    <th onclick="sortTable(4)" scope="col">Type</th>
-                    <th onclick="sortTable(5)" scope="col">Date Created</th>
-                    <th onclick="sortTable(6)" scope="col">Date Updated</th>
+                    <th onclick="sortTable(1)" scope="col">Username <i class="fa fa-sort"/></th>
+                    <th onclick="sortTable(2)" scope="col">First Name <i class="fa fa-sort"/></th>
+                    <th onclick="sortTable(3)" scope="col">Last Name <i class="fa fa-sort"/></th>
+                    <th onclick="sortTable(4)" scope="col">Type <i class="fa fa-sort"/></th>
+                    <th onclick="sortTable(5)" scope="col">Date Created <i class="fa fa-sort"/></th>
+                    <th onclick="sortTable(6)" scope="col">Date Updated <i class="fa fa-sort"/></th>
                     <th scope="col">Active?</th>
                     <th scope="col" class="text-center">Edit</th>
                     <th scope="col" class="text-center">Delete</th>
@@ -136,19 +136,23 @@
             });
         };
         function sortTable(n) {
-          var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+          var table, rows, icons, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
           table = document.getElementById("userTable");
           switching = true;
           dir = "asc";
           while (switching) {
             switching = false;
             rows = table.getElementsByTagName("tr");
+            icons = table.getElementsByTagName('i');
+            for (var j = 0; j < 6; j++)
+                icons[j].className = "fa fa-sort";
             for (i = 1; i < (rows.length - 1); i++) {
               // Start by saying there should be no switching
               shouldSwitch = false;
               x = rows[i].getElementsByTagName("td")[n];
               y = rows[i + 1].getElementsByTagName("td")[n];
               if (dir == "asc") {
+                  icons[n-1].className = "fa fa-sort-asc";
                   if (n == 5 || n == 6) {
                       var xList = x.innerHTML.split(" ");
                       var xYMD = xList[0].split("-");
@@ -171,6 +175,7 @@
                     }
                 }
               } else if (dir == "desc") {
+                  icons[n-1].className = "fa fa-sort-desc";
                   if (n == 5 || n == 6) {
                       var xList = x.innerHTML.split(" ");
                       var xYMD = xList[0].split("-");
