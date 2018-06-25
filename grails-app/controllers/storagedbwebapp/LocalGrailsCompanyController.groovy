@@ -8,6 +8,7 @@ import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.RDSHandler
 import AWSAccessors.Unit
 import AWSAccessors.User
+import AWSAccessors.UserPreferences
 import AWSAccessors.Value
 import org.apache.tomcat.jni.Local
 
@@ -196,7 +197,7 @@ class LocalGrailsCompanyController
     }
     */
     /*
-    PARAMS NEEDED WHEN LOADED: fName, uName
+    PARAMS NEEDED WHEN LOADED: fName, fId
      */
     def loadUnitTable()
     {
@@ -911,9 +912,27 @@ class LocalGrailsCompanyController
 
     def landing()
     {
+        RDSHandler rds = new RDSHandler();
+        System.out.println("USERNAME: " + params.username);
+        User user = rds.getUserByUsername(params.username as String);
+        UserPreferences userPreferences = rds.getPreferencesOfUser(user);
+        switch(userPreferences.getLandingPage())
+        {
+            case "Unit Table":
+                Facility facility = rds.getFacilityFromId(userPreferences.getLandingFacilityId());
+                updateDropdownList((int)(facility.getCompanyId()), 0, 0, 0, 0, facility.getId(), "", "");
+                List<Facility> facilitiesArraylist = rds.getFacilitiesFromCompanyId(facility.getCompanyId());
+                LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
+                for (Facility f : facilitiesArraylist) {
+                    new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
+                }
+                chain(action:"loadUnitTable", params:[fID: facility.getId(), fName: facility.getName()]);
+                break;
+        }
+
         System.out.println("TYPE IS: "  + params.type);
         updateDropdownList(-1, 0, 0, 0, 0, -1l, params.type as String, params.username as String)
-        RDSHandler rds = new RDSHandler();
+
         def companies = LocalGrailsCompany.list()
         [companies: companies, username: params.username, type: params.type]
     }
