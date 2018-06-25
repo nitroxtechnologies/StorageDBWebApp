@@ -57,6 +57,8 @@
                 <thead>
                 <tr>
                     <th scope="col">Username</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
                     <th scope="col">Type</th>
                     <th scope="col">Date Created</th>
                     <th scope="col">Date Updated</th>
@@ -67,8 +69,10 @@
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
                     <tr id = "row${i}">
-                        <td id="userInfoId${i}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
+                        <td id="userInfoId${i}" style="display:none;"  >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
+                        <td contenteditable="false" class="text-left">${user.firstName}</td>
+                        <td contenteditable="false" class="text-left">${user.lastName}</td>
                         <td contenteditable="false" class="text-left">${user.type}</td>
                         <td contenteditable="false" class="text-left">${user.dateCreatedString}</td>
                         <td contenteditable="false" class="text-left">${user.dateUpdatedString}</td>
@@ -80,8 +84,9 @@
             </table>
 
             <button type="submit" name="addUserButton" class="btn btn-outline-danger">ADD IT<i class="fa fa-trash" aria-hidden="true"></i></button><br><br>
-            <button type="submit" name="saveTableButton" class="btn btn-outline-danger">SAVE IT<i class="fa fa-trash" aria-hidden="true"></i></button>
-
+            <div class="col-sm text-center" style="margin-top: 50px">
+                <button onclick = "saveUsers()" type="button" class="btn btn-outline-success">Save</button>
+            </div>
     </div>
 
     <footer class="footer">
@@ -156,11 +161,13 @@
                            <tr id=row' + id + '>\
                                <td style="display:none;" id="userInfoId' + id + '" style="display:none;"> ' + text + '</td>\
                                <td contenteditable="false" class="text-left">' + username + '</td>\
+                               <td contenteditable="false" class="text-left">' + firstName + '</td>\
+                               <td contenteditable="false" class="text-left">' + lastName + '</td>\
                                <td contenteditable="false" class="text-left">' + type + '</td>\
                                <td contenteditable="false" class="text-left">' + date + '</td>\
                                <td contenteditable="false" class="text-left">' + date + '</td>\
                                <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                               <td class="text-center"><button type="submit" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                               <td class="text-center"><button type="submit" onclick = "saveUsers()" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
                            </tr>');
                     }
                     console.log(result);
@@ -208,8 +215,10 @@
                     //Save stuff
                     var newtr = '\
                         <tr id=row' + id + '>\
-                            <td style="display:none;" id="userInfoId' + id + '" > ' + text + '</td>\
+                            <td style="display:none;" id="userInfoId' + id + '" >' + text + '</td>\
                             <td contenteditable="false" class="text-left">' + username + '</td>\
+                            <td contenteditable="false" class="text-left">' + firstName + '</td>\
+                            <td contenteditable="false" class="text-left">' + lastName + '</td>\
                             <td contenteditable="false" class="text-left">' + type + '</td>\
                             <td contenteditable="false" class="text-left">' + dateCreated + '</td>\
                             <td contenteditable="false" class="text-left">' + dateUpdated + '</td>\
@@ -245,6 +254,26 @@
         document.getElementById("username_field").value = username;
         document.getElementById("type_field").value = type;
     })
+
+    function saveUsers()
+    {
+        var params = "";
+        var table = document.getElementById("userTable");
+        var rows = table.getElementsByTagName("tr");
+        var first = true;
+        for (var i = 1; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName("td");
+            if (first) {
+                params += "?";
+                first = false;
+            } else {
+                params += "&";
+            }
+            params += i + "=";
+            params += cells[0].innerText;
+        }
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'saveUsers')}" + params;
+    }
 
 </g:javascript>
 

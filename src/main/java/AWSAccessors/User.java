@@ -2,6 +2,7 @@ package AWSAccessors;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -95,8 +96,9 @@ public class User {
     public void setDateCreated(String dateCreated) throws ParseException
     {
         SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
-        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
-        this.dateCreated = (Date) ft.parse(dateCreated);
+        ft.setTimeZone(TimeZone.getTimeZone("CST"));
+        this.dateCreated = ft.parse(dateCreated);
+        dateCreatedString = dateCreated;
     }
 
     public String getDateCreatedString()
@@ -113,14 +115,14 @@ public class User {
         SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
         ft.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateUpdatedString = ft.format(dateUpdated);
-
     }
 
     public void setDateUpdated(String dateUpdated) throws ParseException
     {
         SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
-        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
-        this.dateUpdated = (Date) ft.parse(dateUpdated);
+        ft.setTimeZone(TimeZone.getTimeZone("CST"));
+        this.dateUpdated = ft.parse(dateUpdated);
+        dateUpdatedString = dateUpdated;
     }
 
     public String toString() {

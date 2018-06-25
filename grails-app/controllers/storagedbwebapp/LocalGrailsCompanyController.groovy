@@ -954,7 +954,7 @@ class LocalGrailsCompanyController
         RDSHandler rds = new RDSHandler();
         ArrayList<User> userList = rds.getActiveUsers();
         ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
-        System.out.println("BEFORE: " + userList + "ACTIVENESS" + userList.get(0).isActive());
+        System.out.println("BEFORE: " + userList);
         for(User user : userList)
         {
             if(user.isActive())
@@ -981,39 +981,21 @@ class LocalGrailsCompanyController
         {
             if(key.equals("controller"))
                 break;
-            int mod = index % 8;
-            switch(mod)
-            {
-                case 0:
-                    temp = new User();
-                    temp.setId(Long.parseLong((String)params.get(key)));
-                    temp.setIsActive(true);
-                    maxUserId = Math.max(maxUserId, temp.getId());
-                    break;
-                case 1:
-                    temp.setType((String)params.get(key));
-                    break;
-                case 2:
-                    temp.setFirstName((String)params.get(key));
-                    break;
-                case 3:
-                    temp.setLastName((String) params.get(key));
-                    break;
-                case 4:
-                    temp.setUsername((String) params.get(key));
-                    break;
-                case 5:
-                    temp.setPassword((String) params.get(key));
-                    break;
-                case 6:
-                    temp.setDateCreated((String) params.get(key));
-                    break;
-                case 7:
-                    temp.setDateUpdated((String)params.get(key));
-                    users.add(temp);
-                    break;
-            }
-            index++;
+            String string = params.get(key) as String;
+            System.out.println(string);
+            String[] result = string.split("\\*");
+            User user = new User();
+            user.setId(Long.parseLong(result[0]));
+            maxUserId = Math.max(user.getId(),maxUserId);
+            user.setType(result[1]);
+            user.setFirstName(result[2]);
+            user.setLastName(result[3]);
+            user.setUsername(result[4]);
+            user.setPassword(result[5]);
+            user.setDateCreated(result[6]);
+            user.setDateUpdated(result[7]);
+            user.setIsActive(true);
+            users.add(user);
         }
 
         ArrayList<Long> removedUserIds = new ArrayList<Long>();
@@ -1032,8 +1014,11 @@ class LocalGrailsCompanyController
                 removedUserIds.add(i);
             }
         }
+        rds.emptyUsersTable();
+        rds.batchSaveUsers( users);
 
-        rds.batchSaveAndUpdateUsers(users);
+
+        chain(action:"showUsers");
     }
 
     def render()

@@ -1477,11 +1477,11 @@ public class RDSHandler
         }
     }
 
-    public void batchSaveAndUpdateUsers(ArrayList<User> users) throws SQLException
+    public void batchSaveUsers(ArrayList<User> users) throws SQLException
     {
         if(users.size() > 0)
         {
-            String query = "INSERT IGNORE Users VALUES";
+            String query = "INSERT Users VALUES";
             for(int i = 0; i < users.size(); i++)
             {
                 User user = users.get(i);
@@ -1646,6 +1646,27 @@ public class RDSHandler
         }
     }
 
+    public void batchDeleteUsersWithIds(ArrayList<Long> ids) throws SQLException {
+        if(ids.size() > 0)
+        {
+            String query = "DELETE FROM Users VALUES(";
+            for(int i = 0; i < ids.size(); i++)
+            {
+                query += ids.get(i);
+                if(i != ids.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                    query += ")";
+                }
+            }
+            executeQuery(query);
+        }
+    }
+
+
 
 
 
@@ -1700,5 +1721,10 @@ public class RDSHandler
         ResultSet rs = executeQuery("SELECT max(id) FROM Users");
         rs.next();
         return rs.getLong(1);
+    }
+
+    public void emptyUsersTable() throws SQLException
+    {
+        executeQuery("TRUNCATE Users");
     }
 }
