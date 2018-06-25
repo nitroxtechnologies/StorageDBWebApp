@@ -225,11 +225,11 @@ class LocalGrailsCompanyController
                     ArrayList<Price> prices = new ArrayList<Price>();
                     prices.add(new Price(val: ftu.getRateAmount(), color: 0));
                     String rateType = ftu.getRateType();
-                    System.out.println("RATE TYPE IS: " + rateType);
+                    System.out.println("RATE AMOUNT IS: " + ftu.getRateAmount());
                     if(rateType == null || rateType.length()==0)
                         rateType = "standard";
-                    System.out.println("RATE TYPE NOW: " + rateType);
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreated()).save(failOnError:true)
+                    //System.out.println("RATE TYPE NOW: " + rateType);
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreatedString()).save(failOnError:true)
                 }
             }
         }
@@ -412,7 +412,7 @@ class LocalGrailsCompanyController
                     if(found == null)
                     {
                         List<Price> prices = new ArrayList<>();
-                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height==null?new BigDecimal(0.0):local.height, type: local.type, rateType: local.rateType, floor: local.floor, prices: prices, time: local.dateCreated);
+                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height==null?new BigDecimal(0.0):local.height, type: local.type, rateType: local.rateType, floor: local.floor, prices: prices, time: local.dateCreatedString);
                     }
                     if(local.facilityId == rfId)
                     {
@@ -557,6 +557,7 @@ class LocalGrailsCompanyController
                     else
                     {
                         temp.price = new BigDecimal((String) params.get(key));
+                        System.out.println("the price is wrong? " + temp.price);
                     }
                     temp.facilityId = facilityId;
                     break;
@@ -812,7 +813,7 @@ class LocalGrailsCompanyController
                     {
                         rateType = "standard";
                     }
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreated()).save()
+                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreatedString()).save()
                 }
             }
         }
@@ -966,11 +967,73 @@ class LocalGrailsCompanyController
         [users: userList, username: username, maxId: maxId]
     }
 
-    def deleteUser()
+    def saveUsers()
     {
         RDSHandler rds = new RDSHandler();
-        rds.makeUserWithIdInactive(params.id as Long);
-        chain(action:"showUsers");
+        long maxUserId = rds.getMaxUserId();
+        ArrayList<User> users = new ArrayList<User>();
+        int index = 0;
+        Collection keys = params.keySet();
+
+        User temp = null;
+
+        for(Object key : keys)
+        {
+            if(key.equals("controller"))
+                break;
+            int mod = index % 8;
+            switch(mod)
+            {
+                case 0:
+                    temp = new User();
+                    temp.setId(Long.parseLong((String)params.get(key)));
+                    temp.setIsActive(true);
+                    maxUserId = Math.max(maxUserId, temp.getId());
+                    break;
+                case 1:
+                    temp.setType((String)params.get(key));
+                    break;
+                case 2:
+                    temp.setFirstName((String)params.get(key));
+                    break;
+                case 3:
+                    temp.setLastName((String) params.get(key));
+                    break;
+                case 4:
+                    temp.setUsername((String) params.get(key));
+                    break;
+                case 5:
+                    temp.setPassword((String) params.get(key));
+                    break;
+                case 6:
+                    temp.setDateCreated((String) params.get(key));
+                    break;
+                case 7:
+                    temp.setDateUpdated((String)params.get(key));
+                    users.add(temp);
+                    break;
+            }
+            index++;
+        }
+
+        ArrayList<Long> removedUserIds = new ArrayList<Long>();
+        for(int i = 0; i < maxUserId; i++)
+        {
+            boolean found = false;
+            for(User user : users)
+            {
+                if(user.getId() == i)
+                {
+                    found = true;
+                }
+            }
+            if(!found)
+            {
+                removedUserIds.add(i);
+            }
+        }
+
+        rds.batchSaveAndUpdateUsers(users);
     }
 
     def render()

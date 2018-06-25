@@ -77,7 +77,7 @@ public class RDSHandler
 
         try {
             connection = DriverManager.
-                    getConnection("jdbc:mysql://" + "nitroxtech.c48qi7cc3kyh.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "StorageDBWebAppMainDatabase", username, password);
+                    getConnection("jdbc:mysql://" + "nitroxtech.c48qi7cc3kyh.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "StorageDBWebAppMainDatabase?useLegacyDatetimeCode=false", username, password);
         } catch (SQLException e) {
             System.out.println("Connection Failed!:\n" + e.getMessage());
         }
@@ -264,8 +264,8 @@ public class RDSHandler
                     "zip" + " TEXT," +
                     "country" + " TEXT," +
                     "website" + " TEXT," +
-                    "setupFee" + " DECIMAL," +
-                    "percentFull" + " DECIMAL," +
+                    "setupFee" + " DECIMAL(10,2)," +
+                    "percentFull" + " DECIMAL(10,2)," +
                     "hasRetailStore" + " BIT," +
                     "hasInsurance" + " BIT," +
                     "hasOnlineBillPay" + " BIT," +
@@ -282,7 +282,7 @@ public class RDSHandler
                     "hasMotionLights" + " BIT," +
                     "hasElectronicLease" + " BIT," +
                     "hasPaperlessBilling" + " BIT," +
-                    "mondayOpen" + " DATE," +
+                    "mondayOpen" + " TIME," +
                     "mondayClose" + " DATE," +
                     "tuesdayOpen" + " DATE," +
                     "tuesdayClose" + " DATE," +
@@ -324,8 +324,8 @@ public class RDSHandler
                     "id" + " BIGINT PRIMARY KEY," +
                     "facilityId" + " BIGINT," +
                     "unitId" + " BIGINT," +
-                    "dateCreated" + " DATE," +
-                    "rateAmount" + " DECIMAL," +
+                    "dateCreated" + " TIMESTAMP," +
+                    "rateAmount" + " DECIMAL(10,2)," +
                     "rateType" + " TEXT" + ")";
             statement.executeUpdate(sql);
             System.out.println("Created FacilitiesUnits table");
@@ -353,8 +353,8 @@ public class RDSHandler
                     "id" + " BIGINT PRIMARY KEY," +
                     "facilityId" + " BIGINT," +
                     "unitId" + " BIGINT," +
-                    "dateCreated" + " DATE," +
-                    "rateAmount" + " DECIMAL," +
+                    "dateCreated" + " TIMESTAMP," +
+                    "rateAmount" + " DECIMAL(10,2)," +
                     "rateType" + " TEXT" + ")";
             statement.executeUpdate(sql);
             System.out.println("Created FacilitiesUnitsHistory table");
@@ -383,12 +383,12 @@ public class RDSHandler
                     "id" + " BIGINT PRIMARY KEY," +
                     "name" + " TEXT," +
                     "type" + " TEXT," +
-                    "width" + " DECIMAL," +
-                    "depth" + " DECIMAL," +
-                    "height" + " DECIMAL," +
+                    "width" + " DECIMAL(10,2)," +
+                    "depth" + " DECIMAL(10,2)," +
+                    "height" + " DECIMAL(10,2)," +
                     "floor" + " INT," +
-                    "doorHeight" + " DECIMAL," +
-                    "doorWidth" + " DECIMAL" + ")";
+                    "doorHeight" + " DECIMAL(10,2)," +
+                    "doorWidth" + " DECIMAL(10,2)" + ")";
             statement.executeUpdate(sql);
             System.out.println("Created Units table");
         } catch (SQLException se) {
@@ -421,8 +421,8 @@ public class RDSHandler
                     "username" + " TEXT," +
                     "password" + " TEXT," +
                     "isActive" + " BIT," +
-                    "dateCreated" + " DATE," +
-                    "dateUpdated" + " DATE)";
+                    "dateCreated" + " TIMESTAMP," +
+                    "dateUpdated" + " TIMESTAMP)";
             statement.executeUpdate(sql);
             System.out.println("Created Units table");
         } catch (SQLException se) {
@@ -654,7 +654,7 @@ public class RDSHandler
     {
         String result = "(" + company.getId() + ", ";
         result += "'" + company.getName() + "', ";
-        result += "" + company.getWebsite() + ")";
+        result += "'" + company.getWebsite() + "')";
 
         return result;
     }
@@ -1477,6 +1477,27 @@ public class RDSHandler
         }
     }
 
+    public void batchSaveAndUpdateUsers(ArrayList<User> users) throws SQLException
+    {
+        if(users.size() > 0)
+        {
+            String query = "INSERT IGNORE Users VALUES";
+            for(int i = 0; i < users.size(); i++)
+            {
+                User user = users.get(i);
+                query += buildValuesOfUserInsertQuery(user);
+                if(i != users.size() - 1)
+                {
+                    query += ",";
+                }
+                else
+                {
+                }
+            }
+            executeQuery(query);
+        }
+    }
+
 /*    public void batchSaveValues(ArrayList<Value> values) throws SQLException
     {
         String query = "INSERT INTO Values VALUES";
@@ -1624,6 +1645,8 @@ public class RDSHandler
             executeQuery(query);
         }
     }
+
+
 
 
 

@@ -1,7 +1,9 @@
 package AWSAccessors;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by spencersharp on 6/18/18.
@@ -85,8 +87,16 @@ public class User {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
+        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateCreatedString = ft.format(dateCreated);
+    }
+
+    public void setDateCreated(String dateCreated) throws ParseException
+    {
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
+        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
+        this.dateCreated = (Date) ft.parse(dateCreated);
     }
 
     public String getDateCreatedString()
@@ -100,8 +110,17 @@ public class User {
 
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
+        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateUpdatedString = ft.format(dateUpdated);
+
+    }
+
+    public void setDateUpdated(String dateUpdated) throws ParseException
+    {
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
+        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
+        this.dateUpdated = (Date) ft.parse(dateUpdated);
     }
 
     public String toString() {

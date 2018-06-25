@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @DynamoDBTable(tableName = "FacilitiesUnitsRecent")
@@ -14,7 +15,8 @@ public class FacilityToUnit
     private long id;
     private long facilityId;
     private long unitId;
-    private java.util.Date dateCreated;
+    private Date dateCreated;
+    private String dateCreatedString;
     private BigDecimal rateAmount;
     private String rateType;
 
@@ -43,6 +45,13 @@ public class FacilityToUnit
     public void setDateCreated(Date dateCreated)
     {
         this.dateCreated = dateCreated;
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
+        dateCreatedString = ft.format(dateCreated);
+    }
+
+    public String getDateCreatedString()
+    {
+        return dateCreatedString;
     }
 
     @DynamoDBAttribute(attributeName = "facilityId")

@@ -1,6 +1,7 @@
 package AWSAccessors;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class JavaLocalGrailsUnit {
@@ -14,6 +15,7 @@ public class JavaLocalGrailsUnit {
     public BigDecimal price;
     public long facilityId;
     public Date dateCreated;
+    public String dateCreatedString;
 
     public String rateType;
 
@@ -35,6 +37,8 @@ public class JavaLocalGrailsUnit {
         this.facilityId = facilityId;
         this.rateType = rateType;
         this.dateCreated = dateCreated;
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
+        dateCreatedString = ft.format(dateCreated);
     }
 
     public String toString()

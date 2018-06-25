@@ -67,7 +67,7 @@
                 <tbody>
                 <g:each in="${users}" var="user" status="i">
                     <tr id = "row${i}">
-                        <td id="userInfoId${i}" >${user.id} ${user.type} ${user.firstName} ${user.lastName} ${user.username} ${user.password} null null</td>
+                        <td id="userInfoId${i}" style="display:none;" >${user.id}*${user.type}*${user.firstName}*${user.lastName}*${user.username}*${user.password}*${user.dateCreatedString}*${user.dateUpdatedString}</td>
                         <td contenteditable="false" class="text-left">${user.username}</td>
                         <td contenteditable="false" class="text-left">${user.type}</td>
                         <td contenteditable="false" class="text-left">${user.dateCreatedString}</td>
@@ -107,10 +107,9 @@
         if(confirm('Are you sure you want to delete this user?'))
         {
             var indexClicked = this.id;
-            var result =
-            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'deleteUser')}" + "?id=" + (indexClicked - 100000);
+            indexClicked = indexClicked.replace("deleteButton","");
+            $('#row' + indexClicked).remove();
         }
-
     })
     var addingId;
     var indexClicked;
@@ -126,7 +125,6 @@
     var status = false;
 
     $('#fullContainer').on('click', 'button[name="addUserButton"]', function () {
-            indexClicked = this.id;
             console.log(indexClicked + "TIMMY");
             bootbox.confirm("<form id='infos' action=''>" +
                "First name:<input type='text' id = 'first_name_field' name='first_name'><br/>" +
@@ -137,7 +135,8 @@
                "</form>", function(result) {
                     if(result)
                     {
-                        var id = indexClicked;
+                        var id = addingId + 1;
+                        addingId = addingId + 1;
                         var firstName = document.getElementById("first_name_field").value;
                         var lastName = document.getElementById("last_name_field").value;
                         var username = document.getElementById("username_field").value;
@@ -146,18 +145,23 @@
                             password = "test";
                         var type = document.getElementById("type_field").value;
 
-                        var dateUpdated = new Date();
-                        var text = id + " " + type + " " + firstName + " " + lastName + " " + username + " " + password + " " + dateCreated + " " + dateUpdated;
+                        var d = new Date();
+                        var date = d.getFullYear()  + "-" +
+                        ("0"+(d.getMonth()+1)).slice(-2) + "-" +
+                        ("0" + d.getDate()).slice(-2) + " " +
+                        ("0" + d.getHours()).slice(-2) + ":" +
+                        ("0" + d.getMinutes()).slice(-2);
+                        var text = id + "*" + type + "*" + firstName + "*" + lastName + "*" + username + "*" + password + "*" + date + "*" + date;
                         $('#userTable').append('\
-                            <tr>\
-                                <td "> ' + text + '</td>\
-                                <td contenteditable="false" class="text-left">' + username + '</td>\
-                                <td contenteditable="false" class="text-left">' + type + '</td>\
-                                <td contenteditable="false" class="text-left">' + dateCreated + '</td>\
-                                <td contenteditable="false" class="text-left">' + dateUpdated + '</td>\
-                                <td class="text-center"><button name="editButton" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                                <td class="text-center"><button type="submit" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                            </tr>');
+                           <tr id=row' + id + '>\
+                               <td style="display:none;" id="userInfoId' + id + '" style="display:none;"> ' + text + '</td>\
+                               <td contenteditable="false" class="text-left">' + username + '</td>\
+                               <td contenteditable="false" class="text-left">' + type + '</td>\
+                               <td contenteditable="false" class="text-left">' + date + '</td>\
+                               <td contenteditable="false" class="text-left">' + date + '</td>\
+                               <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                               <td class="text-center"><button type="submit" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                           </tr>');
                     }
                     console.log(result);
             });
@@ -194,34 +198,25 @@
                     var type = document.getElementById("type_field").value;
 
                     var d = new Date();
-                    var dateCreated =
-                    d.getFullYear()  + "-" +
+                    var dateUpdated = d.getFullYear()  + "-" +
                     ("0"+(d.getMonth()+1)).slice(-2) + "-" +
                     ("0" + d.getDate()).slice(-2) + " " +
                     ("0" + d.getHours()).slice(-2) + ":" +
                     ("0" + d.getMinutes()).slice(-2);
-                    var dateUpdated = dateCreated;
-                    var text = id + " " + type + " " + firstName + " " + lastName + " " + username + " " + password + " null null";
-                    /*$('#userTable').append('\
-                        <tr>\
-                            <td >' + text + '</td>\
-                            <td contenteditable="false" class="text-left">' + username + '</td>\
-                            <td contenteditable="false" class="text-left">' + type + '</td>\
-                            <td class="text-center"><button type="submit" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                            <td class="text-center"><button name="editButton" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                        </tr>');*/
+                    var dateCreated = document.getElementById("userInfoId" + id).innerText.split("*")[6];
+                    var text = id + "*" + type + "*" + firstName + "*" + lastName + "*" + username + "*" + password + "*" + dateCreated + "*" + dateUpdated;
                     //Save stuff
                     var newtr = '\
-                        <tr>\
-                            <td  id="userInfoId"' + id + '> ' + text + '</td>\
+                        <tr id=row' + id + '>\
+                            <td style="display:none;" id="userInfoId' + id + '" > ' + text + '</td>\
                             <td contenteditable="false" class="text-left">' + username + '</td>\
                             <td contenteditable="false" class="text-left">' + type + '</td>\
                             <td contenteditable="false" class="text-left">' + dateCreated + '</td>\
                             <td contenteditable="false" class="text-left">' + dateUpdated + '</td>\
                             <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
-                            <td class="text-center"><button type="submit" name="deleter" id=deleteButton' + id + 'class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                            <td class="text-center"><button type="submit" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
                         </tr>';
-                    $("tr#row0").replaceWith(newtr);
+                    $("tr#row" + id).replaceWith(newtr);
                 }
                 console.log(result);
         });
@@ -236,7 +231,7 @@
         console.log(toLookFor);
         var something = document.getElementById("userInfoId" + indexClicked).innerText;
         console.log(document.getElementById("userInfoId" + indexClicked).innerText);
-        var array = something.split(" ");
+        var array = something.split("*");
         var firstName = array[2];
         if(firstName.includes("["))
         {
