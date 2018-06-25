@@ -60,8 +60,8 @@
                     <th scope="col">Type</th>
                     <th scope="col">Date Created</th>
                     <th scope="col">Date Updated</th>
-                    <th scope="col">Edit</th>
-                    <th scope="col">Delete</th>
+                    <th scope="col" class="text-center">Edit</th>
+                    <th scope="col" class="text-center">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -72,15 +72,15 @@
                         <td contenteditable="false" class="text-left">${user.type}</td>
                         <td contenteditable="false" class="text-left">${user.dateCreatedString}</td>
                         <td contenteditable="false" class="text-left">${user.dateUpdatedString}</td>
-                        <td class="text-center"><button name="editButton" id="editButton${user.id}" type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+                        <td class="text-center"><button name="editButton" id="editButton${user.id}" type="submit" class="btn btn-outline-info"><i class="fa fa-edit" aria-hidden="true"></i></button></td>
                         <td class="text-center"><button type="submit" id="deleteButton${user.id}" name="deleter" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
             </table>
 
-            <button type="submit" name="addUserButton" class="btn btn-outline-danger">ADD IT<i class="fa fa-trash" aria-hidden="true"></i></button><br><br>
-            <button type="submit" name="saveTableButton" class="btn btn-outline-danger">SAVE IT<i class="fa fa-trash" aria-hidden="true"></i></button>
+            <button type="submit" name="addUserButton" class="btn btn-outline-success">Add User</button><br><br>
+            <button type="submit" name="saveTableButton" class="btn btn-outline-primary">Save</button>
 
     </div>
 
