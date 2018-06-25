@@ -108,7 +108,7 @@ public class RDSHandler
 
     public void resetTables()
     {
-        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Users Version");
+        deleteTables(connection, "Companies CompaniesFacilities Facilities FacilitiesUnitsHistory FacilitiesUnits Units Users UserPreferences Version");
 
         createCompaniesTable(connection);
         createCompaniesToFacilitiesTable(connection);
@@ -117,6 +117,7 @@ public class RDSHandler
         createFacilityToUnitsHistoryTable(connection);
         createUnitsTable(connection);
         createUsersTable(connection);
+        createUserPreferencesTable(connection);
         //createValuesTable(connection);
         createVersionTable(connection);
     }
@@ -424,7 +425,35 @@ public class RDSHandler
                     "dateCreated" + " TIMESTAMP," +
                     "dateUpdated" + " TIMESTAMP)";
             statement.executeUpdate(sql);
-            System.out.println("Created Units table");
+            System.out.println("Created Users table");
+        } catch (SQLException se) {
+            //Handle errors for JDBC
+            se.printStackTrace();
+        } catch (Exception e) {
+            //Handle errors for Class.forName
+            e.printStackTrace();
+        } finally {
+            //finally block used to close resources
+            try {
+                if (statement != null)
+                    statement.close();
+            } catch (SQLException se2) {
+            }// nothing we can do
+        }//end try
+    }
+
+    private static void createUserPreferencesTable(Connection conn)
+    {
+        Statement statement = null;
+
+        try {
+            statement = conn.createStatement();
+            String sql =  "CREATE TABLE " + "UserPreferences(" +
+                    "userId" + " BIGINT PRIMARY KEY," +
+                    "landingPage" + " TEXT," +
+                    "landingFacilityId" + " BIGINT)";
+            statement.executeUpdate(sql);
+            System.out.println("Created UserPreferences table");
         } catch (SQLException se) {
             //Handle errors for JDBC
             se.printStackTrace();
@@ -646,6 +675,22 @@ public class RDSHandler
         return user;
     }
 
+    private UserPreferences createUserPreferencesFromResultSet(ResultSet resultSet) throws SQLException
+    {
+        UserPreferences userPreferences = new UserPreferences();
+        userPreferences.setUserId(resultSet.getLong("userId"));
+        userPreferences.setLandingPage(resultSet.getString("landingPage"));
+        userPreferences.setLandingFacilityId(resultSet.getLong("landingFacilityId"));
+        return userPreferences;
+    }
+
+
+
+
+
+
+
+
 
 
 
@@ -853,6 +898,21 @@ public class RDSHandler
         return query;
     }
 
+    private String buildValuesOfUserPreferencesInsertQuery(UserPreferences userPreferences)
+    {
+        String result = "(";
+        result += userPreferences.getUserId() + ",";
+        result += "'" + userPreferences.getLandingPage() + "',";
+        result += userPreferences.getLandingFacilityId() + ")";
+        return result;
+    }
+
+    private String buildUserPreferencesInsertQuery(UserPreferences userPreferences)
+    {
+        String query = "INSERT INTO UserPreferences VALUES" + buildValuesOfUserPreferencesInsertQuery(userPreferences);
+        return query;
+    }
+
 
 
 
@@ -950,11 +1010,10 @@ public class RDSHandler
         executeQuery(query);
     }
 
-    public void updateUser(User user) throws SQLException
+    public void addUserPreferences(UserPreferences userPreferences) throws SQLException
     {
-        String query = "DELETE FROM Users WHERE id=" + user.getId();
+        String query = buildUserPreferencesInsertQuery(userPreferences);
         executeQuery(query);
-        addUser(user);
     }
 
 
@@ -1337,6 +1396,22 @@ public class RDSHandler
     {
         String query = "UPDATE Users SET isActive = FALSE";
         executeQuery(query);
+    }
+
+    public User getUserByUsername(String username) throws SQLException
+    {
+        String query = "SELECT * FROM Users WHERE username='" + username + "'";
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createUserFromResultSet(resultSet);
+    }
+
+    public UserPreferences getPreferencesOfUser(User user) throws SQLException
+    {
+        String query = "SELECT * FROM UserPreferences WHERE userId=" + user.getId();
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        return createUserPreferencesFromResultSet(resultSet);
     }
 
 
