@@ -19,6 +19,7 @@
         %{--<script type="text/javascript" src="/assets/jquery-2.2.0.min.js?compile=true" ></script>--}%
         %{--<script type="text/javascript" src="/assets/application.js?compile=true" ></script>--}%
         <script type="text/javascript" src="/assets/bootbox.min.js?compile=true"></script>
+        <script type="text/javascript" src="/assets/popper.min.js?compile=true" ></script>
 
 
     </head>
@@ -56,14 +57,14 @@
             <table id = "userTable" class="table" style="margin-top: 50px">
                 <thead>
                 <tr>
-                    <th scope="col">Username</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Date Created</th>
-                    <th scope="col">Date Updated</th>
-                    <th scope="col" class="text-center">Edit</th>
-                    <th scope="col" class="text-center">Delete</th>
+                    <th onclick="sortTable(0)" scope="col">Username</th>
+                    <th onclick="sortTable(1)" scope="col">First Name</th>
+                    <th onclick="sortTable(2)" scope="col">Last Name</th>
+                    <th onclick="sortTable(3)" scope="col">Type</th>
+                    <th onclick="sortTable(4)" scope="col">Date Created</th>
+                    <th onclick="sortTable(5)" scope="col">Date Updated</th>
+                    <th onclick="sortTable(6)" scope="col" class="text-center">Edit</th>
+                    <th onclick="sortTable(7)" scope="col" class="text-center">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -93,6 +94,43 @@
         </div>
     </footer>
     <g:javascript>
+        function sortTable(n) {
+          var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+          table = document.getElementById("userTable");
+          switching = true;
+          dir = "asc";
+          while (switching) {
+            switching = false;
+            rows = table.getElementsByTagName("tr");
+            for (i = 1; i < (rows.length - 1); i++) {
+              // Start by saying there should be no switching
+              shouldSwitch = false;
+              x = rows[i].getElementsByTagName("td")[n];
+              y = rows[i + 1].getElementsByTagName("td")[n];
+              if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                  shouldSwitch = true;
+                  break;
+                }
+              } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                  shouldSwitch = true;
+                  break;
+                }
+              }
+            }
+            if (shouldSwitch) {
+              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+              switching = true;
+              switchcount ++;
+            } else {
+              if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+              }
+            }
+          }
+        }
 
    function loadFacilities(e)
    {
@@ -105,6 +143,13 @@
     {
         window.location.href="${createLink(controller:'LocalGrailsCompany', action:'login')}";
     }
+
+    $('#userTable').on('click', 'button[class="dropdown-item"]', function () {
+            // alert($(this).get(0).innerHTML);
+            var cli = $(this).get(0).innerText;
+            // alert($(this).parent().parent().children().get(0).innerText);
+            $(this).parent().parent().children().get(0).innerText = cli;
+        })
 
     $('#userTable').on('click', 'button[name="deleter"]', function () {
         if(confirm('Are you sure you want to delete this user?'))
@@ -164,7 +209,7 @@
                                <td contenteditable="false" class="text-left">' + type + '</td>\
                                <td contenteditable="false" class="text-left">' + date + '</td>\
                                <td contenteditable="false" class="text-left">' + date + '</td>\
-                               <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-success"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
+                               <td class="text-center"><button name="editButton" id=editButton' + id + 'type="submit" class="btn btn-outline-info"><i class="fa fa-edit" aria-hidden="true"></i></button></td>\
                                <td class="text-center"><button type="submit" onclick = "saveUsers()" name="deleter" id="deleteButton' + id + '" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button></td>\
                            </tr>');
                     }
