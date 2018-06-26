@@ -224,7 +224,7 @@ class LocalGrailsCompanyController
                 if (ftu.getUnitId() == u.getId()) {
                     System.out.println("MATCHED");
                     ArrayList<Price> prices = new ArrayList<Price>();
-                    prices.add(new Price(val: ftu.getRateAmount(), color: 0));
+                    prices.add(new Price(val: ftu.getRateAmount(), color: 0, displayPrice: ftu.getRateAmount().toString()));
                     String rateType = ftu.getRateType();
                     System.out.println("RATE AMOUNT IS: " + ftu.getRateAmount());
                     if(rateType == null || rateType.length()==0)
@@ -417,7 +417,7 @@ class LocalGrailsCompanyController
                     }
                     if(local.facilityId == rfId)
                     {
-                        found.prices.add(new Price(val: local.price, color: 0));
+                        found.prices.add(new Price(val: local.price, color: 0, displayPrice: local.price.toString()));
                         if(rfId != idOfBaseFacility)
                         {
                             BigDecimal price = new BigDecimal("12732136");
@@ -437,7 +437,7 @@ class LocalGrailsCompanyController
                                     color = 1;
                                 else
                                     color = 2;
-                                found.prices.add(new Price(val: val, color: color));
+                                found.prices.add(new Price(val: val, color: color, displayPrice: val.toString()));
                             }
                             else
                             {
@@ -808,7 +808,7 @@ class LocalGrailsCompanyController
             for (FacilityToUnit ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
                     ArrayList<Price> prices = new ArrayList<Price>();
-                    prices.add(new Price(val: ftu.getRateAmount(), color: 0));
+                    prices.add(new Price(val: ftu.getRateAmount(), color: 0, displayPrice: ftu.getRateAmount().toString()));
                     String rateType = ftu.getRateType();
                     if(rateType.length() == 0 || rateType == null)
                     {
@@ -1014,6 +1014,7 @@ class LocalGrailsCompanyController
             user.setPassword(result[5]);
             user.setDateCreated(result[6]);
             user.setDateUpdated(result[7]);
+            user.setIsActive(result[8].equals("true"));
             user.setIsActive(true);
             users.add(user);
         }
