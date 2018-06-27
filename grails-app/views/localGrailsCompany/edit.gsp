@@ -99,6 +99,7 @@
                                     <button class="dropdown-item" type="button">Climate</button>
                                     <button class="dropdown-item" type="button">Non-Climate</button>
                                     <button class="dropdown-item" type="button">Parking</button>
+                                    <button class="dropdown-item" type="button">RV Parking</button>
                                 </div>
                             </div>
                         </td>
@@ -210,6 +211,7 @@
             "<button class='dropdown-item' type='button'>Climate</button>" +
             "<button class='dropdown-item' type='button'>Non-Climate</button>" +
             "<button class='dropdown-item' type='button'>Parking</button>" +
+            "<button class='dropdown-item' type='button'>RV Parking</button>" +
         '<td contenteditable="false" class="text-center">N/A</td><td contenteditable="true" class="text-right focusedInput">' +
             '<div class="input-group">' +
                 '<div contenteditable="false" class="input-group-prepend">' +
