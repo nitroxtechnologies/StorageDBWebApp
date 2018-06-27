@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <button onclick = 'verify()' type="button" class="btn btn-outline-info btn-block">Log in</button>
+                <button id = "loginButton" onclick = 'verify()' type="button" class="btn btn-outline-info btn-block">Log in</button>
             </div>
         </form>
           %{--Username: <input type="text" id="usernameField"><br>--}%
@@ -76,6 +76,19 @@
         %{--</div>--}%
     %{--</footer>--}%
     <g:javascript>
+
+        var input = document.getElementById("passwordField");
+
+        // Execute a function when the user releases a key on the keyboard
+        input.addEventListener("keyup", function(event) {
+          // Cancel the default action, if needed
+          event.preventDefault();
+          // Number 13 is the "Enter" key on the keyboard
+          if (event.keyCode === 13) {
+            // Trigger the button element with a click
+            document.getElementById("loginButton").click();
+          }
+        });
 
     function verify()
     {
