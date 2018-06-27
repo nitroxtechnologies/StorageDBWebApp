@@ -441,7 +441,7 @@ class LocalGrailsCompanyController
                             }
                             else
                             {
-                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP));
+                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0, displayPrice: ""));
                             }
                         }
                     }
@@ -469,14 +469,15 @@ class LocalGrailsCompanyController
                             if(!foundIds.contains(local.id))
                             {
                                 foundIds.add(local.id);
-                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0));
+                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0, displayPrice: ""));
                                 if(removeFacilityIds.size() > 1)
                                     if(rfId != removeFacilityIds.get(0))// && rfId != removeFacilityIds.get(1))
-                                        found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0));
+                                        found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0, displayPrice: ""));
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
                         }
                     }
+                    System.out.println("FINDING " + found.height);
                     found.save(failOnError:true, flush: true);
                 }
             }
@@ -593,8 +594,6 @@ class LocalGrailsCompanyController
         //Once we finish this, we have a list of all the units we need to add as well as the FTUs we must add
         //Then just write them to the database
         //Save the new max IDs
-
-
 
         RDSHandler rds = new RDSHandler();
         //Gets all the Units that match in name, floor, climate

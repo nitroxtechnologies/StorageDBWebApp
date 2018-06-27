@@ -144,15 +144,15 @@
                         <td class="text-center">${unit.floor}</td>
                         <td class="text-center">${unit.type}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
-                            <g:if test = "${price.displayPrice != 123456.0}">
+                            <g:if test = "${price.val != 123456.0}">
                                 <g:if test = "${price.color == 1}">
-                                    <td class="text-center" style = "color:black; background-color:rgba(255,0,0,0.51)"><span>$${String.format("%.02f", price.displayprice)}</span></td>
+                                    <td class="text-center" style = "color:black; background-color:rgba(255,0,0,0.51)"><span>${price.displayprice}</span></td>
                                 </g:if>
                                 <g:elseif test = "${price.color == 2}">
-                                    <td class="text-center" style = "color:black; background-color:rgba(0,128,0,0.5)">($${String.format("%.02f", price.displayPrice)})</td>
+                                    <td class="text-center" style = "color:black; background-color:rgba(0,128,0,0.5)">(${price.displayPrice})</td>
                                 </g:elseif>
                                 <g:else>
-                                    <td class="text-center">$${String.format("%.02f", price.displayPrice)}</td>
+                                    <td class="text-center">${price.displayPrice}</td>
                                 </g:else>
                             </g:if>
                             <g:else>
