@@ -634,6 +634,70 @@ class LocalGrailsCompanyController
         updateLocalTables()
     }
 
+    def compareGraphUnit()
+    {
+        String unitName = params.unitName as String;
+        int unitFloor = params.unitFloor as Integer;
+        String unitType = params.unitType as String;
+
+        int index = 0;
+        ArrayList<String> facilityNames = new ArrayList<String>();
+        Collection keys = params.keySet();
+        for(Object key : keys)
+        {
+            switch(index)
+            {
+                case 0:
+                case 1:
+                case 2: break;
+                default: facilityNames.add(params.get(key) as String);
+            }
+        }
+
+        ArrayList<CompareUnit> prices = new ArrayList<CompareUnit>();
+
+        RDSHandler rds = new RDSHandler();
+        JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
+        temp.floor = unitFloor;
+        temp.name = unitName;
+        temp.type = unitType;
+        ArrayList<JavaLocalGrailsUnit> tempList = new ArrayList<JavaLocalGrailsUnit>();
+        tempList.add(temp);
+        ArrayList<Unit> units = rds.getUnitsWithInfo(tempList);
+
+        Unit found = units.get(0);
+
+        ArrayList<FacilityToUnit> facilityToUnits = rds.getFacilityToUnitsFromUnitIdOldestToNewest(found.getId());
+        ArrayList<FacilityToUnitHistory> facilityToUnitHistories = rds.getFacilityToUnitHistoriesFromUnitIdOldestToNewest(found.getId());
+        ArrayList<Facility> facilities = rds.getFacilitiesFromFacilityNames(facilityNames);
+
+        HashMap<Long, Integer> toAddIndices = new HashMap<Long,Integer>();
+        index = 0;
+        for(Facility facility : facilities)
+        {
+            toAddIndices.put(facility.getId(), index++);
+            prices.add(new CompareUnit(dbId: index-1));
+        }
+
+        for(FacilityToUnitHistory facilityToUnitHistory : facilityToUnitHistories)
+        {
+            CompareUnit compareUnit = prices.get(toAddIndices.get(facilityToUnitHistory.getFacilityId()));
+            Price price = new Price(facilityToUnitHistory.getRateAmount(),0);
+            price.setTime(facilityToUnitHistory.getDateCreated());
+            compareUnit.prices.add(price);
+        }
+
+        for(FacilityToUnit facilityToUnit : facilityToUnits)
+        {
+            CompareUnit compareUnit = prices.get(toAddIndices.get(facilityToUnit.getFacilityId()));
+            Price price = new Price(facilityToUnit.getRateAmount(),0);
+            price.setTime(facilityToUnit.getDateCreated());
+            compareUnit.prices.add(price);
+        }
+
+        [facilityNames: facilityNames, prices: prices]
+    }
+
     def save()
     {
         int index = 0;

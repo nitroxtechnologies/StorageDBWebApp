@@ -1,10 +1,13 @@
 package storagedbwebapp
 
+import java.text.SimpleDateFormat
+
 class Price {
 
     BigDecimal val
     String displayPrice
     int color
+    String time
     //0 = black (normal)
     //1 = Red
     //2 = Green
@@ -26,8 +29,16 @@ class Price {
         }
         this.color = color;
         this.val = val;
+        this.time = "ERROR TIME";
     }
     static belongsTo = [compareUnit: CompareUnit]
+
+    public void setTime(Date time)
+    {
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
+        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
+        this.time = ft.format(time);
+    }
 
     public String toString()
     {

@@ -1472,6 +1472,56 @@ public class RDSHandler
         return createCompanyFromResultSet(resultSet);
     }
 
+    public ArrayList<FacilityToUnit> getFacilityToUnitsFromUnitIdOldestToNewest(long unitId) throws SQLException
+    {
+        String query = "SELECT * FROM FacilitiesUnits WHERE unitId=" + unitId + " ORDER BY dateCreated ASC";
+        ResultSet resultSet = executeQuery(query);
+
+        ArrayList<FacilityToUnit> results = new ArrayList<FacilityToUnit>();
+        while(resultSet.next())
+        {
+            results.add(createFacilityToUnitFromResultSet(resultSet));
+        }
+
+        return results;
+    }
+
+    public ArrayList<FacilityToUnitHistory> getFacilityToUnitHistoriesFromUnitIdOldestToNewest(long unitId) throws SQLException
+    {
+        String query = "SELECT * FROM FacilitiesUnitsHistory WHERE unitId=" + unitId + " ORDER BY dateCreated ASC";
+        ResultSet resultSet = executeQuery(query);
+
+        ArrayList<FacilityToUnitHistory> results = new ArrayList<FacilityToUnitHistory>();
+        while(resultSet.next())
+        {
+            results.add(createFacilityToUnitHistoryFromResultSet(resultSet));
+        }
+
+        return results;
+    }
+
+    public ArrayList<Facility> getFacilitiesFromFacilityNames(ArrayList<String> facilityNames) throws SQLException
+    {
+        if(facilityNames.size() == 0)
+        {
+            return new ArrayList<Facility>();
+        }
+        String query = "SELECT * FROM Facilities WHERE name = '" + facilityNames.get(0) + "'";
+        for(int i = 0; i < facilityNames.size(); i++)
+        {
+            query += " OR name = '" + facilityNames.get(i) + "'";
+        }
+        ResultSet resultSet = executeQuery(query);
+
+        ArrayList<Facility> result = new ArrayList<Facility>();
+        while(resultSet.next())
+        {
+            result.add(createFacilityFromResultSet(resultSet));
+        }
+
+        return result;
+    }
+
 
 
 
