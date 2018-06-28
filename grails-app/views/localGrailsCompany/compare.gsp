@@ -144,7 +144,7 @@
                         <td class="text-center">${unit.floor}</td>
                         <td class="text-center">${unit.type}</td>
                         <g:each in="${unit.prices}" var="price" status="j">
-                            <g:if test = "${price.val != 123456.0}">
+                            <g:if test = "${!price.displayPrice.equals("error")}">
                                 <g:if test = "${price.color == 1}">
                                     <td class="text-center" style = "color:black; background-color:rgba(255,0,0,0.51)"><span>${price.displayprice}</span></td>
                                 </g:if>

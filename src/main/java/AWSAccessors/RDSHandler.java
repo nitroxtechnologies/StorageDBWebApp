@@ -1460,6 +1460,18 @@ public class RDSHandler
         return createUserPreferencesFromResultSet(resultSet);
     }
 
+    public Company getCompanyFromFacilityName(String facilityName) throws SQLException
+    {
+        String query = "SELECT * FROM Facilities WHERE name='" + facilityName + "'";
+        ResultSet resultSet = executeQuery(query);
+        resultSet.next();
+        Facility facility = createFacilityFromResultSet(resultSet);
+        query = "SELECT * FROM Companies WHERE id=" + facility.getCompanyId();
+        resultSet = executeQuery(query);
+        resultSet.next();
+        return createCompanyFromResultSet(resultSet);
+    }
+
 
 
 

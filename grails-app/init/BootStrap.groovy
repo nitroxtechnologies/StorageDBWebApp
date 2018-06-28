@@ -16,6 +16,7 @@ class BootStrap {
         }
         new DropdownInfo(companyIndex: 0, facilityIndex: 0, climateIndex: 0, unitIndex: 0, compareCompaniesIndex: 0, facilityId: 0, userType: "Guest", username: "Guest").save(failOnError: true)
     }
+
     def destroy = {
     }
 }

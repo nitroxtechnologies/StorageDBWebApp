@@ -11,6 +11,8 @@ import AWSAccessors.User
 import AWSAccessors.UserPreferences
 import AWSAccessors.Value
 import org.apache.tomcat.jni.Local
+import org.hibernate.Session
+import org.hibernate.SessionFactory
 
 import java.math.RoundingMode
 import java.sql.ResultSet
@@ -23,7 +25,7 @@ import java.util.Date
  */
 class LocalGrailsCompanyController
 {
-    static final BigDecimal PRICE_DIFFERENCE_TO_SKIP = new BigDecimal(""+123456.0);
+
 
     def updateLocalTables()
     {
@@ -72,7 +74,6 @@ class LocalGrailsCompanyController
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId, String userType, String username)
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
-        DropdownInfo.executeUpdate('delete from DropdownInfo')
 
         if(companyIndex >= 0)
         {
@@ -109,7 +110,7 @@ class LocalGrailsCompanyController
             dropdownInfo.username = username;
         }
 
-        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType, username: dropdownInfo.username).save()
+        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType, username: dropdownInfo.username).save(failOnError: true, flush: true)
     }
     def index()
     {
@@ -215,7 +216,12 @@ class LocalGrailsCompanyController
         println("----------------");
         List<Unit> unitsArraylist = rds.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = rds.getFacilityToUnitsFromFacilityId(f.getId())
-        CompareUnit.executeUpdate('delete from CompareUnit')
+        Price.executeUpdate('delete from Price')
+        for(CompareUnit compareUnit : CompareUnit.list())
+        {
+            compareUnit.delete(failOnError: true, flush: true);
+        }
+
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
@@ -224,13 +230,17 @@ class LocalGrailsCompanyController
                 if (ftu.getUnitId() == u.getId()) {
                     System.out.println("MATCHED");
                     ArrayList<Price> prices = new ArrayList<Price>();
-                    prices.add(new Price(val: ftu.getRateAmount(), color: 0, displayPrice: ftu.getRateAmount().toString()));
+                    Price price = new Price(val: ftu.getRateAmount(), color: 0, displayPrice: ftu.getRateAmount().toString());
+
                     String rateType = ftu.getRateType();
                     System.out.println("RATE AMOUNT IS: " + ftu.getRateAmount());
                     if(rateType == null || rateType.length()==0)
                         rateType = "standard";
                     //System.out.println("RATE TYPE NOW: " + rateType);
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreatedString()).save(failOnError:true)
+                    CompareUnit newCompareUnit = new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), time: ftu.getDateCreatedString());
+                    newCompareUnit.addToPrices(price).save(failOnError: true, flush: true);
+                    //newCompareUnit.save(failOnError: true);
+
                 }
             }
         }
@@ -249,6 +259,11 @@ class LocalGrailsCompanyController
     {
         System.out.println("----------\nCompare block start");
 
+        for(RemoveFacility removeFacility : RemoveFacility.list())
+        {
+            System.out.println("WHY IS THIS HERE: " + removeFacility);
+        }
+
         if(CompareCompany.list().size() == 0 && RemoveFacility.list().size() <= 1)
         {
             long index = 1;
@@ -258,13 +273,33 @@ class LocalGrailsCompanyController
             }
         }
         RDSHandler rds = new RDSHandler();
+        //
         if(params.cID != null)
         {
-            System.out.println("\n\nCOMPARE: CID - " + (params.cID as Integer) + "\n\n");
+            int cId = 0;
+            if(params.fName != null)
+            {
+                cId = rds.getCompanyFromFacilityName(params.fName as String).getId();
+            }
+            else
+            {
+                cId = (params.cID as Integer);
+            }
 
-            updateDropdownList(0, 0, 0, 0, (params.cID as Integer)+1, -1l, "", "")
+            System.out.println("\n\nCOMPARE: CID - " + cId + "\n\n");
 
-            Company c = rds.getCompanyFromName(params.cName as String);
+            //
+
+            Company c = null;
+
+            if(params.fName != null)
+            {
+                c = rds.getCompanyFromFacilityName(params.fName as String);
+            }
+            else
+            {
+                c = rds.getCompanyFromName(params.cName as String);
+            }
 
             ArrayList<Facility> facilities = rds.getFacilitiesFromCompanyId(c.getId());
             AddFacility.executeUpdate('delete from AddFacility')
@@ -286,9 +321,10 @@ class LocalGrailsCompanyController
                 if(!hasAlreadyBeenAdded)
                     new AddFacility(dbId: facility.getId(), name: facility.getName()).save();
             }
+
+            updateDropdownList(-1, 0, 0, 0, cId+1, -1l, "", "")
         }
-        else
-        {
+        if(params.fName != null) {
             System.out.println("\n\nCOMPARE: FID\n\n");
             String fName = params.fName as String;
 
@@ -301,13 +337,13 @@ class LocalGrailsCompanyController
             //Update compareCompanies
             boolean isAlreadyAdded = false;
             ArrayList<RemoveFacility> removeFacilities = RemoveFacility.list();
-            for(RemoveFacility facility : removeFacilities) //Check if its in removeFacilities
+            for (RemoveFacility facility : removeFacilities) //Check if its in removeFacilities
             {
                 System.out.println("GOTTA CHECK THE LOOP");
                 System.out.println("REMOVE FACILITY ID: " + facility.dbId);
+                System.out.println("REMOVE FACILITY NAME: " + facility.name);
                 System.out.println("FACILITY ID: " + f.getId() + "\n");
-                if(facility.dbId == f.getId())
-                {
+                if (facility.dbId == f.getId()) {
                     System.out.println("FOUND THE OFFENDER");
                     isAlreadyAdded = true;
                 }
@@ -317,73 +353,121 @@ class LocalGrailsCompanyController
             //We need to add the units to the units model
             if (!isAlreadyAdded) {
                 System.out.println("FOUND A NEW ONE");
-                new RemoveFacility(dbId: f.getId(), name: f.getName()).save();
+                new RemoveFacility(dbId: f.getId(), name: f.getName()).save(flush: true);
 
                 boolean anyLeftForCompany = false;
 
                 ArrayList<Facility> facilities = rds.getFacilitiesFromCompanyId(companyId);
 
-                for(Facility facility : facilities)
-                {
-                    if(facility.getCompanyId() == companyId)
-                    {
+                for (Facility facility : facilities) {
+                    if (facility.getCompanyId() == companyId) {
                         //if there is a facility for this company that is not in remove facilities
                         //then there is something left for the company
                         boolean canFindInRemoveFacilities = false;
-                        for(RemoveFacility facil : removeFacilities)
-                            if(facil.dbId == facility.getId())
+                        for (RemoveFacility facil : removeFacilities)
+                            if (facil.dbId == facility.getId())
                                 canFindInRemoveFacilities = true;
-                        if(!canFindInRemoveFacilities && facility.getId() != fID)
+                        if (!canFindInRemoveFacilities && facility.getId() != fID)
                             anyLeftForCompany = true;
                     }
                 }
+                long firstId = -1l;
+                if (!anyLeftForCompany) {
 
-                if(!anyLeftForCompany)
-                {
-                    for (CompareCompany cc : CompareCompany.list())
-                    {
-                        if(cc.dbId > companyId)
+                    for (CompareCompany cc : CompareCompany.list()) {
+                        if(firstId == -1l && cc.dbId != companyId)
                         {
+                            firstId = cc.dbId;
+                        }
+                        if (cc.dbId > companyId) {
+
                             cc.index--;
                             cc.save();
                         }
-                        if(cc.dbId == companyId)
-                        {
+                        if (cc.dbId == companyId) {
                             cc.delete();
                         }
                     }
+                    System.out.println("USE CASE IDENTIFIED");
+                    AddFacility.executeUpdate('delete from AddFacility')
+                    updateDropdownList(-1, 0, 0, 0, 1, -1l, "", "")
+
+                    facilities = rds.getFacilitiesFromCompanyId(firstId);
+                    for(Facility facility : facilities)
+                    {
+                        boolean isAlreadyRemoved = false;
+                        for(RemoveFacility facility1 : RemoveFacility.list())
+                        {
+                            if(facility1.dbId == facility.getId())
+                            {
+                                isAlreadyRemoved = true;
+                            }
+                        }
+                        if(!isAlreadyRemoved)
+                        {
+                            new AddFacility(dbId: facility.getId(), name: facility.getName()).save(failOnError: true);
+                        }
+                    }
+
+
                     //CompareCompany.executeUpdate("delete CompareCompany c where c.dbId = :badId",[badId:companyId])
                 }
+                else
+                {
+                    AddFacility.executeUpdate('delete from AddFacility')
+
+                    for(Facility facility : facilities)
+                    {
+                        boolean isAlreadyRemoved = false;
+                        for(RemoveFacility facility1 : RemoveFacility.list())
+                        {
+                            if(facility1.dbId == facility.getId())
+                            {
+                                isAlreadyRemoved = true;
+                            }
+                        }
+                        if(!isAlreadyRemoved)
+                        {
+                            new AddFacility(dbId: facility.getId(), name: facility.getName()).save(failOnError: true);
+                        }
+                    }
+                }
+
             }
             //If fID is in removeFacilities
             //We need to remove the units from the units model
             else {
                 System.out.println("ALREADY GOT THIS ONE");
-                RemoveFacility.executeUpdate("delete RemoveFacility c where c.dbId = :badId",[badId:fID])
+                RemoveFacility.executeUpdate("delete RemoveFacility c where c.dbId = :badId", [badId: fID])
 
                 boolean isCompanyAleadyInCompareCompanies = false;
-                for(CompareCompany cc : CompareCompany.list())
-                {
-                    if(cc.dbId == companyId)
-                    {
+                for (CompareCompany cc : CompareCompany.list()) {
+                    if (cc.dbId == companyId) {
                         isCompanyAleadyInCompareCompanies = true;
                     }
                 }
-                if(!isCompanyAleadyInCompareCompanies)
-                {
+                if (!isCompanyAleadyInCompareCompanies) {
                     Company c = rds.getCompanyFromId(companyId);
                     long newIndex = 1;
-                    for(CompareCompany cc : CompareCompany.list())
-                    {
+                    for (CompareCompany cc : CompareCompany.list()) {
                         newIndex++;
                     }
                     new CompareCompany(dbId: companyId, index: newIndex, name: c.getName()).save();
                 }
+                if(isCompanyAleadyInCompareCompanies || CompareCompany.list().size() <= 1)
+                {
+                    new AddFacility(dbId: f.getId(), name: f.getName()).save(flush: true);
+                }
             }
 
+
+
             LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
-            AddFacility.executeUpdate('delete from AddFacility')
-            CompareUnit.executeUpdate('delete from CompareUnit')
+
+            ArrayList<CompareUnit> toDelete = new ArrayList<CompareUnit>();
+            for (CompareUnit compareUnit : CompareUnit.list()) {
+                toDelete.add(compareUnit);
+            }
 
             ArrayList<Long> removeFacilityIds = new ArrayList<>();
 
@@ -397,18 +481,22 @@ class LocalGrailsCompanyController
             System.out.println("UNITS IN TABLE: " + javaLocalGrailsUnitList.size());
             HashMap<Long, HashSet<Long>> alreadyAddedTemps = new HashMap<>();
             long idOfBaseFacility = removeFacilityIds.get(0);
+            ArrayList<CompareUnit> localCompareUnitList = new ArrayList<CompareUnit>();
+            BigDecimal PRICE_DIFFERENCE_TO_SKIP = new BigDecimal(""+123456.0);
             for(Long rfId : removeFacilityIds)
             {
                 for(JavaLocalGrailsUnit local : javaLocalGrailsUnitList)
                 {
-                    System.out.println("LOCAL FACILITY ID: " + local.facilityId);
-
-                    def result = CompareUnit.findByDbId(local.id);
-
-                    CompareUnit found;
-                    for(CompareUnit compareUnit : result)
+                    //System.out.println("LOCAL FACILITY ID: " + local.facilityId);
+                    CompareUnit found = null;
+                    boolean couldFind = false;
+                    for(CompareUnit compareUnit1 : localCompareUnitList)
                     {
-                        found = compareUnit;
+                        if(compareUnit1.dbId == local.id)
+                        {
+                            found = compareUnit1;
+                            couldFind = true;
+                        }
                     }
                     if(found == null)
                     {
@@ -417,9 +505,12 @@ class LocalGrailsCompanyController
                     }
                     if(local.facilityId == rfId)
                     {
-                        found.prices.add(new Price(val: local.price, color: 0, displayPrice: local.price.toString()));
+                        //System.out.println("FOUND THE PRICE AS: " + local.price.toString());
+                        Price addPrice = new Price(val: local.price, color: 0, displayPrice: local.price.toString());
+                        found.addToPrices(addPrice).save(failOnError: true, flush: true);
                         if(rfId != idOfBaseFacility)
                         {
+                            //System.out.println("oh no");
                             BigDecimal price = new BigDecimal("12732136");
                             for(JavaLocalGrailsUnit local2 : javaLocalGrailsUnitList)
                             {
@@ -437,11 +528,13 @@ class LocalGrailsCompanyController
                                     color = 1;
                                 else
                                     color = 2;
-                                found.prices.add(new Price(val: val, color: color, displayPrice: val.toString()));
+                                Price otherPrice = new Price(val: val, color: color, displayPrice: val.toString());
+                                found.addToPrices(otherPrice).save(flush: true, failOnError: true);
                             }
                             else
                             {
-                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0, displayPrice: ""));
+                                Price tempPrice = new Price(val:new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), color: 0, displayPrice: "error");
+                                found.addToPrices(tempPrice).save(flush: true, failOnError: true);
                             }
                         }
                     }
@@ -469,25 +562,49 @@ class LocalGrailsCompanyController
                             if(!foundIds.contains(local.id))
                             {
                                 foundIds.add(local.id);
-                                found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0, displayPrice: ""));
+                                Price anotherToAddPrice = new Price(val: new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), color: 0, displayPrice: "error");
+
+                                found.addToPrices(anotherToAddPrice).save(flush: true, failOnError: true);
                                 if(removeFacilityIds.size() > 1)
                                     if(rfId != removeFacilityIds.get(0))// && rfId != removeFacilityIds.get(1))
-                                        found.prices.add(new Price(val: PRICE_DIFFERENCE_TO_SKIP, color: 0, displayPrice: ""));
+                                    {
+                                        Price possibleToAddPrice = new Price(val: new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), color: 0, displayPrice: "error");
+                                        found.addToPrices(possibleToAddPrice).save(flush:true, failOnError: true);
+                                    }
                                 alreadyAddedTemps.put(rfId, foundIds);
                             }
                         }
                     }
-                    System.out.println("FINDING " + found.height);
-                    found.save(failOnError:true, flush: true);
+                    //System.out.println("FINDING " + found + " " + found.dbId + " "  + found.name + " " + found.width + " " + found.depth +" "+ found.height + " " + found.type + " " + found.rateType + " " + found.floor + " " + found.prices + " " + found.time);
+                    found.save(failOnError:true);
+                    if(!couldFind)
+                    {
+                        localCompareUnitList.add(found);
+                    }
+
                 }
             }
 
             for (JavaLocalGrailsUnit u : javaLocalGrailsUnitList) {
                 new LocalGrailsUnit(u.id, u.name, u.width, u.depth, u.height, u.type, u.floor, u.price).save()
             }
+
+            for(int i = 0; i < toDelete.size(); i++)
+            {
+                CompareUnit compareUnit1 = toDelete.get(i);
+                if(i < toDelete.size()-1)
+                {
+                    compareUnit1.delete(failOnError: true);
+                }
+                else
+                {
+                    compareUnit1.delete(failOnError: true, flush: true);
+                }
+            }
         }
 
         System.out.println("Compare block end\n----------\n\n\n\n\n");
+
         updateLocalTables()
     }
 
@@ -576,9 +693,6 @@ class LocalGrailsCompanyController
 
         }
         System.out.println("------------");
-
-
-
 
         //NEW IDEA FOR CODE STRUCTURE
         //Get all the FTU ids for the facility, this way we know what IDs to use for our new FTUs
@@ -799,7 +913,11 @@ class LocalGrailsCompanyController
         println("----------------");
         List<Unit> unitsArraylist = rds.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = rds.getFacilityToUnitsFromFacilityId(f.getId())
-        CompareUnit.executeUpdate('delete from CompareUnit')
+
+        for(CompareUnit compareUnit : CompareUnit.list())
+        {
+            compareUnit.delete(failOnError: true, flush: true);
+        }
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
         for(Unit u : unitsArraylist) {
@@ -912,6 +1030,19 @@ class LocalGrailsCompanyController
     def landing()
     {
         RDSHandler rds = new RDSHandler();
+        ArrayList<CompareUnit> toDelete = CompareUnit.list();
+        for(int i = 0; i < toDelete.size(); i++)
+        {
+            CompareUnit compareUnit1 = toDelete.get(i);
+            if(i < toDelete.size()-1)
+            {
+                compareUnit1.delete(failOnError: true);
+            }
+            else
+            {
+                compareUnit1.delete(failOnError: true, flush: true);
+            }
+        }
         System.out.println("USERNAME: " + params.username);
         User user = rds.getUserByUsername(params.username as String);
         UserPreferences userPreferences = rds.getPreferencesOfUser(user);

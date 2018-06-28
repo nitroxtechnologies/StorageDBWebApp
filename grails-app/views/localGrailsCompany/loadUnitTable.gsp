@@ -163,7 +163,7 @@
     function compare(e) {
         var fID = e.selectedIndex;
         var fName = fName = e.options[e.selectedIndex].text;
-        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName;
+        window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compare')}" + "?fID=" + fID + "&fName=" + fName + "&initialLoad=a";
 
     }
 

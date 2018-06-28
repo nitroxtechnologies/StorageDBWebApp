@@ -10,8 +10,14 @@ class Price {
     //2 = Green
 
 
-    static belongsTo = CompareUnit
+    static belongsTo = [compareUnit: CompareUnit]
 
-    static constraints = {
+    public String toString()
+    {
+        String ret = "";
+        ret += val + " ";
+        ret += displayPrice + " ";
+        ret += color;
+        return ret;
     }
 }

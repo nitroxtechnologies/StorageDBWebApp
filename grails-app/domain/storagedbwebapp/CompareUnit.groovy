@@ -10,20 +10,11 @@ class CompareUnit {
     String type
     String rateType
     int floor
-    List prices
     String time
 
-    static hasMany = [prices: Price]
+    List prices
 
-    public String toString()
-    {
-        String ret = "";
-        for(Price p : prices)
-        {
-            ret += p.val + " ";
-        }
-        return ret;
-    }
+    static hasMany = [prices: Price]
 
     static mapping = {
         prices cascade: 'all-delete-orphan'
