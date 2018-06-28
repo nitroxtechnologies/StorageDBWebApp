@@ -1,6 +1,6 @@
 package storagedbwebapp
 
-class CompareUnit {
+class CompareUnit implements Comparable<storagedbwebapp.CompareUnit>{
 
     long dbId
     String name
@@ -18,5 +18,48 @@ class CompareUnit {
 
     static mapping = {
         prices cascade: 'all-delete-orphan'
+    }
+
+    public int compareTo(CompareUnit other)
+    {
+        int c = width.compareTo(other.width);
+        if(c < 0)
+        {
+            return -1;
+        }
+        else if(c > 0)
+        {
+            return 1;
+        }
+
+        c = depth.compareTo(other.depth);
+        if(c < 0)
+        {
+            return -1;
+        }
+        else if(c > 0)
+        {
+            return 1;
+        }
+
+        c = type.compareTo(other.type);
+        if(c < 0)
+        {
+            return 1;
+        }
+        else if(c > 0)
+        {
+            return -1;
+        }
+
+        if(floor > other.floor)
+        {
+            return -1;
+        }
+        else if(floor < other.floor)
+        {
+            return 1;
+        }
+        return 0;
     }
 }
