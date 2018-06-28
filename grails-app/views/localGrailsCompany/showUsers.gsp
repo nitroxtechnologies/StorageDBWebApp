@@ -76,7 +76,7 @@
                     <th onclick="sortTable(4)" scope="col">Type <i class="fa fa-sort"/></th>
                     <th onclick="sortTable(5)" scope="col">Date Created <i class="fa fa-sort"/></th>
                     <th onclick="sortTable(6)" scope="col">Date Updated <i class="fa fa-sort"/></th>
-                    <th scope="col">Active?</th>
+                    <th scope="col">Active</th>
                     <th scope="col" class="text-center">Edit</th>
                     <th scope="col" class="text-center">Delete</th>
                 </tr>

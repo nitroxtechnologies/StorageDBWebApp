@@ -66,20 +66,20 @@
             <div class="col-lg-12 text-center" style="margin-top: 50px">
                 <div class = "row">
                     <div class = "col-md-6 text-center">
-                        <label>Company:</label>
+                        <label>Select a Company:</label>
                         <g:select id = "company" optionKey="index" optionValue="name" value ="${compareCompany}"
                                   name="companydropdown" from="${compareCompanies}"
                                   onChange= 'addCompany(document.getElementById("company"))'>
                         </g:select>
                         <br><br>
-                        <label>Facility:</label>
+                        <label>Select a Facility:</label>
 
                         <g:select id = 'addFacility' optionKey="dbId" optionValue="name"
                                   name="addF" from="${addFacilities}">
                         </g:select>
 
                         <div class="page-header" style = "margin-bottom: 20px; margin-top: 20px;">
-                            <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Add</button>
+                            <button type="button" class="btn btn-outline-success" onclick="addUnit(document.getElementById('addFacility'))">Compare this facility</button>
                         </div>
                     </div>
                 <div class = "col-md-6 text-center">
@@ -159,6 +159,7 @@
                                 <td class="text-center"> </td>
                             </g:else>
                         </g:each>
+                        <td class="text-center"><button onclick='graph("${unit.name}", "${unit.type}", "${unit.floor}")' type="submit" class="btn btn-link"><i class="fa fa-line-chart" aria-hidden="true"></i></button></td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -175,6 +176,11 @@
     <script type="text/javascript" src="/assets/bootstrap.bundle.min.js?compile=true" ></script>
     %{--<script type="text/javascript" src="/assets/chosen.jquery.min.js?compile=true" ></script>--}%
     <g:javascript>
+
+
+       function graph(n, c, f) {
+            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compareGraph')}" + "?uName=" + n + "&uType=" + c + "&uFloor=" + f;
+        }
        function loadFacilities(e){
             var cID = e.selectedIndex;
             var cName = e.options[e.selectedIndex].text;
