@@ -645,6 +645,9 @@ class LocalGrailsCompanyController
         Collection keys = params.keySet();
         for(Object key : keys)
         {
+            System.out.println(params.get(key));
+            if(key.equals("controller"))
+                break;
             switch(index)
             {
                 case 0:
@@ -652,6 +655,13 @@ class LocalGrailsCompanyController
                 case 2: break;
                 default: facilityNames.add(params.get(key) as String);
             }
+            index++;
+        }
+
+        System.out.println("FACILITY NAMES");
+        for(String name : facilityNames)
+        {
+            System.out.println(name);
         }
 
         ArrayList<CompareUnit> prices = new ArrayList<CompareUnit>();
@@ -673,10 +683,14 @@ class LocalGrailsCompanyController
 
         HashMap<Long, Integer> toAddIndices = new HashMap<Long,Integer>();
         index = 0;
+        System.out.println("HASHMAP MATCHES");
         for(Facility facility : facilities)
         {
             toAddIndices.put(facility.getId(), index++);
-            prices.add(new CompareUnit(dbId: index-1));
+            System.out.println(facility.getId() + " " + (index-1));
+            CompareUnit toAdd = new CompareUnit(dbId: index-1);
+            toAdd.prices = new ArrayList<>();
+            prices.add(toAdd);
         }
 
         for(FacilityToUnitHistory facilityToUnitHistory : facilityToUnitHistories)
@@ -689,10 +703,25 @@ class LocalGrailsCompanyController
 
         for(FacilityToUnit facilityToUnit : facilityToUnits)
         {
-            CompareUnit compareUnit = prices.get(toAddIndices.get(facilityToUnit.getFacilityId()));
-            Price price = new Price(facilityToUnit.getRateAmount(),0);
-            price.setTime(facilityToUnit.getDateCreated());
-            compareUnit.prices.add(price);
+            long facilityId = facilityToUnit.getFacilityId();
+            int indexOfFacilityInList = (int) (toAddIndices.get(facilityId)==null?-1:toAddIndices.get(facilityId));
+            if(indexOfFacilityInList != -1)
+            {
+                CompareUnit compareUnit = prices.get(indexOfFacilityInList);
+                System.out.println(compareUnit == null);
+                Price price = new Price(facilityToUnit.getRateAmount(),0);
+                price.setTime(facilityToUnit.getDateCreated());
+                compareUnit.prices.add(price);
+            }
+
+        }
+
+        for(CompareUnit compareUnit : prices)
+        {
+            for(Price price : compareUnit.prices)
+            {
+                System.out.println(price.displayPrice + " " + price.time);
+            }
         }
 
         [facilityNames: facilityNames, prices: prices]
