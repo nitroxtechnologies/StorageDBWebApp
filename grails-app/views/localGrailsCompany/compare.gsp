@@ -179,7 +179,12 @@
 
 
        function graph(n, c, f) {
-            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compareGraph')}" + "?uName=" + n + "&uType=" + c + "&uFloor=" + f;
+            var facilities = [];
+            facilities.push('${compareFacility.name}');
+            <g:each in="${removeFacilities}" var="f">
+                facilities.push('${f.name}');
+            </g:each>
+            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compareGraph')}" + "?uName=" + n + "&uType=" + c + "&uFloor=" + f + "&facilities=" + facilities;
         }
        function loadFacilities(e){
             var cID = e.selectedIndex;
