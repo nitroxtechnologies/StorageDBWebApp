@@ -560,7 +560,7 @@ public class RDSHandler
 
     public ResultSet executeQuery(String query) throws SQLException
     {
-        //System.out.println("QUERY: " + query);
+        System.out.println("QUERY: " + query);
         Statement statement = connection.createStatement();
         if(query.contains("INSERT") || query.contains("DELETE") || query.contains("UPDATE") || query.contains("TRUNCATE"))
         {

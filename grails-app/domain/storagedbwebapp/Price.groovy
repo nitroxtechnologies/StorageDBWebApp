@@ -10,6 +10,23 @@ class Price {
     //2 = Green
 
 
+    public Price(BigDecimal val, int color)
+    {
+        if(val.compareTo(new BigDecimal("0.00")) == 0)
+        {
+            displayPrice = "-";
+        }
+        else
+        {
+            displayPrice = val.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+        }
+        if(displayPrice.equals("123456.00"))
+        {
+            displayPrice = "error";
+        }
+        this.color = color;
+        this.val = val;
+    }
     static belongsTo = [compareUnit: CompareUnit]
 
     public String toString()

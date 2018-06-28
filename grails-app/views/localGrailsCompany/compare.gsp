@@ -110,7 +110,7 @@
                     </select>
                 <label>Unit:</label>
                 <g:select id = 'units' optionKey="dbId" optionValue="name"
-                          name="unitdropdown" from="${units}"
+                          name="unitdropdown" from="${filterUnits}"
                           onChange = 'filterTable(document.getElementById("units"), document.getElementById("climate"))'
                           noSelection="['null':'All']">
                 </g:select>

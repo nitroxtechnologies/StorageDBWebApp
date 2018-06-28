@@ -26,7 +26,6 @@ import java.util.Date
 class LocalGrailsCompanyController
 {
 
-
     def updateLocalTables()
     {
         DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
@@ -66,9 +65,28 @@ class LocalGrailsCompanyController
         if(compareFacility == null)
             compareFacility = new LocalGrailsFacility(dbId: Long.MAX_VALUE, name: "None")
 
+        ArrayList<CompareUnit> filterUnits = new ArrayList<CompareUnit>();
+        for(CompareUnit compareUnit : units)
+        {
+            boolean alreadyAdded = false;
+            for(CompareUnit other : filterUnits)
+            {
+                if(compareUnit.name.equals(other.name))
+                {
+                    alreadyAdded = true;
+                }
+            }
+            if(!alreadyAdded)
+            {
+                filterUnits.add(compareUnit);
+            }
+        }
+        Collections.sort(filterUnits);
+
         [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
-         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities]
+         compareFacility: compareFacility, units: units, companies: companies, facilities: facilities,
+         filterUnits: filterUnits]
     }
 
     def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId, String userType, String username)
@@ -230,7 +248,7 @@ class LocalGrailsCompanyController
                 if (ftu.getUnitId() == u.getId()) {
                     System.out.println("MATCHED");
                     ArrayList<Price> prices = new ArrayList<Price>();
-                    Price price = new Price(val: ftu.getRateAmount(), color: 0, displayPrice: ftu.getRateAmount().toString());
+                    Price price = new Price(ftu.getRateAmount(), 0);
 
                     String rateType = ftu.getRateType();
                     System.out.println("RATE AMOUNT IS: " + ftu.getRateAmount());
@@ -506,7 +524,7 @@ class LocalGrailsCompanyController
                     if(local.facilityId == rfId)
                     {
                         //System.out.println("FOUND THE PRICE AS: " + local.price.toString());
-                        Price addPrice = new Price(val: local.price, color: 0, displayPrice: local.price.toString());
+                        Price addPrice = new Price(local.price, 0);
                         found.addToPrices(addPrice).save(failOnError: true, flush: true);
                         if(rfId != idOfBaseFacility)
                         {
@@ -522,18 +540,26 @@ class LocalGrailsCompanyController
                             }
                             if(!price.equals(new BigDecimal("12732136")))
                             {
-                                BigDecimal val = local.price.subtract(price);
-                                long color = 0;
-                                if(val.compareTo(new BigDecimal(""+0)) > 0)
-                                    color = 1;
+                                BigDecimal val = null;
+                                int color = 0;
+                                if(price.compareTo(new BigDecimal("0")) == 0 || local.price.compareTo(new BigDecimal("0")) == 0)
+                                {
+                                    val = new BigDecimal("0");
+                                }
                                 else
-                                    color = 2;
-                                Price otherPrice = new Price(val: val, color: color, displayPrice: val.toString());
+                                {
+                                    val = local.price.subtract(price);
+                                    if(val.compareTo(new BigDecimal(""+0)) > 0)
+                                        color = 1;
+                                    else
+                                        color = 2;
+                                }
+                                Price otherPrice = new Price(val, color);
                                 found.addToPrices(otherPrice).save(flush: true, failOnError: true);
                             }
                             else
                             {
-                                Price tempPrice = new Price(val:new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), color: 0, displayPrice: "error");
+                                Price tempPrice = new Price(new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), 0);
                                 found.addToPrices(tempPrice).save(flush: true, failOnError: true);
                             }
                         }
@@ -562,13 +588,13 @@ class LocalGrailsCompanyController
                             if(!foundIds.contains(local.id))
                             {
                                 foundIds.add(local.id);
-                                Price anotherToAddPrice = new Price(val: new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), color: 0, displayPrice: "error");
+                                Price anotherToAddPrice = new Price(new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), 0);
 
                                 found.addToPrices(anotherToAddPrice).save(flush: true, failOnError: true);
                                 if(removeFacilityIds.size() > 1)
                                     if(rfId != removeFacilityIds.get(0))// && rfId != removeFacilityIds.get(1))
                                     {
-                                        Price possibleToAddPrice = new Price(val: new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), color: 0, displayPrice: "error");
+                                        Price possibleToAddPrice = new Price(new BigDecimal(PRICE_DIFFERENCE_TO_SKIP.toString()), 0);
                                         found.addToPrices(possibleToAddPrice).save(flush:true, failOnError: true);
                                     }
                                 alreadyAddedTemps.put(rfId, foundIds);
