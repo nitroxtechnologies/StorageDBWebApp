@@ -184,7 +184,7 @@
             <g:each in="${removeFacilities}" var="f">
                 facilities += "&${f.name}=${f.name}";
             </g:each>
-            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compareGraphUnit')}" + "?uName=" + n + "&uType=" + c + "&uFloor=" + f + facilities;
+            window.location.href="${createLink(controller:'LocalGrailsCompany' ,action:'compareGraphUnit')}" + "?unitName=" + n + "&unitType=" + c + "&unitFloor=" + f + facilities;
         }
        function loadFacilities(e){
             var cID = e.selectedIndex;
