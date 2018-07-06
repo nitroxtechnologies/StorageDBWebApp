@@ -1,6 +1,8 @@
 package storagedbwebapp
 
-import AWSAccessors.User;
+import AWSAccessors.User
+
+import java.time.LocalDateTime;
 
 /**
  * Created by spencersharp on 6/18/18.
@@ -14,8 +16,8 @@ public class LocalUser
     String username;
     String password;
     boolean isActive;
-    Date dateCreated;
-    Date dateUpdated;
+    LocalDateTime dateCreated;
+    LocalDateTime dateUpdated;
 
     public LocalUser()
     {
@@ -92,22 +94,22 @@ public class LocalUser
         this.isActive = isActive;
     }
 
-    public Date getDateCreated()
+    public LocalDateTime getDateCreated()
     {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated)
+    public void setDateCreated(LocalDateTime dateCreated)
     {
         this.dateCreated = dateCreated;
     }
 
-    public Date getDateUpdated()
+    public LocalDateTime getDateUpdated()
     {
         return dateUpdated;
     }
 
-    public void setDateUpdated(Date dateUpdated)
+    public void setDateUpdated(LocalDateTime dateUpdated)
     {
         this.dateUpdated = dateUpdated;
     }

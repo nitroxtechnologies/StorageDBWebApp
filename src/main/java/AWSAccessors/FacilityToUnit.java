@@ -6,17 +6,16 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @DynamoDBTable(tableName = "FacilitiesUnitsRecent")
-public class FacilityToUnit
+public class FacilityToUnit implements Comparable<FacilityToUnit>
 {
     private long id;
     private long facilityId;
     private long unitId;
-    private Date dateCreated;
-    private String dateCreatedString;
+    private LocalDateTime dateCreated;
     private BigDecimal rateAmount;
     private String rateType;
 
@@ -37,21 +36,14 @@ public class FacilityToUnit
     }
 
     @DynamoDBAttribute(attributeName = "timeCreated")
-    public java.util.Date getDateCreated()
+    public LocalDateTime getDateCreated()
     {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated)
+    public void setDateCreated(LocalDateTime dateCreated)
     {
         this.dateCreated = dateCreated;
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm");
-        dateCreatedString = ft.format(dateCreated);
-    }
-
-    public String getDateCreatedString()
-    {
-        return dateCreatedString;
     }
 
     @DynamoDBAttribute(attributeName = "facilityId")
@@ -109,8 +101,48 @@ public class FacilityToUnit
         return this;
     }
 
+    public FacilityToUnitHistory getAsFacilityToUnitHistory()
+    {
+        FacilityToUnitHistory facilityToUnitHistory = new FacilityToUnitHistory();
+        facilityToUnitHistory.setId(id);
+        facilityToUnitHistory.setFacilityId(facilityId);
+        facilityToUnitHistory.setUnitId(unitId);
+        facilityToUnitHistory.setDateCreated(dateCreated);
+        facilityToUnitHistory.setRateAmount(rateAmount);
+        facilityToUnitHistory.setRateType(rateType);
+
+        return facilityToUnitHistory;
+    }
+
     public String toString()
     {
         return id + " " + facilityId + " " + unitId + " Cost: " + rateAmount + " Type: " + rateType;
+    }
+
+    public int compareTo(FacilityToUnit other)
+    {
+        if(facilityId > other.facilityId)
+        {
+            return 1;
+        }
+        else if(facilityId < other.facilityId)
+        {
+            return -1;
+        }
+        else
+        {
+            if(unitId > other.unitId)
+            {
+                return 1;
+            }
+            else if(unitId < other.unitId)
+            {
+                return -1;
+            }
+            else
+            {
+                return rateType.compareTo(other.rateType);
+            }
+        }
     }
 }

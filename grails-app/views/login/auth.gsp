@@ -13,17 +13,7 @@
 
     </head>
 <body>
-    <div class="container">
-        <!-- As a heading -->
-
-            <div class="col-lg-12 text-center" style="margin-top: 50px">
-                <label>Company:</label>
-                <g:select id = "cDropdown" optionKey="dbId" optionValue="name"
-                          name="companydropdown" from="${companies}" value = ""
-                          onChange= 'loadFacilities(document.getElementById("cDropdown"))' noSelection="['null':'Select a Company']">
-                </g:select>
-            </div>
-    </div>
+    TESTING THE AUTH
 
     <g:javascript>
 

@@ -1,6 +1,9 @@
 package storagedbwebapp
 
+import AWSAccessors.TimeFormatter
+
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 
 class Price {
 
@@ -33,11 +36,9 @@ class Price {
     }
     static belongsTo = [compareUnit: CompareUnit]
 
-    public void setTime(Date time)
+    public void setTime(LocalDateTime localDateTime)
     {
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm");
-        ft.setTimeZone(TimeZone.getTimeZone("UTC"));
-        this.time = ft.format(time);
+        time = TimeFormatter.showLocalTimeFromLocalDateTime(localDateTime);
     }
 
     public String toString()

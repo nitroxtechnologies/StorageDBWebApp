@@ -6,6 +6,7 @@ import AWSAccessors.FacilityToUnitHistory
 import AWSAccessors.FacilityToUnit
 import AWSAccessors.JavaLocalGrailsUnit
 import AWSAccessors.RDSHandler
+import AWSAccessors.TimeFormatter
 import AWSAccessors.Unit
 import AWSAccessors.User
 import AWSAccessors.UserPreferences
@@ -16,8 +17,11 @@ import org.hibernate.SessionFactory
 
 import java.math.RoundingMode
 import java.sql.ResultSet
+import java.sql.Time
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Date
 
 /**
@@ -25,25 +29,63 @@ import java.util.Date
  */
 class LocalGrailsCompanyController
 {
+    static String username = "Guest";
+    String type;
+    int companyIndex;
+    int facilityIndex;
+    int climateIndex;
+    int unitIndex;
+    int compareCompaniesIndex;
+    long facilityId;
+
+
+    def springSecurityService
+
+    def resetCompareUnit()
+    {
+        ArrayList<CompareUnit> toDelete = CompareUnit.list();
+        for(int i = 0; i < toDelete.size(); i++)
+        {
+            CompareUnit compareUnit1 = toDelete.get(i);
+            if(i < toDelete.size()-1)
+            {
+                compareUnit1.delete(failOnError: true);
+            }
+            else
+            {
+                compareUnit1.delete(failOnError: true, flush: true);
+            }
+        }
+    }
+
+    def resetLocalDatabase()
+    {
+        AddFacility.executeUpdate('delete from AddFacility')
+        CompareCompany.executeUpdate('delete from CompareCompany')
+        resetCompareUnit();
+        LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
+        LocalGrailsUnit.executeUpdate('delete from LocalGrailsUnit')
+        LocalUser.executeUpdate('delete from LocalUser')
+        RemoveFacility.executeUpdate('delete from RemoveFacility')
+    }
 
     def updateLocalTables()
     {
-        DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
 
         def companies = LocalGrailsCompany.list()
         def facilities = LocalGrailsFacility.list()
         def units = CompareUnit.list()
 
-        System.out.println("\n\nCOMPANIES INDEX: " + dropdownInfo.companyIndex + "\n\n");
+        System.out.println("\n\nCOMPANIES INDEX: " + companyIndex + "\n\n");
         def company;
-        if(companies.size() > dropdownInfo.companyIndex)
+        if(companies.size() > companyIndex)
         {
-            company = dropdownInfo.companyIndex + 1;
+            company = companyIndex;
         }
         def facility;
-        if(facilities.size() > dropdownInfo.facilityIndex)
+        if(facilities.size() > facilityIndex)
         {
-            facility = dropdownInfo.facilityIndex + 1
+            facility = facilityIndex + 1
         }
 
         def addFacilities = AddFacility.list()
@@ -53,7 +95,7 @@ class LocalGrailsCompanyController
         if(RemoveFacility.list().size() > 0)
             removeFacilities.remove(0);
 
-        def compareCompany = dropdownInfo.compareCompaniesIndex;
+        def compareCompany = compareCompaniesIndex;
 
         def compareCompanies = CompareCompany.list()
 
@@ -83,53 +125,44 @@ class LocalGrailsCompanyController
         }
         Collections.sort(filterUnits);
 
-        [facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
+        [username: username, type: type,
+         facility: facility, addFacilities: addFacilities, removeFacilities: removeFacilities,
          compareCompany: compareCompany, compareCompanies: compareCompanies, company: company,
          compareFacility: compareFacility, units: units, companies: companies, facilities: facilities,
          filterUnits: filterUnits]
     }
 
-    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId, String userType, String username)
+    def updateDropdownList(int companyIndex, int facilityIndex, int climateIndex, int unitIndex, int compareCompaniesIndex, long facilityId)
     {
-        DropdownInfo dropdownInfo = DropdownInfo.list().get(0)
-
         if(companyIndex >= 0)
         {
-            dropdownInfo.companyIndex = companyIndex - 1;
+            this.companyIndex = companyIndex;
         }
         if(facilityIndex > 0)
         {
-            dropdownInfo.facilityIndex = facilityIndex - 1;
+            this.facilityIndex = facilityIndex - 1;
         }
         if(climateIndex > 0)
         {
-            dropdownInfo.climateIndex = climateIndex - 1;
+            this.climateIndex = climateIndex - 1;
         }
         if(unitIndex > 0)
         {
-            dropdownInfo.unitIndex = unitIndex - 1;
+            this.unitIndex = unitIndex - 1;
         }
         if(compareCompaniesIndex > 0)
         {
-            dropdownInfo.compareCompaniesIndex = compareCompaniesIndex;
+            this.compareCompaniesIndex = compareCompaniesIndex;
         }
         if(facilityId >= 0)
         {
-            dropdownInfo.facilityId = facilityId;
+            this.facilityId = facilityId;
         }
 
-        if(userType.length() > 0)
-        {
-            dropdownInfo.userType = userType;
-        }
-
-        if(username.length() > 0)
-        {
-            dropdownInfo.username = username;
-        }
-
-        new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType, username: dropdownInfo.username).save(failOnError: true, flush: true)
+        //new DropdownInfo(companyIndex: dropdownInfo.companyIndex, facilityIndex: dropdownInfo.facilityIndex, climateIndex: dropdownInfo.climateIndex, unitIndex: dropdownInfo.unitIndex, compareCompaniesIndex: dropdownInfo.compareCompaniesIndex, facilityId: dropdownInfo.facilityId, userType: dropdownInfo.userType, username: dropdownInfo.username).save(failOnError: true, flush: true)
     }
+    //DEPRECATED
+    /*
     def index()
     {
         CompareCompany.executeUpdate('delete from CompareCompany')
@@ -159,10 +192,22 @@ class LocalGrailsCompanyController
         println("----------------");
         updateLocalTables()
     }
+    */
+
+    def needToLogin()
+    {
+
+    }
+
     /*
     PARAMS NEEDED WHEN LOADED: cID
      */
     def loadFacilities() {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
+
         println("----------------");
         println("LOAD FACILITIES")
         println("CID = " + params.cID)
@@ -174,12 +219,12 @@ class LocalGrailsCompanyController
         for (Facility f : facilitiesArraylist) {
             new LocalGrailsFacility(dbId: f.getId(), name: f.getName()).save()
         }
-        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l, "", "")
+        updateDropdownList((params.cID as Integer), 0, 0, 0, 0, -1l)
         updateLocalTables()
     }
     //Deprecated
     /*
-    def loadUnits()
+    def ()
     {
         def companies = LocalGrailsCompany.list()
         def facilities = LocalGrailsFacility.list()
@@ -220,6 +265,10 @@ class LocalGrailsCompanyController
      */
     def loadUnitTable()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
         //new LocalGrailsUnit(dbId: 0, name: "10x10", climate: "Climate", floor: 0, price: 10.00).save()
 
         println("----------------");
@@ -234,11 +283,7 @@ class LocalGrailsCompanyController
         println("----------------");
         List<Unit> unitsArraylist = rds.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = rds.getFacilityToUnitsFromFacilityId(f.getId())
-        Price.executeUpdate('delete from Price')
-        for(CompareUnit compareUnit : CompareUnit.list())
-        {
-            compareUnit.delete(failOnError: true, flush: true);
-        }
+        resetCompareUnit();
 
         System.out.println("UNITSARRAYLIST SIZE: "  + unitsArraylist.size());
         System.out.println("FACILITYTOUNIT SIZE: "  + facilityToUnitList.size());
@@ -246,23 +291,30 @@ class LocalGrailsCompanyController
             for (FacilityToUnit ftu : facilityToUnitList) {
 
                 if (ftu.getUnitId() == u.getId()) {
-                    System.out.println("MATCHED");
-                    ArrayList<Price> prices = new ArrayList<Price>();
                     Price price = new Price(ftu.getRateAmount(), 0);
 
                     String rateType = ftu.getRateType();
-                    System.out.println("RATE AMOUNT IS: " + ftu.getRateAmount());
+                    //System.out.println("RATE AMOUNT IS: " + ftu.getRateAmount());
                     if(rateType == null || rateType.length()==0)
                         rateType = "standard";
                     //System.out.println("RATE TYPE NOW: " + rateType);
-                    CompareUnit newCompareUnit = new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), time: ftu.getDateCreatedString());
+                    CompareUnit newCompareUnit = new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), time: TimeFormatter.showLocalTimeFromLocalDateTime(ftu.getDateCreated()));
                     newCompareUnit.addToPrices(price).save(failOnError: true, flush: true);
-                    //newCompareUnit.save(failOnError: true);
-
                 }
             }
         }
-        updateDropdownList(-1, (params.fID as Integer), 0, 0, 0, f.getId(), "", "")
+        /**
+        ArrayList<CompareUnit> compareUnits = new ArrayList<CompareUnit>();
+        compareUnits = CompareUnit.list();
+        resetCompareUnit();
+        Collections.sort(compareUnits);
+
+        for(CompareUnit compareUnit : compareUnits)
+        {
+            compareUnit.save(failOnError: true);
+        }
+        */
+        updateDropdownList(-1, (params.fID as Integer), 0, 0, 0, f.getId())
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -275,6 +327,11 @@ class LocalGrailsCompanyController
      */
     def compare()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
+
         System.out.println("----------\nCompare block start");
 
         for(RemoveFacility removeFacility : RemoveFacility.list())
@@ -340,7 +397,7 @@ class LocalGrailsCompanyController
                     new AddFacility(dbId: facility.getId(), name: facility.getName()).save();
             }
 
-            updateDropdownList(-1, 0, 0, 0, cId+1, -1l, "", "")
+            updateDropdownList(-1, 0, 0, 0, cId+1, -1l)
         }
         if(params.fName != null) {
             System.out.println("\n\nCOMPARE: FID\n\n");
@@ -408,7 +465,7 @@ class LocalGrailsCompanyController
                     }
                     System.out.println("USE CASE IDENTIFIED");
                     AddFacility.executeUpdate('delete from AddFacility')
-                    updateDropdownList(-1, 0, 0, 0, 1, -1l, "", "")
+                    updateDropdownList(-1, 0, 0, 0, 1, -1l)
 
                     facilities = rds.getFacilitiesFromCompanyId(firstId);
                     for(Facility facility : facilities)
@@ -519,7 +576,7 @@ class LocalGrailsCompanyController
                     if(found == null)
                     {
                         List<Price> prices = new ArrayList<>();
-                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height==null?new BigDecimal(0.0):local.height, type: local.type, rateType: local.rateType, floor: local.floor, prices: prices, time: local.dateCreatedString);
+                        found = new CompareUnit(dbId: local.id, name: local.name, width: local.width, depth: local.depth, height: local.height==null?new BigDecimal(0.0):local.height, type: local.type, rateType: local.rateType, floor: local.floor, prices: prices, time: TimeFormatter.showLocalTimeFromLocalDateTime(local.dateCreated));
                     }
                     if(local.facilityId == rfId)
                     {
@@ -636,6 +693,11 @@ class LocalGrailsCompanyController
 
     def compareGraphUnit()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
+
         String unitName = params.unitName as String;
         int unitFloor = params.unitFloor as Integer;
         String unitType = params.unitType as String;
@@ -695,10 +757,13 @@ class LocalGrailsCompanyController
 
         for(FacilityToUnitHistory facilityToUnitHistory : facilityToUnitHistories)
         {
-            CompareUnit compareUnit = prices.get(toAddIndices.get(facilityToUnitHistory.getFacilityId()));
-            Price price = new Price(facilityToUnitHistory.getRateAmount(),0);
-            price.setTime(facilityToUnitHistory.getDateCreated());
-            compareUnit.prices.add(price);
+            if(toAddIndices.get(facilityToUnitHistory.getFacilityId()) != null)
+            {
+                CompareUnit compareUnit = prices.get(toAddIndices.get(facilityToUnitHistory.getFacilityId()));
+                Price price = new Price(facilityToUnitHistory.getRateAmount(),0);
+                price.setTime(facilityToUnitHistory.getDateCreated());
+                compareUnit.prices.add(price);
+            }
         }
 
         for(FacilityToUnit facilityToUnit : facilityToUnits)
@@ -729,11 +794,15 @@ class LocalGrailsCompanyController
 
     def save()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
         int index = 0;
         Collection keys = params.keySet();
         JavaLocalGrailsUnit temp;
         ArrayList<JavaLocalGrailsUnit> list = new ArrayList<>();
-        long facilityId = DropdownInfo.list().get(0).facilityId;
+        long facilityId = facilityId;
         System.out.println("FACILITY ID IS: " + facilityId);
         double MAGIC_NUMBER = Math.random();
         for(Object key : keys)
@@ -809,7 +878,6 @@ class LocalGrailsCompanyController
                     break;
             }
             index++;
-
         }
         System.out.println("------------");
 
@@ -959,7 +1027,7 @@ class LocalGrailsCompanyController
             toAdd.facilityId = javaLocalGrailsUnit.facilityId;
             toAdd.unitId = foundUnit.id;
 
-            toAdd.dateCreated = new Date();
+            toAdd.dateCreated = TimeFormatter.getCurrentLocalDateTimeToWrite();
             toAdd.rateAmount = javaLocalGrailsUnit.price;
             if(javaLocalGrailsUnit.rateType == null)
             {
@@ -995,6 +1063,11 @@ class LocalGrailsCompanyController
     }
 
     def input() {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
+
         RDSHandler rds = new RDSHandler();
 
         Collection keys = params.keySet();
@@ -1019,6 +1092,10 @@ class LocalGrailsCompanyController
     }
 
     def edit() {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
 
         println("----------------");
         println("LOAD UNIT TABLE")
@@ -1033,6 +1110,7 @@ class LocalGrailsCompanyController
         List<Unit> unitsArraylist = rds.getUnitsFromFacilityName(params.fName as String)
         List<FacilityToUnit> facilityToUnitList = rds.getFacilityToUnitsFromFacilityId(f.getId())
 
+        Price.executeUpdate('delete from Price')
         for(CompareUnit compareUnit : CompareUnit.list())
         {
             compareUnit.delete(failOnError: true, flush: true);
@@ -1043,18 +1121,18 @@ class LocalGrailsCompanyController
             System.out.println("LOOP");
             for (FacilityToUnit ftu : facilityToUnitList) {
                 if (ftu.getUnitId() == u.getId()) {
-                    ArrayList<Price> prices = new ArrayList<Price>();
-                    prices.add(new Price(val: ftu.getRateAmount(), color: 0, displayPrice: ftu.getRateAmount().toString()));
+                    Price price = new Price(ftu.getRateAmount(), 0);
                     String rateType = ftu.getRateType();
-                    if(rateType.length() == 0 || rateType == null)
-                    {
+                    if (rateType.length() == 0 || rateType == null) {
                         rateType = "standard";
                     }
-                    new CompareUnit(dbId:  u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight()==null?new BigDecimal(0.0):u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), prices: prices, time: ftu.getDateCreatedString()).save()
+                    CompareUnit newCompareUnit = new CompareUnit(dbId: u.getId(), name: u.getName(), width: u.getWidth(), depth: u.getDepth(), height: u.getHeight() == null ? new BigDecimal(0.0) : u.getHeight(), type: u.getType(), rateType: rateType, floor: u.getFloor(), time: TimeFormatter.showLocalTimeFromLocalDateTime(ftu.getDateCreated()));
+                    newCompareUnit.addToPrices(price).save(failOnError: true, flush: true);
                 }
             }
         }
-        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId(), "", "")
+        RemoveFacility removeFacility = new RemoveFacility(name: f.getName()).save(flush: true, failOnError: true)          ;
+        updateDropdownList(0, (params.fID as Integer), 0, 0, 0, f.getId())
         /*
         FacilityToUnit ftu = dh.getFacilityToUnitFromNames(params.fName as String, params.uName as String)
 
@@ -1064,8 +1142,13 @@ class LocalGrailsCompanyController
     }
 
     def graph() {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
+
         RDSHandler rds = new RDSHandler();
-        long facilityId = DropdownInfo.list().get(0).facilityId;
+        long facilityId = facilityId;
         System.out.println("FACILITY ID: " + facilityId);
 
         JavaLocalGrailsUnit temp = new JavaLocalGrailsUnit();
@@ -1086,45 +1169,45 @@ class LocalGrailsCompanyController
 
         String facilityName = rds.getFacilityFromId(facilityId).getName();
 
-        ArrayList<Double> prices = new ArrayList<Double>();
+        ArrayList<BigDecimal> prices = new ArrayList<BigDecimal>();
         ArrayList<String> dates = new ArrayList<String>();
 
         ArrayList<FacilityToUnitHistory> historicalPrices = rds.getFacilityToUnitsHistoryWithInfo(tempList);
-        FacilityToUnit mostRecent = rds.getFacilityToUnitByFacilityIdAndUnitId(facilityId, unitId);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        while(historicalPrices.size() > 0)
+        HashMap<LocalDateTime, BigDecimal> datesToPrices = new HashMap<LocalDateTime, BigDecimal>();
+        ArrayList<LocalDateTime> localDateTimes = new ArrayList<LocalDateTime>();
+
+        for(FacilityToUnitHistory facilityToUnitHistory : historicalPrices)
         {
-            Date minDate = new Date(Long.MAX_VALUE);
-            double price = 0.0;
-            int index = 0;
-            for(int i = 0; i < historicalPrices.size(); i++)
-            {
-                Date date = historicalPrices.get(i).dateCreated;
-                if(date.compareTo(minDate) < 0)
-                {
-                    minDate = date;
-                    price = historicalPrices.get(i).rateAmount;
-                    index = i;
-                }
-            }
-            String toSend = dateFormat.format(minDate);
-            dates.add(toSend);
-            prices.add(price);
-            System.out.println(index + " " + historicalPrices.size());
-            System.out.println(historicalPrices.remove(index));
+            datesToPrices.put(facilityToUnitHistory.getDateCreated(), facilityToUnitHistory.getRateAmount());
+            localDateTimes.add(facilityToUnitHistory.getDateCreated());
         }
+
+        Collections.sort(localDateTimes);
+
+        for(LocalDateTime localDateTime : localDateTimes)
+        {
+            dates.add(TimeFormatter.showLocalTimeFromLocalDateTime(localDateTime));
+            prices.add(datesToPrices.get(localDateTime));
+        }
+
+        FacilityToUnit mostRecent = rds.getFacilityToUnitByFacilityIdAndUnitId(facilityId, unitId);
         prices.add(mostRecent.rateAmount);
-        dates.add(dateFormat.format(mostRecent.dateCreated));
+        dates.add(TimeFormatter.showLocalTimeFromLocalDateTime(mostRecent.getDateCreated()));
 
         System.out.println(prices);
         System.out.println(dates);
         [prices: prices, dates: dates, facilityName: facilityName]
     }
 
+    //Method that is called to verify the user's login information
     def verify()
     {
+        resetLocalDatabase()
+
         RDSHandler rds = new RDSHandler();
         String type = rds.getUserTypeFromLogin(params.username as String, params.password as String);
+
+        username = params.username as String;
 
         if(type.equals("Admin"))
         {
@@ -1136,20 +1219,33 @@ class LocalGrailsCompanyController
         else
         {
             type = "Guest";
+            username = "Guest";
             chain(action:"failedLogin", params:[username: params.username, type: type]);
+            return;
         }
         chain(action:"landing", params:[username: params.username, type: type]);
     }
 
     def failedLogin()
     {
-
+        chain(action: "login", params: [username: params.username, password: params.password]);
     }
 
+    //Method that is called
     def landing()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+            return;
+        }
+
+        System.out.println("USERNAME ON LANDING: " + username);
+
         RDSHandler rds = new RDSHandler();
         ArrayList<CompareUnit> toDelete = CompareUnit.list();
+
+
         for(int i = 0; i < toDelete.size(); i++)
         {
             CompareUnit compareUnit1 = toDelete.get(i);
@@ -1162,14 +1258,15 @@ class LocalGrailsCompanyController
                 compareUnit1.delete(failOnError: true, flush: true);
             }
         }
-        System.out.println("USERNAME: " + params.username);
-        User user = rds.getUserByUsername(params.username as String);
+
+        System.out.println("USERNAME: " + username);
+        User user = rds.getUserByUsername(username);
         UserPreferences userPreferences = rds.getPreferencesOfUser(user);
         switch(userPreferences.getLandingPage())
         {
             case "Unit Table":
                 Facility facility = rds.getFacilityFromId(userPreferences.getLandingFacilityId());
-                updateDropdownList((int)(facility.getCompanyId()), 0, 0, 0, 0, facility.getId(), "", "");
+                updateDropdownList((int)(facility.getCompanyId()), 0, 0, 0, 0, facility.getId());
                 List<Facility> facilitiesArraylist = rds.getFacilitiesFromCompanyId(facility.getCompanyId());
                 LocalGrailsFacility.executeUpdate('delete from LocalGrailsFacility')
                 for (Facility f : facilitiesArraylist) {
@@ -1178,9 +1275,9 @@ class LocalGrailsCompanyController
                 chain(action:"loadUnitTable", params:[fID: facility.getId(), fName: facility.getName()]);
                 break;
         }
-
+        //The best way for me to test
         System.out.println("TYPE IS: "  + params.type);
-        updateDropdownList(-1, 0, 0, 0, 0, -1l, params.type as String, params.username as String)
+        updateDropdownList(-1, 0, 0, 0, 0, -1l)
 
         def companies = LocalGrailsCompany.list()
         [companies: companies, username: params.username, type: params.type]
@@ -1188,6 +1285,12 @@ class LocalGrailsCompanyController
 
     def addUser()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+            return;
+        }
+
         /*
         RDSHandler rds = new RDSHandler();
         User user = new User();
@@ -1207,12 +1310,18 @@ class LocalGrailsCompanyController
         temp.setUsername(params.username as String);
         temp.setPassword(params.password as String);
         temp.setIsActive(true);
-        rds.updateUser(temp);
+        rds.addUser(temp);
     }
 
     //Params needed: none
     def showUsers()
     {
+        if(!type.equals("Admin"))
+        {
+            chain(action:"needToLogin")
+            return;
+        }
+
         System.out.println("SHOW EM");
         boolean shouldSet = false;
         if(params.id != null)
@@ -1230,7 +1339,7 @@ class LocalGrailsCompanyController
                 localUsers.add(LocalUser.createFromUser(user));
         }
         def users = localUsers;
-        def username = DropdownInfo.list().get(0).username;
+        def username = username;
         System.out.println("USERS: " + users);
         def maxId = rds.getMaxUserId();
         [users: userList, username: username, maxId: maxId]
@@ -1238,6 +1347,11 @@ class LocalGrailsCompanyController
 
     def saveUsers()
     {
+        if(username.equals("Guest"))
+        {
+            chain(action:"needToLogin")
+        }
+
         RDSHandler rds = new RDSHandler();
         long maxUserId = rds.getMaxUserId();
         ArrayList<User> users = new ArrayList<User>();
@@ -1261,8 +1375,8 @@ class LocalGrailsCompanyController
             user.setLastName(result[3]);
             user.setUsername(result[4]);
             user.setPassword(result[5]);
-            user.setDateCreated(result[6]);
-            user.setDateUpdated(result[7]);
+            user.setDateCreated(TimeFormatter.getTimeToWriteFromString(result[6]));
+            user.setDateUpdated(TimeFormatter.getTimeToWriteFromString(result[7]));
             user.setIsActive(result[8].equals("true"));
             user.setIsActive(true);
             users.add(user);

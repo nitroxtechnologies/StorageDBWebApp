@@ -42,7 +42,7 @@
     <div class="container">
         <form class="Absolute-Center is-Responsive">
             <div id="logo-container"><span class="text-muted">&copy;2018 Nitrox Technologies</span></div>
-            Incorrect Username or Password
+            You must Log In in order to use this site
             <div class="form-row">
                 <div class="input-group col-md-12 mb-3">
                     <div class="input-group-prepend">

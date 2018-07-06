@@ -5,6 +5,9 @@ import java.io.IOException;
 import static java.lang.System.out;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -33,22 +36,18 @@ public class RDSHandler
 
 
 
-    public java.util.Date getDateFromSqlDate(Timestamp date)
-    {
-        Date javaDate = null;
-        if (date != null) {
-            javaDate = new Date(date.getTime());
-        }
-        return javaDate;
-    }
 
-    public Timestamp getSqlDateFromDate(Date date)
-    {
-        if(date == null)
-            return null;
-        Timestamp result = new Timestamp(date.getTime());
-        return result;
-    }
+
+
+
+
+
+
+
+
+
+
+
 
     public RDSHandler() {
 
@@ -656,7 +655,7 @@ public class RDSHandler
         facilityToUnit.setId(resultSet.getLong("id"));
         facilityToUnit.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnit.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnit.setDateCreated(getDateFromSqlDate(resultSet.getTimestamp("dateCreated")));
+        facilityToUnit.setDateCreated(TimeFormatter.getDateFromTimestamp(resultSet.getTimestamp("dateCreated")));
         facilityToUnit.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnit.setRateType(resultSet.getString("rateType"));
         return facilityToUnit;
@@ -668,7 +667,7 @@ public class RDSHandler
         facilityToUnitHistory.setId(resultSet.getLong("id"));
         facilityToUnitHistory.setFacilityId(resultSet.getLong("facilityId"));
         facilityToUnitHistory.setUnitId(resultSet.getLong("unitId"));
-        facilityToUnitHistory.setDateCreated(getDateFromSqlDate(resultSet.getTimestamp("dateCreated")));
+        facilityToUnitHistory.setDateCreated(TimeFormatter.getDateFromTimestamp(resultSet.getTimestamp("dateCreated")));
         facilityToUnitHistory.setRateAmount(resultSet.getBigDecimal("rateAmount"));
         facilityToUnitHistory.setRateType(resultSet.getString("rateType"));
         return facilityToUnitHistory;
@@ -699,8 +698,8 @@ public class RDSHandler
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
         user.setIsActive(resultSet.getBoolean("isActive"));
-        user.setDateCreated(getDateFromSqlDate(resultSet.getTimestamp("dateCreated")));
-        user.setDateUpdated(getDateFromSqlDate(resultSet.getTimestamp("dateUpdated")));
+        user.setDateCreated(TimeFormatter.getDateFromTimestamp(resultSet.getTimestamp("dateCreated")));
+        user.setDateUpdated(TimeFormatter.getDateFromTimestamp(resultSet.getTimestamp("dateUpdated")));
         return user;
     }
 
@@ -816,7 +815,7 @@ public class RDSHandler
         String result = "(" + facilityToUnit.getId() + ", ";
         result += "" + facilityToUnit.getFacilityId() + ", ";
         result += "" + facilityToUnit.getUnitId() + ", ";
-        Timestamp date = getSqlDateFromDate(facilityToUnit.getDateCreated());
+        Timestamp date = TimeFormatter.getTimestampFromDate(facilityToUnit.getDateCreated());
         //PreparedStatement preparedStatement = connection.prepareStatement("?");
         //preparedStatement.setTimestamp(1,date);
         //out.println("AHA: " +preparedStatement.toString());
@@ -846,7 +845,7 @@ public class RDSHandler
         String result = "(" + facilityToUnitHistory.getId() + ", ";
         result += "" + facilityToUnitHistory.getFacilityId() + ", ";
         result += "" + facilityToUnitHistory.getUnitId() + ", ";
-        Timestamp date = getSqlDateFromDate(facilityToUnitHistory.getDateCreated());
+        Timestamp date = TimeFormatter.getTimestampFromDate(facilityToUnitHistory.getDateCreated());
         if(date == null)
         {
             result += "null, ";
@@ -901,7 +900,7 @@ public class RDSHandler
         result += "'" + user.getUsername() + "',";
         result += "'" + user.getPassword() + "',";
         result += "" + user.isActive() + ",";
-        Timestamp date = getSqlDateFromDate(user.getDateCreated());
+        Timestamp date = TimeFormatter.getTimestampFromDate(user.getDateCreated());
         if(date == null)
         {
             result += "null, ";
@@ -910,7 +909,7 @@ public class RDSHandler
         {
             result += "'" + date + "',";
         }
-        date = getSqlDateFromDate(user.getDateUpdated());
+        date = TimeFormatter.getTimestampFromDate(user.getDateUpdated());
         if(date == null)
         {
             result += "null)";
@@ -947,7 +946,7 @@ public class RDSHandler
     {
         String result = "(";
         result += writeTime.getId() + ",";
-        Date date = getSqlDateFromDate(writeTime.getTime());
+        Date date = TimeFormatter.getTimestampFromDate(writeTime.getTime());
         if(date == null)
         {
             result += "null)";
@@ -1256,6 +1255,10 @@ public class RDSHandler
     {
         ArrayList<FacilityToUnit> facilityToUnits = getFacilityToUnitsFromFacilityIds(facilityIds);
 
+        if(facilityToUnits.size() == 0)
+        {
+            return new ArrayList<JavaLocalGrailsUnit>();
+        }
         //Search units for unitIds of the FacilityToUnit objects
         String query = "SELECT * FROM Units WHERE id IN (";
         for(int i = 0; i < facilityToUnits.size(); i++)
@@ -1456,8 +1459,11 @@ public class RDSHandler
     {
         String query = "SELECT * FROM UserPreferences WHERE userId=" + user.getId();
         ResultSet resultSet = executeQuery(query);
-        resultSet.next();
-        return createUserPreferencesFromResultSet(resultSet);
+        if(resultSet.next())
+        {
+            return createUserPreferencesFromResultSet(resultSet);
+        }
+        return new UserPreferences();
     }
 
     public Company getCompanyFromFacilityName(String facilityName) throws SQLException
@@ -1579,6 +1585,18 @@ public class RDSHandler
             facilityToUnits.add(createFacilityToUnitFromResultSet(resultSet));
         }
         return facilityToUnits;
+    }
+
+    public ArrayList<FacilityToUnitHistory> getAllFacilityToUnitHistories() throws SQLException
+    {
+        ArrayList<FacilityToUnitHistory> facilityToUnitHistories = new ArrayList<FacilityToUnitHistory>();
+        String query = "SELECT * FROM FacilitiesUnitsHistory";
+        ResultSet resultSet = executeQuery(query);
+        while(resultSet.next())
+        {
+            facilityToUnitHistories.add(createFacilityToUnitHistoryFromResultSet(resultSet));
+        }
+        return facilityToUnitHistories;
     }
 
     public ArrayList<Unit> getAllUnits() throws SQLException
@@ -1783,6 +1801,67 @@ public class RDSHandler
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void overwriteAllCompanies(ArrayList<Company> companies) throws SQLException
+    {
+        String query = "TRUNCATE TABLE Companies";
+        executeQuery(query);
+        batchSaveCompanies(companies);
+    }
+
+    public void overwriteAllCompanyToFacilities(ArrayList<CompanyToFacility> companiesToFacilities) throws SQLException
+    {
+        String query = "TRUNCATE TABLE CompaniesFacilities";
+        executeQuery(query);
+        batchSaveCompanyToFacilities(companiesToFacilities);
+    }
+
+    public void overwriteAllFacilities(ArrayList<Facility> facilities) throws SQLException
+    {
+        String query = "TRUNCATE TABLE Facilities";
+        executeQuery(query);
+        batchSaveFacilities(facilities);
+    }
+
+    public void overwriteAllFacilityToUnits(ArrayList<FacilityToUnit> facilityToUnits) throws SQLException
+    {
+        String query = "TRUNCATE TABLE FacilitiesUnits";
+        executeQuery(query);
+        batchSaveFacilityToUnits(facilityToUnits);
+    }
+
+    public void overwriteAllFacilityToUnitHistories(ArrayList<FacilityToUnitHistory> facilityToUnitHistories) throws SQLException
+    {
+        String query = "TRUNCATE TABLE FacilitiesUnitsHistory";
+        executeQuery(query);
+        batchSaveFacilityToUnitsHistory(facilityToUnitHistories);
+    }
+
+    public void overwriteAllUnits(ArrayList<Unit> units) throws SQLException
+    {
+        String query = "TRUNCATE TABLE Units";
+        executeQuery(query);
+        batchSaveUnits(units);
+    }
+
+    public void overwriteAllUsers(ArrayList<User> users) throws SQLException
+    {
+        String query = "TRUNCATE TABLE Users";
+        executeQuery(query);
+        batchSaveUsers(users);
+    }
 
 
 
